@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="تحليل الأسهم الإماراتية - DEWA, SALIK, TALABAT, NMDC Energy">
+  <meta name="keywords" content="أسهم, دبي, أبوظبي, استثمار, تحليل مالي">
+  <title>منصة تحليل الأسهم الإماراتية المتقدمة - نسخة مطابقة شكلًا</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- DataTables -->
+  <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+  <!-- Plotly بدل Chart.js -->
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+  <style>
+    /* نحتفظ بنفس الستايلات الموجودة في الصفحة المرسلة */
+    :root { --primary-color:#1e3c72; --secondary-color:#2a5298; --success-color:#28a745; --danger-color:#dc3545; --warning-color:#ffc107; --info-color:#17a2b8; --light-color:#f8f9fa; --dark-color:#343a40; }
+    *{ margin:0; padding:0; box-sizing:border-box; }
+    body{ font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color:var(--light-color); transition:all .3s ease; }
+    body.dark-mode{ background-color:#1a1a1a; color:#fff; }
+    body.dark-mode .card{ background-color:#2d2d2d; color:#fff; }
+    body.dark-mode .table{ color:#fff; }
+    body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > *{ background-color:rgba(255,255,255,.05); }
+
+    .main-header{ background:linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color:#fff; padding:2rem 0; box-shadow:0 4px 6px rgba(0,0,0,.1); position:relative; overflow:hidden; }
+    .main-header::before{ content:''; position:absolute; inset:0; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>'); opacity:.1; }
+    .header-content{ position:relative; z-index:1; }
+    .stock-card{ background:#fff; border-radius:15px; box-shadow:0 8px 25px rgba(0,0,0,.1); margin-bottom:2rem; overflow:hidden; transition:all .3s ease; border:none; }
+    .stock-card:hover{ transform: translateY(-8px); box-shadow:0 12px 35px rgba(0,0,0,.15); }
+    .stock-header{ padding:1.5rem; color:#fff; font-weight:700; font-size:1.3rem; position:relative; overflow:hidden; }
+    .stock-header::after{ content:''; position:absolute; inset:0; background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%); }
+    .dewa-header{ background: linear-gradient(135deg, #0066cc, #004499); }
+    .salik-header{ background: linear-gradient(135deg, #ff6600, #cc5200); }
+    .talabat-header{ background: linear-gradient(135deg, #ff9900, #cc7700); }
+    .nmdc-header{ background: linear-gradient(135deg, #009933, #006622); }
+    .stock-body{ padding:2rem; }
+    .metric{ display:flex; justify-content:space-between; align-items:center; padding:.75rem 0; border-bottom:1px solid #eee; transition:.2s; }
+    .metric:hover{ background-color:rgba(0,0,0,.02); padding-inline:.5rem; }
+    .metric:last-child{ border-bottom:none; }
+    .metric-label{ font-weight:600; color:#495057; display:flex; align-items:center; gap:.5rem; }
+    .metric-value{ font-weight:700; font-size:1.1rem; }
+    .price-positive{ color: var(--success-color); } .price-negative{ color: var(--danger-color); } .price-neutral{ color: var(--warning-color); }
+    .technical-indicators{ background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius:10px; padding:1.5rem; margin-top:1rem; }
+    .indicator{ display:flex; justify-content:space-between; align-items:center; padding:.5rem 0; border-bottom:1px solid #dee2e6; }
+    .indicator:last-child{ border-bottom:none; }
+    .status{ padding:.25rem .75rem; border-radius:20px; font-size:.8rem; font-weight:bold; }
+    .status.positive{ background-color:#d4edda; color:#155724; } .status.negative{ background-color:#f8d7da; color:#721c24; } .status.neutral{ background-color:#fff3cd; color:#856404; }
+    .chart-container{ background:#fff; border-radius:15px; padding:2rem; box-shadow:0 8px 25px rgba(0,0,0,.1); margin-bottom:2rem; height:400px; position:relative; }
+    .comparison-section{ background:#fff; border-radius:15px; padding:2rem; box-shadow:0 8px 25px rgba(0,0,0,.1); margin-bottom:2rem; }
+    .live-indicator{ display:inline-flex; align-items:center; gap:.5rem; background:var(--success-color); color:#fff; padding:.25rem .75rem; border-radius:20px; font-size:.8rem; font-weight:bold; }
+    .live-dot{ width:8px; height:8px; background:#fff; border-radius:50%; animation: pulse 2s infinite; }
+    @keyframes pulse{ 0%{opacity:1;} 50%{opacity:.5;} 100%{opacity:1;} }
+    .api-status{ position:fixed; bottom:20px; right:20px; background:var(--success-color); color:#fff; padding:.5rem 1rem; border-radius:20px; font-size:.8rem; z-index:1000; }
+    .api-status.error{ background: var(--danger-color); }
+    .update-badge{ position:absolute; top:10px; right:10px; background:var(--info-color); color:#fff; padding:.25rem .75rem; border-radius:20px; font-size:.8rem; font-weight:bold; }
+    .theme-toggle{ position:fixed; top:20px; left:20px; z-index:1000; background:var(--primary-color); color:#fff; border:none; border-radius:50%; width:50px; height:50px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,.1); transition:.3s; }
+    .theme-toggle:hover{ transform: scale(1.1); }
+    .footer{ background: var(--dark-color); color:#fff; text-align:center; padding:3rem 0 2rem; margin-top:4rem; }
+    .footer-links{ display:flex; justify-content:center; gap:2rem; margin-bottom:2rem; }
+    .footer-links a{ color:#fff; text-decoration:none; transition: color .3s; }
+    .footer-links a:hover{ color: var(--warning-color); }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="toggleTheme()" title="تبديل الوضع الليلي"><i class="fas fa-moon"></i></button>
+  <div class="api-status" id="apiStatus"><i class="fas fa-check-circle"></i> متصل بالخادم</div>
+
+  <header class="main-header">
+    <div class="container header-content">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h1><i class="fas fa-chart-line"></i> منصة تحليل الأسهم الإماراتية المتقدمة</h1>
+          <p class="lead">تحليلات متقدمة، بيانات مباشرة، وتوقعات دقيقة لأسهم DEWA, SALIK, TALABAT, NMDC Energy</p>
+          <div class="live-indicator"><div class="live-dot"></div> بيانات مباشرة</div>
+          <div class="update-badge"><i class="fas fa-sync-alt"></i> محدث تلقائياً</div>
+        </div>
+        <div class="col-md-4 text-end">
+          <div class="d-flex justify-content-end gap-2">
+            <button class="btn btn-light" onclick="showPriceAlert()"><i class="fas fa-bell"></i> تنبيهات الأسعار</button>
+            <button class="btn btn-outline-light" onclick="toggleWatchlist()"><i class="fas fa-star"></i> قائمة المتابعة</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container mt-4">
+    <div class="performance-metrics">
+      <div class="metric-card"><div class="metric-value-large" id="metricCompanies">4</div><div class="metric-label-small">الشركات المتتبعة</div></div>
+      <div class="metric-card"><div class="metric-value-large" id="metricAvg">—</div><div class="metric-label-small">متوسط النمو اليومي</div></div>
+      <div class="metric-card"><div class="metric-value-large" id="metricMcap">—</div><div class="metric-label-small">إجمالي القيمة السوقية (درهم)</div></div>
+      <div class="metric-card"><div class="metric-value-large">87%</div><div class="metric-label-small">دقة التوقعات</div></div>
+    </div>
+
+    <!-- Stock Cards (مطابقة بالشكل لكن القيم تُحقن من JSON) -->
+    <div class="row" id="stockCards">
+      <!-- DEWA -->
+      <div class="col-lg-6 col-xl-3" data-company="DEWA">
+        <div class="stock-card">
+          <div class="stock-header dewa-header"><i class="fas fa-bolt"></i> DEWA <div class="notification-badge">2</div></div>
+          <div class="stock-body">
+            <div class="metric"><span class="metric-label"><i class="fas fa-tag"></i> السعر</span><span class="metric-value" data-field="price">—</span></div>
+            <div class="metric"><span class="metric-label"><i class="fas fa-chart-line"></i> التغير</span><span class="metric-value" data-field="change">—</span></div>
+            <div class="metric"><span class="metric-label"><i class="fas fa-chart-bar"></i> الحجم</span><span class="metric-value" data-field="volume">—</span></div>
+            <div class="metric"><span class="metric-label"><i class="fas fa-dollar-sign"></i> القيمة السوقية</span><span class="metric-value" data-field="marketCap">—</span></div>
+            <div class="technical-indicators">
+              <h6>المؤشرات الفنية</h6>
+              <div class="indicator"><span>RSI</span><span class="value" data-field="rsi">—</span><span class="status neutral" data-field="rsiStatus">محايد</span></div>
+              <div class="indicator"><span>MACD</span><span class="value" data-field="macd">—</span><span class="status neutral" data-field="macdStatus">—</span></div>
+            </div>
+            <div class="health-score"><div class="score-circle score-excellent" id="dewaScore">85</div><div><strong>الصحة المالية</strong><br><small>ممتازة</small></div></div>
+            <button class="btn btn-primary w-100 mt-3" onclick="showDetailedAnalysis('DEWA')"><i class="fas fa-chart-area"></i> تحليل مفصل</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SALIK -->
+      <div class="col-lg-6 col-xl-3" data-company="SALIK">
+        <div class="stock-card">
+          <div class="stock-header salik-header"><i class="fas fa-road"></i> SALIK <div class="notification-badge">1</div></div>
+          <div class="stock-body">
+            <div class="metric"><span class="metric-label"><i class="fas fa-tag"></i> السعر</span><span class="metric-value" data-field="price">—</span></div>
+            <div class="metric"><span class="metric-label"><i class="fas fa-chart-line"></i> التغير</span><span class="metric-value" data-field="change">—</span></div>
+            <div class="metric"><span class="metric-label"><i class="fas fa-chart-bar"></i> الحجم</span><span class="metric-value" data-field="volume">—</span></div>
+            <div class="metric"><span class="metric-label"><i class="fas fa-dollar-sign"></i> القيمة السوقية</span><span class="metric-value" data-field="marketCap">—</span></div>
+            <div class="technical-indicators">
+              <h6>المؤشرات الفنية</h6>
+              <div class="indicator"><span>RSI</span><span class="value" data-field="rsi">—</span><span class="status neutral" data-field="rsiStatus">محايد</span></div>
+              <div class="indicator"><span>MACD</span><span class="value" data-field="macd">—</span><span class="status neutral" data-field="macdStatus">—</span></div>
+            </div>
+            <div class="health-score"><div class="score-circle score-excellent">92</div><div><strong>الصحة المالية</strong><br><small>ممتازة</small></div></div>
+            <button class="btn btn-primary w-100 mt-3" onclick="showDetailedAnalysis('SALIK')"><i class="fas fa-chart-area"></i> تحليل مفصل</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TALABAT -->
+      <div class="col-lg-6 col-xl-3" data-company="TALABAT">
+        <div class="stock-card">
+          <div class="stock-header talabat-header"><i class="fas fa-utensils"></i> TALABAT <div class="notification-badge">1</div></div>
+          <div class="stock-body">
+            <div class="metric"><span class="metric-label"><i class="fas fa-tag"></i> السعر</span><span class="metric-value" data-field="price">—</span></div>
+            <div class="metric"><span class="metric-label"><i class="fas fa-chart-line"></i> التغير</span><span class="metric-value" data-field="change">—</span></div>
+            <div class="metric"><span class="metric-label"><i class="fas fa-chart-bar"></i> الحجم</span><span class="metric-value" data-field="volume">—</span></div>
+            <div class="metric"><span class="metric-label"><i class="fas fa-dollar-sign"></i> القيمة السوقية</span><span class="metric-value" data-field="marketCap">—</span></div>
+            <div class="technical-indicators">
+              <h6>المؤشرات الفنية</h6>
+              <div class="indicator"><span>RSI</span><span class="value" data-field="rsi">—</span><span class="status neutral" data-field="rsiStatus">محايد</span></div>
+              <div class="indicator"><span>MACD</span><span class="value" data-field="macd">—</span><span class="status neutral" data-field="macdStatus">—</span></div>
+            </div>
+            <div class="health-score"><div class="score-circle score-good">78</div><div><strong>الصحة المالية</strong><br><small>جيدة</small></div></div>
+            <button class="btn btn-primary w-100 mt-3" onclick="showDetailedAnalysis('TALABAT')"><i class="fas fa-chart-area"></i> تحليل مفصل</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- NMDCENR -->
+      <div class="col-lg-6 col-xl-3" data-company="NMDCENR">
+        <div class="stock-card">
+          <div class="stock-header nmdc-header"><i class="fas fa-industry"></i> NMDC Energy <div class="notification-badge">1</div></div>
+          <div class="stock-body">
+            <div class="metric"><span class="metric-label"><i class="fas fa-tag"></i> السعر</span><span class="metric-value" data-field="price">—</span></div>
+            <div class="metric"><span class="metric-label"><i class="fas fa-chart-line"></i> التغير</span><span class="metric-value" data-field="change">—</span></div>
+            <div class="metric"><span class="metric-label"><i class="fas fa-chart-bar"></i> الحجم</span><span class="metric-value" data-field="volume">—</span></div>
+            <div class="metric"><span class="metric-label"><i class="fas fa-dollar-sign"></i> القيمة السوقية</span><span class="metric-value" data-field="marketCap">—</span></div>
+            <div class="technical-indicators">
+              <h6>المؤشرات الفنية</h6>
+              <div class="indicator"><span>RSI</span><span class="value" data-field="rsi">—</span><span class="status neutral" data-field="rsiStatus">محايد</span></div>
+              <div class="indicator"><span>MACD</span><span class="value" data-field="macd">—</span><span class="status positive" data-field="macdStatus">—</span></div>
+            </div>
+            <div class="health-score"><div class="score-circle score-good">75</div><div><strong>الصحة المالية</strong><br><small>جيدة</small></div></div>
+            <button class="btn btn-primary w-100 mt-3" onclick="showDetailedAnalysis('NMDCENR')"><i class="fas fa-chart-area"></i> تحليل مفصل</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Chart (Plotly) -->
+    <div class="chart-container">
+      <h3><i class="fas fa-chart-line"></i> الرسم البياني التفاعلي</h3>
+      <div id="stockChart" style="height:340px"></div>
+    </div>
+
+    <!-- Comparison Section -->
+    <div class="comparison-section">
+      <h3><i class="fas fa-balance-scale"></i> مقارنة بين الشركات</h3>
+      <div class="table-responsive">
+        <table class="table table-striped" id="comparisonTable">
+          <thead><tr><th>المعيار</th><th>DEWA</th><th>SALIK</th><th>TALABAT</th><th>NMDC Energy</th></tr></thead>
+          <tbody id="cmpBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Notice -->
+    <div class="alert alert-warning">
+      <h5><i class="fas fa-exclamation-triangle"></i> تنبيه هام:</h5>
+      <p>هذه البيانات والتحليلات هي لغرض الاستعلام فقط ولا تشكل توصية استثمارية.</p>
+      <p><strong>آخر تحديث:</strong> <span id="lastUpdate">—</span></p>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-links">
+        <a href="#" onclick="showAbout()">من نحن</a>
+        <a href="#" onclick="showContact()">اتصل بنا</a>
+        <a href="#" onclick="showPrivacy()">سياسة الخصوصية</a>
+        <a href="#" onclick="showTerms()">الشروط والأحكام</a>
+      </div>
+      <p>© 2025 منصة تحليل الأسهم الإماراتية المتقدمة. جميع الحقوق محفوظة.</p>
+      <p>المصادر: سوق دبي المالي، سوق أبوظبي المالي، Investing.com</p>
+      <p>آخر تحديث: <span id="lastUpdate2">—</span></p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+  <script>
+    let priceAlerts = [];
+    const fmt = (n, d=2) => typeof n==='number' ? n.toLocaleString('ar-EG',{maximumFractionDigits:d}) : (n??'—');
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // تحميل JSON
+      const [daily, fund] = await Promise.all([
+        fetch('data/daily.json?c='+Date.now()).then(r=>r.json()),
+        fetch('data/fundamentals.json?c='+Date.now()).then(r=>r.json()).catch(_=>({}))
+      ]);
+
+      document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ar-EG');
+      document.getElementById('lastUpdate2').textContent = daily.as_of;
+
+      // ميتريكس عامة
+      const totalMcap = ['DEWA','SALIK','TALABAT','NMDCENR'].reduce((s,k)=> s + (daily.symbols[k]?.marketCap||0), 0);
+      document.getElementById('metricMcap').textContent = fmt(totalMcap,0);
+      const avgChange = (['DEWA','SALIK','TALABAT','NMDCENR'].reduce((s,k)=> s + (daily.symbols[k]?.change||0),0))/4;
+      document.getElementById('metricAvg').textContent = (avgChange>0?'+':'') + fmt(avgChange,2) + '%';
+
+      // حقن بطاقات الأسهم
+      ['DEWA','SALIK','TALABAT','NMDCENR'].forEach(sym => {
+        const card = document.querySelector(`[data-company="${sym}"]`);
+        if(!card) return;
+        const sd = daily.symbols[sym]||{};
+        card.querySelector('[data-field="price"]').textContent = fmt(sd.price,2);
+        const chEl = card.querySelector('[data-field="change"]');
+        chEl.textContent = (sd.change>0?'+':'') + fmt(sd.change,3) + '%';
+        chEl.classList.remove('price-negative','price-positive','price-neutral');
+        chEl.classList.add(sd.change>0?'price-positive':(sd.change<0?'price-negative':'price-neutral'));
+        card.querySelector('[data-field="volume"]').textContent = fmt(sd.volume,0);
+        card.querySelector('[data-field="marketCap"]').textContent = fmt(sd.marketCap,0);
+        // مؤشرات مبدئية بسيطة
+        const closes = (daily.series[sym]?.close)||[];
+        const rsi = calcRSI(closes);
+        card.querySelector('[data-field="rsi"]').textContent = rsi?fmt(rsi,1):'—';
+        const rsiStatus = card.querySelector('[data-field="rsiStatus"]');
+        if(rsi!==null){
+          if(rsi>70){ rsiStatus.className='status negative'; rsiStatus.textContent='تشبع شراء'; }
+          else if(rsi<30){ rsiStatus.className='status positive'; rsiStatus.textContent='تشبع بيع'; }
+          else { rsiStatus.className='status neutral'; rsiStatus.textContent='محايد'; }
+        }
+        // MACD مبسط (فرق متوسطين 12/26)
+        const macd = calcMACD(closes);
+        card.querySelector('[data-field="macd"]').textContent = macd!==null?fmt(macd,2):'—';
+        const macdStatus = card.querySelector('[data-field="macdStatus"]');
+        if(macd!==null){ macdStatus.className = macd>0?'status positive':'status negative'; macdStatus.textContent = macd>0?'شراء':'بيع'; }
+      });
+
+      // جدول المقارنة
+      const tbody = document.getElementById('cmpBody');
+      const row = (label, key, suf='') => {
+        const tds = ['DEWA','SALIK','TALABAT','NMDCENR'].map(k=> {
+          const v = key(daily.symbols[k]||{});
+          return `<td>${v}</td>`;
+        }).join('');
+        return `<tr><td>${label}</td>${tds}</tr>`;
+      };
+      tbody.innerHTML = ''
+        + row('السعر الحالي', s=> fmt(s.price,2))
+        + row('التغير %', s=> ((s.change>0?'+':'')+fmt(s.change,3)+'%'))
+        + row('القيمة السوقية', s=> fmt(s.marketCap,0))
+        + row('حجم التداول', s=> fmt(s.volume,0))
+        + row('أعلى 52 أسبوع', s=> fmt(s.week52High,3))
+        + row('أدنى 52 أسبوع', s=> fmt(s.week52Low,3));
+
+      // الرسم البياني Plotly (مطابق مكان الـ canvas السابق)
+      const traces = ['DEWA','SALIK','TALABAT','NMDCENR'].map((k,i)=> ({
+        x: daily.series[k].dates, y: daily.series[k].close, mode:'lines', name:k
+      }));
+      Plotly.newPlot('stockChart', traces, {
+        margin:{t:10,r:10,b:30,l:40},
+        legend:{orientation:'h'},
+      }, {displayModeBar:false});
+
+      // DataTable
+      $('#comparisonTable').DataTable({ language:{ url:'//cdn.datatables.net/plug-ins/1.13.6/i18n/ar.json' } });
+    });
+
+    function toggleTheme(){
+      document.body.classList.toggle('dark-mode');
+      const icon = document.querySelector('.theme-toggle i');
+      icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun');
+    }
+    function showPriceAlert(){ alert('نظام تنبيهات الأسعار قيد التطوير'); }
+    function toggleWatchlist(){ alert('قائمة المتابعة قيد التطوير'); }
+
+    // حساب RSI و MACD مبسطين
+    function calcRSI(closes){
+      if(!closes || closes.length<15) return null;
+      let gains=0, losses=0;
+      for(let i=1;i<=14;i++){
+        const diff = closes[closes.length-14+i-1]-closes[closes.length-14+i-2];
+        if(diff>=0) gains+=diff; else losses+=-diff;
+      }
+      const avgGain=gains/14, avgLoss=losses/14;
+      if(avgLoss===0) return 100;
+      const rs = avgGain/avgLoss;
+      return 100 - (100/(1+rs));
+    }
+    function ema(arr, period){
+      const k = 2/(period+1);
+      let emaVal = arr.slice(0,period).reduce((a,b)=>a+b,0)/period;
+      for(let i=period;i<arr.length;i++){ emaVal = arr[i]*k + emaVal*(1-k); }
+      return emaVal;
+    }
+    function calcMACD(closes){
+      if(!closes || closes.length<26) return null;
+      const ema12 = ema(closes,12);
+      const ema26 = ema(closes,26);
+      return ema12 - ema26;
+    }
+  </script>
+</body>
+</html>

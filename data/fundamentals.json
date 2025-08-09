@@ -1,0 +1,26 @@
+{
+  "DEWA": {
+    "pe": 18.5,
+    "eps": null,
+    "dy": 4.5,
+    "roe": null
+  },
+  "SALIK": {
+    "pe": 22.3,
+    "eps": null,
+    "dy": 3.2,
+    "roe": null
+  },
+  "TALABAT": {
+    "pe": 28.7,
+    "eps": null,
+    "dy": 2.1,
+    "roe": null
+  },
+  "NMDCENR": {
+    "pe": 15.2,
+    "eps": 0.6566,
+    "dy": 5.5,
+    "roe": null
+  }
+}
