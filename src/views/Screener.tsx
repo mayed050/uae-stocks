@@ -226,10 +226,11 @@ function getDailyData(s: Stock) {
   const low = Math.min(price, prevClose) * (1 - rand(0.012, 0.001))
   const open = prevClose * (1 + rand(0.004, -0.004))
 
-  const mcapVal = parseAmount(s.mcap) ?? 5 // default 5 Billion
+  const rawMcap = parseAmount(s.mcap) ?? 5e9
+  const mcapVal = rawMcap > 1e6 ? rawMcap / 1e9 : rawMcap
   const volume = Math.round((mcapVal * 150000) * rand(2.2, 0.1))
   const value = volume * price
-  const trades = Math.round(volume * rand(0.0006, 0.00015)) + 8
+  const trades = Math.round(volume * rand(0.00005, 0.00001)) + 3
 
   return {
     change,
