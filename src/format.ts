@@ -88,3 +88,25 @@ export const MONTHS_AR = [
   'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
   'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
 ]
+
+/** يستخرج التوزيع النقدي للسهم كقيمة رقمية بالدرهم. */
+export function parseDivPs(s: string | null | undefined): number | null {
+  if (!s) return null
+  const clean = s.replace(/~/g, '').trim()
+  const m = clean.match(/(\d+(?:\.\d+)?)/)
+  if (!m) return null
+  const val = parseFloat(m[1])
+  if (clean.includes('فلس')) {
+    return val / 100
+  }
+  return val
+}
+
+/** يحسب التوزيع السنوي الإجمالي للسهم بناءً على التكرار. */
+export function getAnnualPs(s: Stock): number {
+  const val = parseDivPs(s.div.ps) ?? 0
+  const freq = s.div.freq
+  if (freq === 'ربعي' || s.div.ps?.includes('ربع')) return val * 4
+  if (freq === 'نصف سنوي' && !s.div.ps?.includes('سنوي')) return val * 2
+  return val
+}

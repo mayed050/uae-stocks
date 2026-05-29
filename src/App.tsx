@@ -7,6 +7,7 @@ import Overview from './views/Overview'
 import Screener from './views/Screener'
 import Dividends from './views/Dividends'
 import Compare from './views/Compare'
+import Portfolio from './views/Portfolio'
 
 export default function App() {
   const [view, setView] = useState<View>('overview')
@@ -31,6 +32,7 @@ export default function App() {
         {view === 'screener' && <Screener onOpen={setDetail} />}
         {view === 'dividends' && <Dividends onOpen={setDetail} />}
         {view === 'compare' && <Compare />}
+        {view === 'portfolio' && <Portfolio onOpen={setDetail} />}
       </main>
       {detail && <StockDetail item={detail} onClose={() => setDetail(null)} />}
     </div>
