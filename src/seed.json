@@ -1,5 +1,5 @@
 {
-  "lastUpdated": null,
+  "lastUpdated": "2026-05-30",
   "source": "seed",
   "stocks": [
     { "sym": "DEWA", "name": "ديوا — كهرباء ومياه دبي", "ex": "DFM", "sector": "مرافق", "cat": "income", "yahoo": "DEWA.AE", "priceAuto": true,

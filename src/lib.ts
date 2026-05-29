@@ -29,12 +29,29 @@ export function upcoming(item: Stock): Upcoming | null {
   const e2 = parseISO(item.div.nextExd); if (e2) cands.push({ d: e2, label: 'الشريحة القادمة', ps: item.div.note ?? item.div.ps })
   const le = parseISO(item.div.lastEnt); if (le) cands.push({ d: le, label: 'آخر يوم شراء', ps: item.div.ps })
 
-  const future = cands
-    .map((c) => ({ ...c, n: daysUntil(c.d) }))
+  const withDays = cands.map((c) => ({ ...c, n: daysUntil(c.d) }))
+
+  // أولاً: أقرب تاريخ مستقبلي (n >= 0)
+  const future = withDays
     .filter((c): c is { d: Date; label: string; ps?: string | null; n: number } => c.n !== null && c.n >= 0)
     .sort((a, b) => a.n - b.n)
 
   if (future.length) return { n: future[0].n, label: future[0].label, ps: future[0].ps }
+
+  // ثانياً: إن لم يوجد مستقبلي، أعد آخر تاريخ منقضٍ مع علامة "تم الإيداع"
+  const past = withDays
+    .filter((c): c is { d: Date; label: string; ps?: string | null; n: number } => c.n !== null && c.n < 0)
+    .sort((a, b) => b.n - a.n) // الأقرب للحاضر أولاً
+
+  if (past.length) {
+    return {
+      n: past[0].n,
+      label: 'تم الإيداع ✅',
+      ps: item.div.ps,
+      payHint: item.div.pay ?? undefined
+    }
+  }
+
   if (item.div.watch) return { n: null, watch: true, label: 'توزيع قادم (التاريخ لم يُعلن)', ps: item.div.ps, payHint: item.div.nextPay }
   return null
 }

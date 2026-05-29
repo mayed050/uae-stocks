@@ -35,7 +35,7 @@ header.hero{position:relative; overflow:hidden; border-radius:24px; padding:34px
   width:40px; height:40px; border-radius:12px; font-size:18px; display:grid; place-items:center}
 .iconbtn:hover{background:#ffffff28}
 
-.disclaimer{margin-top:16px; background:var(--panel); backdrop-filter:blur(8px);
+.disclaimer{display:flex; align-items:center; gap:8px; margin-top:16px; background:var(--panel); backdrop-filter:blur(8px);
   border:1px solid var(--line); border-inline-start:4px solid var(--warn);
   border-radius:14px; padding:14px 16px; font-size:13.5px; color:var(--muted)}
 .disclaimer b{color:var(--txt)}

@@ -58,6 +58,69 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
     return [...m.entries()].map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value)
   }, [items])
 
+  // 3.ب. مستشار المحفظة الذكي "الفارابي" (Al-Farabi AI Portfolio Advisor)
+  const advisorOutput = useMemo(() => {
+    if (items.length === 0) {
+      return {
+        title: '🔮 الفارابي بانتظار إعداد المحفظة',
+        text: 'قم بالبحث وإضافة أسهم استثمارية وتعيين كمياتها أدناه، وسيقوم الفارابي فوراً بتحليل تنويعك القطاعي وعوائدك المرجحة وتقديم نصائح تخصيص أصول مخصصة وحقيقية.',
+        rating: 'بانتظار البيانات'
+      }
+    }
+
+    let title = '🔮 مستشار المحفظة الذكي (الفارابي)'
+    let text = 'محفظتك تظهر أداءً متزناً، استمر في إعادة استثمار توزيعاتك لتشهد قوة الفائدة المركبة.'
+    let rating = 'متوازنة'
+
+    const maxSector = sectorData.length > 0 ? sectorData[0] : null
+    const maxSectorPct = maxSector && totalInvested > 0 ? (maxSector.value / totalInvested) * 100 : 0
+    const companyCount = items.length
+
+    if (companyCount === 1) {
+      title = '⚠️ تنبيه: تركز استثماري عالي الخطورة'
+      text = `تحتوي محفظتك حالياً على سهم شركة واحدة فقط وهي (${items[0].sym}). من الحكمة الاستثمارية لتأمين رأس مالك توزيع استثماراتك على 3 إلى 5 شركات في قطاعات مختلفة لتجنب مخاطر التذبذب الفردي المفاجئ.`
+      rating = 'مخاطر عالية'
+    } else if (maxSector && maxSectorPct > 55) {
+      title = '⚠️ تنبيه: تركز قطاعي مرتفع'
+      text = `تتركز استثماراتك بشكل كبير جداً بنسبة ${maxSectorPct.toFixed(1)}% في قطاع واحد وهو (${maxSector.name}). لتفادي أزمات القطاعات الفردية، ننصحك بتوجيه سيولتك الاستثمارية القادمة نحو قطاعات دفاعية ومستقرة أخرى مثل قطاع المرافق والخدمات أو قطاع الطاقة.`
+      rating = 'تركز مرتفع'
+    } else if (weightedYield < 4) {
+      title = '💡 توصية: تعزيز عائد توزيعات المحفظة'
+      text = `متوسط عائد توزيعات محفظتك المرجح الحالي (${weightedYield.toFixed(2)}%) يقل عن متوسط السوق الإماراتي البالغ 5.5%. ننصح بزيادة حصتك في أسهم ريادية ذات عوائد ممتازة (مثل إعمار العقارية، بنك دبي الإسلامي، أو أدنوك للتوزيع) لرفع التدفقات النقدية.`
+      rating = 'عائد منخفض'
+    } else if (weightedYield > 8.5) {
+      title = '⚠️ تنبيه: عوائد محفظة مرتفعة وحساسة'
+      text = `عائد محفظتك المرجح مرتفع للغاية (${weightedYield.toFixed(2)}%). تذكر دوماً أن العوائد الفوق طبيعية ترتبط غالباً بمخاطر أعلى أو حساسية شديدة للدورات الاقتصادية (مثل أسهم العقارات). ننصح بدمج حصص مستقرة كحماية.`
+      rating = 'عوائد حساسة'
+    } else if (companyCount >= 3 && sectorData.length >= 2) {
+      title = '🎉 محفظة متوازنة وممتازة'
+      text = `أداء استثنائي مذهل! محفظتك متوازنة للغاية وموزعة بذكاء على قطاعات متعددة بعائد مرجح يبلغ (${weightedYield.toFixed(2)}%). نوصي بالاستمرار في استثمار مبالغ إضافية دورية وإعادة ضخ الأرباح لتفعيل أثر كرة الثلج الرائع.`
+      rating = 'متوازنة جداً'
+    }
+
+    return { title, text, rating }
+  }, [items, sectorData, totalInvested, weightedYield])
+
+  // 3.جـ. خريطة أهداف الحياة المغطاة بالأرباح (Gamified Lifestyle Milestones)
+  const lifestyleMilestones = useMemo(() => {
+    const list = [
+      { id: 'coffee', name: '☕ قهوتك اليومية مغطاة بالكامل', cost: 1800, desc: 'يعادل 5 دراهم يومياً لتأمين كوب كرك دافئ أو قهوة متميزة.' },
+      { id: 'bills', name: '⚡ فواتير الخدمات مغطاة بالكامل', cost: 6000, desc: 'يعادل 500 درهم شهرياً لتأمين فواتير الإنترنت، الكهرباء، والمياه.' },
+      { id: 'fuel', name: '🚗 قسط النقل والوقود مغطى', cost: 14400, desc: 'يعادل 1,200 درهم شهرياً لتغطية استهلاك الوقود والمواصلات بالكامل.' },
+      { id: 'travel', name: '✈️ السفرة العائلية السنوية مغطاة', cost: 30000, desc: 'يعادل 2,500 درهم شهرياً لتأمين عطلة سنوية مميزة خارج البلاد مع العائلة.' },
+      { id: 'rent', name: '🏡 إيجار منزلك السنوي مغطى بالكامل', cost: 72000, desc: 'يعادل 6,000 درهم شهرياً لتغطية بند السكن بالكامل من مكاسب محفظتك!' }
+    ]
+
+    return list.map(m => {
+      const pct = Math.min(100, Math.round((totalAnnualDividends / m.cost) * 100))
+      return {
+        ...m,
+        pct,
+        unlocked: totalAnnualDividends >= m.cost
+      }
+    })
+  }, [totalAnnualDividends])
+
   // ب. جدول التدفق النقدي المتوقع للأرباح شهرياً
   const monthlyData = useMemo(() => {
     const months = new Array(12).fill(0)
@@ -272,9 +335,79 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
         .drip-slider::-webkit-slider-thumb:hover {
           transform: scale(1.2);
         }
+
+        /* ستايل لوحة ذكاء المحفظة والحرية المالية */
+        .intel-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          gap: 20px;
+          margin: 20px 0;
+        }
+        .ai-advisor-card {
+          background: linear-gradient(135deg, rgba(255, 176, 32, 0.04), rgba(124, 92, 255, 0.03));
+          border: 1px solid rgba(255, 176, 32, 0.25);
+          border-radius: var(--radius);
+          padding: 20px;
+          position: relative;
+          overflow: hidden;
+          box-shadow: var(--shadow);
+          text-align: right;
+        }
+        .ai-advisor-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-weight: 800;
+          font-size: 14.5px;
+          color: var(--warn);
+          border-bottom: 1px solid var(--line);
+          padding-bottom: 10px;
+          margin-bottom: 12px;
+        }
+        .ai-pulse-dot {
+          width: 8px;
+          height: 8px;
+          background-color: var(--warn);
+          border-radius: 50%;
+          display: inline-block;
+          animation: ai-pulse 1.8s infinite;
+        }
+        @keyframes ai-pulse {
+          0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 176, 32, 0.7); }
+          70% { transform: scale(1.15); box-shadow: 0 0 0 6px rgba(255, 176, 32, 0); }
+          100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 176, 32, 0); }
+        }
+        .roadmap-card {
+          background: var(--panel);
+          border: 1px solid var(--line);
+          border-radius: var(--radius);
+          padding: 20px;
+          box-shadow: var(--shadow);
+          text-align: right;
+        }
+        .roadmap-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 10px 12px;
+          border-radius: 12px;
+          background: var(--chip);
+          border: 1px solid var(--line);
+          margin-bottom: 8px;
+          transition: all 0.2s;
+          text-align: right;
+        }
+        .roadmap-item.unlocked {
+          background: rgba(33, 201, 139, 0.04);
+          border-color: rgba(33, 201, 139, 0.25);
+          box-shadow: 0 0 10px rgba(33, 201, 139, 0.05);
+        }
+        .roadmap-item:last-child {
+          margin-bottom: 0;
+        }
         
         @media print {
-          .sidebar, .theme-toggle-floating, .p-search-container, select, .del-btn, .controls, .print-btn, .disclaimer {
+          .sidebar, .theme-toggle-floating, .p-search-container, select, .del-btn, .controls, .print-btn, .disclaimer, .intel-grid {
             display: none !important;
           }
           body {
@@ -354,6 +487,65 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
           <div className="stat-sub">متوسط مرجح للعائد النقدي</div>
         </div>
       </div>
+
+      {/* 🔮 لوحة ذكاء المحفظة والحرية المالية (AI advisor & Lifestyle Roadmap) */}
+      {items.length > 0 && (
+        <div className="intel-grid">
+          {/* 1. الفارابي: مستشار الاستثمار الذكي */}
+          <div className="ai-advisor-card">
+            <div className="ai-advisor-header">
+              <span className="ai-pulse-dot" />
+              <span>{advisorOutput.title}</span>
+              <span style={{ fontSize: '11px', background: 'rgba(255,176,32,0.1)', padding: '2px 8px', borderRadius: '6px', marginInlineStart: 'auto', border: '1px solid rgba(255,176,32,0.25)' }}>
+                {advisorOutput.rating}
+              </span>
+            </div>
+            
+            <p style={{ margin: 0, fontSize: '13.5px', color: 'var(--txt)', lineHeight: '1.55', fontWeight: 600 }}>
+              {advisorOutput.text}
+            </p>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10.5px', color: 'var(--muted2)', marginTop: '16px', borderTop: '1px dashed var(--line)', paddingTop: '8px' }}>
+              <span>🧠 تشغيل محلي فوري</span>
+              <span>تحليل التنويع القطاعي والعائد</span>
+            </div>
+          </div>
+
+          {/* 2. خريطة أهداف الحياة المغطاة */}
+          <div className="roadmap-card">
+            <h3 className="panel-h" style={{ margin: '0 0 14px 0', borderBottom: '1px solid var(--line)', paddingBottom: '8px', fontSize: '14.5px', color: 'var(--good)' }}>
+              🎯 أهداف الحياة المغطاة بأرباح محفظتك
+            </h3>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {lifestyleMilestones.map((m) => (
+                <div 
+                  key={m.id} 
+                  className={`roadmap-item ${m.unlocked ? 'unlocked' : ''}`}
+                  title={m.desc}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%' }}>
+                    <span style={{ fontWeight: 800, fontSize: '12.5px', color: m.unlocked ? 'var(--good)' : 'var(--txt)' }}>
+                      {m.name}
+                    </span>
+                    <span style={{ 
+                      fontSize: '10px', 
+                      padding: '1px 7px', 
+                      borderRadius: '5px', 
+                      background: m.unlocked ? 'rgba(33, 201, 139, 0.1)' : 'var(--line)', 
+                      color: m.unlocked ? 'var(--good)' : 'var(--muted2)', 
+                      fontWeight: 800, 
+                      marginInlineStart: 'auto' 
+                    }}>
+                      {m.unlocked ? 'مغطى ✅' : `${m.pct}%`}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* قسم تتبع الهدف المالي للمستثمر */}
       <div className="panel" style={{ marginBottom: 20 }}>

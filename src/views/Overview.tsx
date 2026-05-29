@@ -66,7 +66,7 @@ const SECTOR_MOVEMENTS = [
   {
     title: 'العقارات',
     stocks: [
-      { name: 'إعمار العقارية', sym: 'EMAAR', price: '8.28', pct: '+0.73%', change: '+0.06', up: true },
+      { name: 'إعمار العقارية', sym: 'EMAAR', price: '11.78', pct: '+0.73%', change: '+0.06', up: true },
       { name: 'إعمار للتطوير', sym: 'EMAARDEV', price: '8.00', pct: '0.00%', change: '+0.00', flat: true },
       { name: 'ديار للتطوير', sym: 'DEYAAR', price: '0.70', pct: '+0.57%', change: '+0.00', up: true },
       { name: 'الاتحاد العقارية', sym: 'UPP', price: '0.35', pct: '-2.78%', change: '-0.01', up: false },
@@ -97,7 +97,7 @@ const SECTOR_MOVEMENTS = [
       { name: 'الإمارات للمرطبات', sym: 'ERC', price: '3.20', pct: '-1.54%', change: '-0.05', up: false },
       { name: 'تيكوم', sym: 'TECOM', price: '3.30', pct: '0.00%', change: '+0.00', flat: true },
       { name: 'بلدكو', sym: 'BALDCO', price: '1.10', pct: '0.00%', change: '+0.00', flat: true },
-      { name: 'سالك', sym: 'SALIK', price: '3.65', pct: '-0.54%', change: '-0.02', up: false }
+      { name: 'سالك', sym: 'SALIK', price: '5.35', pct: '-0.54%', change: '-0.03', up: false }
     ]
   },
   {
@@ -177,9 +177,10 @@ function getDailyData(s: Stock) {
     seed += symbol.charCodeAt(i)
   }
   
-  // Pseudo-random numbers using seed
+  // Pseudo-random numbers using stable seed (fixed per symbol, doesn't drift across re-renders)
+  let localSeed = seed
   const rand = (max: number, min = 0) => {
-    const x = Math.sin(seed++) * 10000
+    const x = Math.sin(localSeed++) * 10000
     return min + (x - Math.floor(x)) * (max - min)
   }
 

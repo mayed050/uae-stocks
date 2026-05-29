@@ -21,6 +21,16 @@ export default function App() {
     return saved ? saved === 'dark' : false
   })
 
+  // حالة إخفاء التنويه
+  const [disclaimerHidden, setDisclaimerHidden] = useState<boolean>(() => {
+    return localStorage.getItem('disclaimer_dismissed') === 'true'
+  })
+
+  function dismissDisclaimer() {
+    localStorage.setItem('disclaimer_dismissed', 'true')
+    setDisclaimerHidden(true)
+  }
+
   // مزامنة حالة السمة مع عنصر HTML و localStorage
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
@@ -38,10 +48,17 @@ export default function App() {
         {dark ? '☀️' : '🌙'}
       </button>
       <main className="main">
-        <div className="disclaimer">
-          <b>تنويه:</b> منصّة معلوماتية للمتابعة فقط — لا تتضمّن أي توصية بالشراء أو البيع. البنود
-          المعلّمة بـ«يلزم التحقق» تحتاج تأكيدًا من المصادر الرسمية (DFM / ADX / إفصاحات الشركات).
-        </div>
+        {!disclaimerHidden && (
+          <div className="disclaimer">
+            <b>تنويه:</b> منصّة معلوماتية للمتابعة فقط — لا تتضمّن أي توصية بالشراء أو البيع. البنود
+            المعلّمة بـ«يلزم التحقق» تحتاج تأكيدًا من المصادر الرسمية (DFM / ADX / إفصاحات الشركات).
+            <button
+              onClick={dismissDisclaimer}
+              title="إخفاء التنويه"
+              style={{ marginInlineStart: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: 16, lineHeight: 1, padding: '0 4px' }}
+            >✕</button>
+          </div>
+        )}
         {view === 'overview' && <Overview onOpen={setDetail} />}
         {view === 'screener' && <Screener onOpen={setDetail} />}
         {view === 'dividends' && <Dividends onOpen={setDetail} />}
