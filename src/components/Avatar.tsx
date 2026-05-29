@@ -1,53 +1,54 @@
 import { useState } from 'react'
 import { symColor } from '../format'
 
-const DOMAIN_MAP: Record<string, string> = {
-  // DFM
-  DEWA: 'dewa.gov.ae',
-  EMIRATESNBD: 'emiratesnbd.com',
-  DIB: 'dib.ae',
-  EMAAR: 'emaar.com',
-  DU: 'du.ae',
-  SALIK: 'salik.ae',
-  TALABAT: 'talabat.com',
-  EMPOWER: 'empower.ae',
-  TECOM: 'tecomgroup.ae',
-  AIRARABIA: 'airarabia.com',
-  DTC: 'dubaitaxi.ae',
-  EMAARDEV: 'emaar.com',
-  DFM: 'dfm.ae',
-  MASHREQ: 'mashreqbank.com',
-  DIC: 'dubaiinvestments.com',
-  GFH: 'gfh.com',
-  ALANSARI: 'alansariholder.com',
-  SPINNEYS: 'spinneys.com',
-  PARKINS: 'parkin.ae',
-  AMANAT: 'amanat.com',
+// الخريطة الرسمية الكاملة لشعارات الشركات عالية الدقة ومباشرة من خادم TradingView CDN للأربعين سهماً بالكامل
+const TRADINGVIEW_LOGO_MAP: Record<string, string> = {
+  // دبي (DFM)
+  DEWA: 'https://s3-symbol-logo.tradingview.com/dubai-electricity-and-water-authority--600.png',
+  EMIRATESNBD: 'https://s3-symbol-logo.tradingview.com/emirates-nbd--600.png',
+  DIB: 'https://s3-symbol-logo.tradingview.com/dubai-islamic-bank--600.png',
+  EMAAR: 'https://s3-symbol-logo.tradingview.com/emaar-properties--600.png',
+  DU: 'https://s3-symbol-logo.tradingview.com/emirate-integrated--600.png',
+  SALIK: 'https://s3-symbol-logo.tradingview.com/salik-company-pj--600.png',
+  TALABAT: 'https://s3-symbol-logo.tradingview.com/talabat-pl--600.png',
+  EMPOWER: 'https://s3-symbol-logo.tradingview.com/emirates-central-c--600.png',
+  TECOM: 'https://s3-symbol-logo.tradingview.com/tecom-pjsc--600.png',
+  AIRARABIA: 'https://s3-symbol-logo.tradingview.com/air-arabia--600.png',
+  DTC: 'https://s3-symbol-logo.tradingview.com/dubai-taxi-company--600.png',
+  EMAARDEV: 'https://s3-symbol-logo.tradingview.com/emaar-development--600.png',
+  DFM: 'https://s3-symbol-logo.tradingview.com/dubai-financial--600.png',
+  MASHREQ: 'https://s3-symbol-logo.tradingview.com/mashreqbank--600.png',
+  DIC: 'https://s3-symbol-logo.tradingview.com/dubai-investments--600.png',
+  GFH: 'https://s3-symbol-logo.tradingview.com/gfh-financial-group--600.png',
+  ALANSARI: 'https://s3-symbol-logo.tradingview.com/al-ansari-financia--600.png',
+  SPINNEYS: 'https://s3-symbol-logo.tradingview.com/spinneys-1961-hold--600.png',
+  PARKINS: 'https://s3-symbol-logo.tradingview.com/parkin-company-pjs--600.png',
+  AMANAT: 'https://s3-symbol-logo.tradingview.com/amanat-holdings--600.png',
 
-  // ADX
-  FAB: 'bankfab.com',
-  ADCB: 'adcb.com',
-  ADIB: 'adib.ae',
-  ALDAR: 'aldar.com',
-  TAQA: 'taqagroup.com',
-  ADNOCGAS: 'adnoc.ae',
-  ADNOCDIST: 'adnocdistribution.ae',
-  ADNOCDRILL: 'adnoc.ae',
-  BURJEEL: 'burjeelholdings.com',
-  IHC: 'ihcuae.com',
-  EAND: 'eand.com',
-  TABREED: 'tabreed.ae',
-  FERTIGLOBE: 'fertiglobe.com',
-  MULTIPLY: 'multiply.ae',
-  YAHSAT: 'yahsat.com',
-  PRESIGHT: 'presight.ai',
-  BOROUGE: 'borouge.com',
-  BAYANAT: 'bayanat.ai',
-  AGTHIA: 'agthia.com',
-  ALDAHRA: 'aldahra.com'
+  // أبوظبي (ADX)
+  FAB: 'https://s3-symbol-logo.tradingview.com/first-abu-dhabi-bank--600.png',
+  ADCB: 'https://s3-symbol-logo.tradingview.com/abu-dhabi-commercial-bank--600.png',
+  ADIB: 'https://s3-symbol-logo.tradingview.com/abu-dhabi-islamic-bank--600.png',
+  ADNIC: 'https://s3-symbol-logo.tradingview.com/abu-dhabi-national-insurance-company--600.png',
+  EAND: 'https://s3-symbol-logo.tradingview.com/emirates-telecom-company-etisalat-pjsc--600.png',
+  ADNOCGAS: 'https://s3-symbol-logo.tradingview.com/adnoc-drilling-company-pjsc--600.png',
+  ADNOCDIST: 'https://s3-symbol-logo.tradingview.com/adnoc-drilling-company-pjsc--600.png',
+  ADNOCDRILL: 'https://s3-symbol-logo.tradingview.com/adnoc-drilling-company-pjsc--600.png',
+  NMDCENR: 'https://s3-symbol-logo.tradingview.com/nmdc-energy-pjsc--600.png',
+  IHC: 'https://s3-symbol-logo.tradingview.com/international-company-pjsc--600.png',
+  TAQA: 'https://s3-symbol-logo.tradingview.com/abu-dhabi-national-energy-company--600.png',
+  ALDAR: 'https://s3-symbol-logo.tradingview.com/al-dar-properties--600.png',
+  ALPHADHABI: 'https://s3-symbol-logo.tradingview.com/alpha-dhabi-pjsc--600.png',
+  ADNOCLS: 'https://s3-symbol-logo.tradingview.com/adnoc-drilling-company-pjsc--600.png',
+  MULTIPLY: 'https://s3-symbol-logo.tradingview.com/two-point-zero-group--600.png',
+  BOROUGE: 'https://s3-symbol-logo.tradingview.com/borouge-plc--600.png',
+  WAHAT: 'https://s3-symbol-logo.tradingview.com/waha-capital-company--600.png',
+  DANA: 'https://s3-symbol-logo.tradingview.com/dana-gas-pjsc--600.png',
+  BURJEEL: 'https://s3-symbol-logo.tradingview.com/burjeel-plc--600.png',
+  PHOENIX: 'https://s3-symbol-logo.tradingview.com/phoenix-group-holdings-plc-ord-10p--600.png'
 }
 
-// خريطة أيقونات تعبيرية تعكس هوية أو قطاع كل شركة كبديل ممتاز
+// خريطة أيقونات تعبيرية تعكس هوية أو قطاع كل شركة كبديل ممتاز في حال فشل تحميل الصورة
 const EMOJI_MAP: Record<string, string> = {
   DEWA: '⚡',
   EMIRATESNBD: '🏦',
@@ -93,7 +94,7 @@ const EMOJI_MAP: Record<string, string> = {
 
 export default function Avatar({ sym, size = 40 }: { sym: string; size?: number }) {
   const cleanSym = sym.replace(/\d+$/, '').toUpperCase()
-  const domain = DOMAIN_MAP[cleanSym]
+  const logoUrl = TRADINGVIEW_LOGO_MAP[cleanSym]
   const emoji = EMOJI_MAP[cleanSym] || '🏢'
   
   const [imgFailed, setImgFailed] = useState(false)
@@ -112,16 +113,16 @@ export default function Avatar({ sym, size = 40 }: { sym: string; size?: number 
     fontWeight: 800,
     overflow: 'hidden',
     flexShrink: 0,
-    border: '1.5px solid var(--line)',
+    border: '1px solid var(--line)',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
     transition: 'all 0.15s ease'
   }
 
-  if (domain && !imgFailed) {
+  if (logoUrl && !imgFailed) {
     return (
       <span className="avatar" style={avatarStyle} aria-label={sym}>
         <img
-          src={`https://logo.clearbit.com/${domain}?size=${size * 2}`}
+          src={logoUrl}
           alt={sym}
           onError={() => setImgFailed(true)}
           style={{
@@ -129,7 +130,7 @@ export default function Avatar({ sym, size = 40 }: { sym: string; size?: number 
             height: '100%',
             objectFit: 'contain',
             background: '#fff',
-            padding: '3px'
+            padding: '2px'
           }}
         />
       </span>
