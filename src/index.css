@@ -126,11 +126,15 @@ footer a:hover{text-decoration:underline}
   background:linear-gradient(180deg,#13233f,#16294a); border-inline-start:1px solid var(--line);
   display:flex; flex-direction:column; padding:22px 16px; gap:8px}
 html[data-theme="light"] .sidebar{background:linear-gradient(180deg,#ffffff,#f1f5fb)}
-.brand{display:flex; align-items:center; gap:11px; padding:4px 6px 18px}
+.brand{display:flex; align-items:center; gap:11px; padding:4px 6px 18px; width:100%}
 .brand-mark{width:42px; height:42px; border-radius:12px; display:grid; place-items:center;
   font-weight:900; font-size:15px; color:#fff; background:linear-gradient(120deg,var(--brand),var(--brand2))}
 .brand-title{font-weight:800; font-size:15px}
 .brand-sub{color:var(--muted); font-size:12px}
+.theme-toggle-btn{width:36px; height:36px; border-radius:50%; border:1px solid var(--line);
+  background:var(--chip); color:var(--txt); display:grid; place-items:center; cursor:pointer;
+  transition:all .25s cubic-bezier(0.4, 0, 0.2, 1); font-size:15px; flex-shrink:0}
+.theme-toggle-btn:hover{background:var(--panel-solid); border-color:var(--brand); transform:scale(1.08) rotate(15deg); box-shadow:var(--shadow)}
 .nav{display:flex; flex-direction:column; gap:4px; margin-top:6px}
 .navitem{display:flex; align-items:center; gap:11px; width:100%; text-align:start; cursor:pointer;
   background:transparent; border:1px solid transparent; color:var(--muted); font-family:inherit;
@@ -261,4 +265,13 @@ th.sortable:hover{color:var(--txt)}
   .sidebar-foot .navitem{padding:8px 12px; font-size:13px}
   .sidebar-note{display:none}
   .modal-grid,.modal-divgrid{grid-template-columns:1fr}
+}
+
+@keyframes skeleton-pulse {
+  0% { opacity: .6; }
+  50% { opacity: .3; }
+  100% { opacity: .6; }
+}
+.skeleton-pulse {
+  animation: skeleton-pulse 1.8s infinite ease-in-out;
 }

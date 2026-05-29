@@ -1,157 +1,54 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { Stock } from '../data'
-import { useStocks } from '../store'
-import { getAnnualPs, fmtAmount, MONTHS_AR } from '../format'
+import { usePortfolio } from '../store'
+import { fmtAmount, MONTHS_AR } from '../format'
 import { parseISO } from '../lib'
 import Avatar from '../components/Avatar'
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, CartesianGrid, LabelList
+  ResponsiveContainer, CartesianGrid, LabelList, AreaChart, Area
 } from 'recharts'
 
 const PALETTE = ['#3aa0ff', '#7c5cff', '#21c98b', '#ffb020', '#ff5a72', '#36c5d8', '#e26bd0', '#9bd13a']
 
 export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
-  const { stocks: DATA, loading } = useStocks()
+  const {
+    items,
+    totalInvested,
+    totalAnnualDividends,
+    weightedYield,
+    monthlyAverage,
+    goal,
+    setGoal,
+    addStock,
+    deleteStock,
+    updateAmount,
+    updateShares,
+    isInPortfolio,
+    stocks,
+    loading
+  } = usePortfolio()
 
-  // 1. شحن بيانات المحفظة المخزنة مسبقاً أو تعيين قيم افتراضية نموذجية
-  const [portfolio, setPortfolio] = useState<{ sym: string; amount: number; shares: number }[]>(() => {
-    const saved = localStorage.getItem('dividend_portfolio')
-    if (saved) {
-      try {
-        return JSON.parse(saved)
-      } catch {
-        // العودة للافتراضي في حال حدوث مشكلة
-      }
-    }
-    // محفظة نموذجية افتراضية لعرض البيانات بشكل مبهر
-    return [
-      { sym: 'DEWA', amount: 15000, shares: 15000 / 2.61 },
-      { sym: 'EMIRATESNBD', amount: 30000, shares: 30000 / 27.62 },
-      { sym: 'EMAAR', amount: 25000, shares: 25000 / 11.78 }
-    ]
-  })
-
-  // 2. شحن الهدف المالي للمستثمر
-  const [goal, setGoal] = useState<number>(() => {
-    const saved = localStorage.getItem('dividend_goal')
-    return saved ? parseFloat(saved) : 1000
-  })
-
+  // 1. حقول البحث والإدخال لقائمة الإضافة
   const [searchQuery, setSearchQuery] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
 
-  // حفظ المحفظة والهدف في التخزين المحلي
-  useEffect(() => {
-    if (!loading && DATA.length > 0) {
-      localStorage.setItem('dividend_portfolio', JSON.stringify(portfolio))
-    }
-  }, [portfolio, loading, DATA])
-
-  useEffect(() => {
-    localStorage.setItem('dividend_goal', String(goal))
-  }, [goal])
-
-  // 3. حساب تفاصيل المحفظة والأسهم
-  const items = useMemo(() => {
-    return portfolio.map(p => {
-      const stock = DATA.find(s => s.sym === p.sym)
-      if (!stock) return null
-      const price = stock.price ?? 1.0 // سعر افتراضي في حال عدم وجود سعر
-      const annualPs = getAnnualPs(stock)
-      const calculatedYield = price > 0 ? (annualPs / price) * 100 : 0
-      const expectedAnnualDiv = p.shares * annualPs
-
-      return {
-        ...p,
-        stock,
-        price,
-        annualPs,
-        yield: calculatedYield,
-        expectedAnnualDiv
-      }
-    }).filter(Boolean) as {
-      sym: string
-      amount: number
-      shares: number
-      stock: Stock
-      price: number
-      annualPs: number
-      yield: number
-      expectedAnnualDiv: number
-    }[]
-  }, [portfolio, DATA])
-
-  // 4. المجاميع والمؤشرات الكلية
-  const totalInvested = useMemo(() => items.reduce((sum, item) => sum + item.amount, 0), [items])
-  const totalAnnualDividends = useMemo(() => items.reduce((sum, item) => sum + item.expectedAnnualDiv, 0), [items])
-  const weightedYield = useMemo(() => {
-    if (totalInvested === 0) return 0
-    return (totalAnnualDividends / totalInvested) * 100
-  }, [totalInvested, totalAnnualDividends])
-  const monthlyAverage = totalAnnualDividends / 12
-
-  // تحديث مبلغ الاستثمار (وإعادة حساب عدد الأسهم تلقائياً)
-  const updateAmount = (sym: string, amt: number) => {
-    setPortfolio(prev => prev.map(p => {
-      if (p.sym !== sym) return p
-      const stock = DATA.find(s => s.sym === sym)
-      const price = stock?.price ?? 1.0
-      return {
-        sym,
-        amount: amt,
-        shares: price > 0 ? amt / price : 0
-      }
-    }))
-  }
-
-  // تحديث عدد الأسهم (وإعادة حساب مبلغ الاستثمار تلقائياً)
-  const updateShares = (sym: string, shs: number) => {
-    setPortfolio(prev => prev.map(p => {
-      if (p.sym !== sym) return p
-      const stock = DATA.find(s => s.sym === sym)
-      const price = stock?.price ?? 1.0
-      return {
-        sym,
-        amount: shs * price,
-        shares: shs
-      }
-    }))
-  }
-
-  // حذف سهم من المحفظة
-  const deleteStock = (sym: string) => {
-    setPortfolio(prev => prev.filter(p => p.sym !== sym))
-  }
-
-  // إضافة سهم جديد للمحفظة
-  const addStock = (sym: string) => {
-    const stock = DATA.find(s => s.sym === sym)
-    if (!stock) return
-    const price = stock.price ?? 1.0
-    const defaultAmount = 10000
-    setPortfolio(prev => [
-      ...prev,
-      {
-        sym,
-        amount: defaultAmount,
-        shares: price > 0 ? defaultAmount / price : 0
-      }
-    ])
-    setSearchQuery('')
-    setShowDropdown(false)
-  }
+  // 2. حالات محاكي خطة إعادة استثمار الأرباح (DRIP Simulator States)
+  const [dripYears, setDripYears] = useState<number>(10)
+  const [dripMonthly, setDripMonthly] = useState<number>(1000)
+  const [dripPriceGrowth, setDripPriceGrowth] = useState<number>(4) // 4% نمو سعر السهم
+  const [dripDivGrowth, setDripDivGrowth] = useState<number>(3)     // 3% نمو التوزيعات السنوي
 
   // تصفية نتائج البحث للأسهم المتاحة للإضافة
   const availableStocks = useMemo(() => {
-    return DATA.filter(s => 
-      !portfolio.some(p => p.sym === s.sym) &&
+    return stocks.filter(s => 
+      !isInPortfolio(s.sym) &&
       (s.sym.toLowerCase().includes(searchQuery.toLowerCase()) || 
        s.name.toLowerCase().includes(searchQuery.toLowerCase()))
     )
-  }, [portfolio, DATA, searchQuery])
+  }, [stocks, searchQuery, isInPortfolio])
 
-  // 5. إعداد البيانات للرسوم البيانية
+  // 3. إعداد البيانات للرسوم البيانية للمحفظة
   // أ. تنوع القطاعات في المحفظة
   const sectorData = useMemo(() => {
     const m = new Map<string, number>()
@@ -201,6 +98,54 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
       amount: Math.round(months[i])
     }))
   }, [items])
+
+  // جـ. حسابات محاكاة خطة الـ DRIP على مدار السنوات
+  const dripData = useMemo(() => {
+    const data = []
+    let capCash = totalInvested
+    let capDrip = totalInvested
+    let cumulativeDivCash = 0
+
+    const currentYieldDecimal = weightedYield / 100
+
+    // إضافة سنة التأسيس (السنة 0)
+    data.push({
+      year: 'البداية',
+      cashWealth: Math.round(capCash),
+      dripWealth: Math.round(capDrip),
+      snowballBenefit: 0
+    })
+
+    for (let y = 1; y <= dripYears; y++) {
+      const priceGrowthFactor = 1 + dripPriceGrowth / 100
+      const divGrowthFactor = Math.pow(1 + dripDivGrowth / 100, y)
+      const annualYield = currentYieldDecimal * divGrowthFactor
+
+      // 1. حساب مسار الكاش (بدون إعادة استثمار)
+      const divCash = capCash * annualYield
+      cumulativeDivCash += divCash
+      capCash = capCash * priceGrowthFactor + dripMonthly * 12
+      const cashWealth = capCash + cumulativeDivCash
+
+      // 2. حساب مسار الـ DRIP (مع إعادة استثمار الأرباح فوراً)
+      const divDrip = capDrip * annualYield
+      capDrip = capDrip * priceGrowthFactor + divDrip + dripMonthly * 12
+      const dripWealth = capDrip
+
+      data.push({
+        year: `سنة ${y}`,
+        cashWealth: Math.round(cashWealth),
+        dripWealth: Math.round(dripWealth),
+        snowballBenefit: Math.max(0, Math.round(dripWealth - cashWealth))
+      })
+    }
+    return data
+  }, [totalInvested, weightedYield, dripYears, dripMonthly, dripPriceGrowth, dripDivGrowth])
+
+  // حساب مؤشر كرة الثلج النهائي
+  const finalDripWealth = dripData[dripData.length - 1]?.dripWealth ?? 0
+  const finalCashWealth = dripData[dripData.length - 1]?.cashWealth ?? 0
+  const snowballEffectValue = Math.max(0, finalDripWealth - finalCashWealth)
 
   // نسبة تحقيق الهدف المالي
   const progressPercent = Math.min(100, Math.round((monthlyAverage / goal) * 100))
@@ -286,6 +231,47 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
           border-radius: 99px;
           transition: width 0.3s ease;
         }
+        
+        /* تنسيقات محاكي DRIP */
+        .drip-ctrl-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 16px;
+          margin-bottom: 20px;
+        }
+        .drip-slider-box {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        .drip-slider-header {
+          display: flex;
+          justify-content: space-between;
+          font-size: 13px;
+          color: var(--muted);
+        }
+        .drip-slider {
+          -webkit-appearance: none;
+          width: 100%;
+          height: 6px;
+          border-radius: 99px;
+          background: var(--line);
+          outline: none;
+          cursor: pointer;
+        }
+        .drip-slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: var(--brand);
+          cursor: pointer;
+          transition: transform 0.1s ease;
+        }
+        .drip-slider::-webkit-slider-thumb:hover {
+          transform: scale(1.2);
+        }
       `}</style>
 
       <div className="page-head">
@@ -350,7 +336,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
         )}
       </div>
 
-      {/* قسم الرسوم البيانية التفاعلية */}
+      {/* قسم الرسوم البيانية التفاعلية للمحفظة */}
       {items.length > 0 && (
         <div className="chart-grid">
           {/* مخطط القطاعات */}
@@ -396,6 +382,161 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
         </div>
       )}
 
+      {/* ===================== محاكي DRIP التفاعلي المتقدم ===================== */}
+      {items.length > 0 && (
+        <div className="panel" style={{ margin: '24px 0' }}>
+          <div style={{ borderBottom: '1px solid var(--line)', paddingBottom: '12px', marginBottom: '18px' }}>
+            <h3 className="panel-h" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              ❄️ محاكي أثر إعادة استثمار الأرباح (DRIP Snowball Simulator)
+            </h3>
+            <p style={{ margin: '4px 0 0', color: 'var(--muted)', fontSize: '13px' }}>
+              شاهد كيف تنمو ثروتك ومحفظتك بشكل أسي على المدى الطويل عند إعادة استثمار أرباح الأسهم بدلاً من سحبها
+            </p>
+          </div>
+
+          {/* شبكة التحكم بالمدخلات */}
+          <div className="drip-ctrl-grid">
+            <div className="drip-slider-box">
+              <div className="drip-slider-header">
+                <span>⏳ أفق الاستثمار</span>
+                <span style={{ fontWeight: 700, color: 'var(--brand)' }}>{dripYears} سنة</span>
+              </div>
+              <input 
+                type="range" 
+                min="3" 
+                max="30" 
+                className="drip-slider" 
+                value={dripYears}
+                onChange={(e) => setDripYears(parseInt(e.target.value))}
+              />
+            </div>
+
+            <div className="drip-slider-box">
+              <div className="drip-slider-header">
+                <span>💵 مساهمة شهرية إضافية</span>
+                <span style={{ fontWeight: 700, color: 'var(--good)' }}>{dripMonthly.toLocaleString('en-US')} د.إ</span>
+              </div>
+              <input 
+                type="range" 
+                min="0" 
+                max="15000" 
+                step="500" 
+                className="drip-slider" 
+                value={dripMonthly}
+                onChange={(e) => setDripMonthly(parseInt(e.target.value))}
+              />
+            </div>
+
+            <div className="drip-slider-box">
+              <div className="drip-slider-header">
+                <span>📈 نمو سعر الأسهم سنويًا</span>
+                <span style={{ fontWeight: 700, color: 'var(--warn)' }}>{dripPriceGrowth}%</span>
+              </div>
+              <input 
+                type="range" 
+                min="0" 
+                max="12" 
+                step="0.5" 
+                className="drip-slider" 
+                value={dripPriceGrowth}
+                onChange={(e) => setDripPriceGrowth(parseFloat(e.target.value))}
+              />
+            </div>
+
+            <div className="drip-slider-box">
+              <div className="drip-slider-header">
+                <span>💸 نمو التوزيعات سنويًا</span>
+                <span style={{ fontWeight: 700, color: 'var(--brand2)' }}>{dripDivGrowth}%</span>
+              </div>
+              <input 
+                type="range" 
+                min="0" 
+                max="10" 
+                step="0.5" 
+                className="drip-slider" 
+                value={dripDivGrowth}
+                onChange={(e) => setDripDivGrowth(parseFloat(e.target.value))}
+              />
+            </div>
+          </div>
+
+          {/* لوحة المؤشرات السريعة للمحاكاة */}
+          <div className="stats" style={{ margin: '0 0 20px' }}>
+            <div className="stat" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
+              <div className="n" style={{ color: '#fff', fontSize: '22px' }}>{finalCashWealth.toLocaleString('en-US')} درهم</div>
+              <div className="l">ثروة سحب الأرباح نقداً (Cash)</div>
+              <div className="stat-sub">توزيعات مسحوبة وغير مستثمرة</div>
+            </div>
+            <div className="stat" style={{ background: 'rgba(124, 92, 255, 0.05)', border: '1px solid rgba(124, 92, 255, 0.2)' }}>
+              <div className="n" style={{ color: 'var(--brand2)', fontSize: '22px' }}>{finalDripWealth.toLocaleString('en-US')} درهم</div>
+              <div className="l">ثروة إعادة الاستثمار (DRIP)</div>
+              <div className="stat-sub">توزيعات يعاد ضخها فورياً بالسوق</div>
+            </div>
+            <div className="stat" style={{ background: 'rgba(33, 201, 139, 0.06)', border: '1px solid rgba(33, 201, 139, 0.2)' }}>
+              <div className="n" style={{ color: 'var(--good)', fontSize: '22px' }}>+{snowballEffectValue.toLocaleString('en-US')} درهم</div>
+              <div className="l">🔥 عائد أثر كرة الثلج الإضافي</div>
+              <div className="stat-sub">مكاسب خالصة من قوة الفائدة المركبة</div>
+            </div>
+          </div>
+
+          {/* الرسم البياني لنمو الثروة */}
+          <div style={{ width: '100%', height: 320, marginTop: 14 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={dripData} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
+                <defs>
+                  <linearGradient id="colorDrip" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--brand2)" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="var(--brand2)" stopOpacity={0.0}/>
+                  </linearGradient>
+                  <linearGradient id="colorCash" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--muted2)" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="var(--muted2)" stopOpacity={0.0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--line)" />
+                <XAxis dataKey="year" tick={{ fill: 'var(--muted)', fontSize: 11 }} />
+                <YAxis tick={{ fill: 'var(--muted)', fontSize: 11 }} tickFormatter={(val: number) => `${val / 1000}k`} />
+                <Tooltip 
+                  contentStyle={tipStyle} 
+                  formatter={(val, name) => [
+                    `${Number(val).toLocaleString('en-US')} درهم`,
+                    name === 'dripWealth' ? 'إعادة الاستثمار (DRIP)' : 'سحب الأرباح كاش'
+                  ]}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="dripWealth" 
+                  stroke="var(--brand2)" 
+                  strokeWidth={2.5}
+                  fillOpacity={1} 
+                  fill="url(#colorDrip)" 
+                  name="dripWealth"
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="cashWealth" 
+                  stroke="var(--muted2)" 
+                  strokeWidth={1.5}
+                  fillOpacity={1} 
+                  fill="url(#colorCash)" 
+                  name="cashWealth"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{ display: 'flex', gap: 20, justifyContent: 'center', fontSize: '12px', color: 'var(--muted)', marginTop: '8px' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <i style={{ width: 12, height: 12, borderRadius: 3, background: 'var(--brand2)', display: 'inline-block' }} /> 
+              المحفظة مع إعادة استثمار الأرباح (DRIP)
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <i style={{ width: 12, height: 12, borderRadius: 3, background: 'var(--muted2)', display: 'inline-block' }} /> 
+              المحفظة مع سحب الأرباح نقداً (Cash)
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* جدول إدارة المحفظة التفاعلي */}
       <h2 className="sec"><span className="dot" style={{ background: 'var(--brand2)' }} /> أصول المحفظة والحاسبة الآلية</h2>
 
@@ -417,7 +558,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
                   <div style={{ padding: 12, color: 'var(--muted2)', fontSize: 13, textAlign: 'center' }}>لا توجد نتائج مطابقة أو تم إضافة السهم بالفعل.</div>
                 ) : (
                   availableStocks.map(s => (
-                    <button key={s.sym} className="p-dropdown-item" onClick={() => addStock(s.sym)}>
+                    <button key={s.sym} className="p-dropdown-item" onClick={() => { addStock(s.sym); setSearchQuery(''); setShowDropdown(false); }}>
                       <Avatar sym={s.sym} size={24} />
                       <span style={{ fontWeight: 600 }}>{s.sym}</span>
                       <span style={{ color: 'var(--muted2)', fontSize: 12, flex: 1, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{s.name}</span>
@@ -435,7 +576,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
             )}
           </div>
           {searchQuery === '' && availableStocks.length > 0 && (
-            <select style={{ width: 220 }} onChange={(e) => { if(e.target.value !== '') addStock(e.target.value); e.target.value = '' }}>
+            <select style={{ width: 220 }} onChange={(e) => { if(e.target.value !== '') { addStock(e.target.value); }; e.target.value = '' }}>
               <option value="">أضف سهماً سريعا من القائمة...</option>
               {availableStocks.map(s => (
                 <option key={s.sym} value={s.sym}>{s.sym} — {s.name.split('—')[0]}</option>
@@ -460,7 +601,11 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
             </tr>
           </thead>
           <tbody>
-            {items.length === 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan={8} style={{ textAlign: 'center', padding: '30px' }}>جاري تحميل البيانات...</td>
+              </tr>
+            ) : items.length === 0 ? (
               <tr>
                 <td colSpan={8}>
                   <div className="empty">المحفظة فارغة حالياً. ابحث عن سهم في القائمة أعلاه وقم بإضافته للبدء في الحساب!</div>

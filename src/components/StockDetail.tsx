@@ -5,6 +5,7 @@ import { upcoming, isAlert } from '../lib'
 import { parseGrowth, symColor } from '../format'
 import Avatar from './Avatar'
 import Snowflake from './Snowflake'
+import { usePortfolio } from '../store'
 
 const NA = 'يلزم التحقق'
 function v(x: string | number | null | undefined) {
@@ -21,6 +22,9 @@ function Row({ k, val }: { k: string; val: React.ReactNode }) {
 }
 
 export default function StockDetail({ item, onClose }: { item: Stock; onClose: () => void }) {
+  const { isInPortfolio, togglePortfolioStock } = usePortfolio()
+  const added = isInPortfolio(item.sym)
+
   useEffect(() => {
     const h = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
     window.addEventListener('keydown', h)
@@ -55,6 +59,31 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
               </span>
             </div>
           </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: 10, margin: '14px 0 2px', justifyContent: 'flex-start' }}>
+          <button 
+            className={`portfolio-toggle-btn ${added ? 'added' : ''}`}
+            onClick={() => togglePortfolioStock(item.sym)}
+            style={{
+              padding: '7px 14px',
+              borderRadius: '10px',
+              border: '1px solid var(--line)',
+              background: added ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'var(--chip)',
+              color: added ? '#fff' : 'var(--txt)',
+              fontFamily: 'inherit',
+              fontWeight: 700,
+              fontSize: '12.5px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.15s ease',
+              boxShadow: added ? 'var(--shadow)' : 'none'
+            }}
+          >
+            <span>{added ? '💼 مضاف للمحفظة (حذف 🗑️)' : '💼 أضف إلى المحفظة +'}</span>
+          </button>
         </div>
 
         {u && isAlert(u) && (

@@ -23,10 +23,13 @@ export default function Sidebar({
     <aside className="sidebar">
       <div className="brand">
         <span className="brand-mark">UAE</span>
-        <div>
+        <div style={{ flex: 1 }}>
           <div className="brand-title">منصة الأسهم الإماراتية</div>
           <div className="brand-sub">دبي · أبوظبي</div>
         </div>
+        <button className="theme-toggle-btn" onClick={toggleTheme} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
+          {dark ? '☀️' : '🌙'}
+        </button>
       </div>
 
       <nav className="nav">
@@ -43,10 +46,6 @@ export default function Sidebar({
       </nav>
 
       <div className="sidebar-foot">
-        <button className="navitem" onClick={toggleTheme}>
-          <span className="navicon">{dark ? '☀️' : '🌙'}</span>
-          {dark ? 'الوضع الفاتح' : 'الوضع الداكن'}
-        </button>
         <div className="sidebar-note">بيانات 28 مايو 2026 — للمعلومات فقط</div>
       </div>
     </aside>

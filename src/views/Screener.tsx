@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { CAT_LABEL } from '../data'
 import type { Stock, Exchange, Category } from '../data'
-import { useStocks } from '../store'
+import { useStocks, usePortfolio } from '../store'
 import { parseYield, parseAmount } from '../format'
 import Avatar from '../components/Avatar'
 
@@ -14,6 +14,7 @@ function cell(x: string | number | null | undefined) {
 
 export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA } = useStocks()
+  const { isInPortfolio, togglePortfolioStock } = usePortfolio()
   const [q, setQ] = useState('')
   const [ex, setEx] = useState<'all' | Exchange>('all')
   const [cat, setCat] = useState<'all' | Category>('all')
@@ -96,6 +97,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
               <th>صافي الربح</th>
               <th className="sortable" onClick={() => toggleSort('yield')}>العائد{arrow('yield')}</th>
               <th>التصنيف</th>
+              <th>المحفظة</th>
             </tr>
           </thead>
           <tbody>
@@ -118,6 +120,22 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                 <td>{cell(s.net)}</td>
                 <td>{cell(s.div.yld)}</td>
                 <td><span className={'ribbon cat-' + s.cat}>{CAT_LABEL[s.cat]}</span></td>
+                <td onClick={(e) => e.stopPropagation()}>
+                  <button 
+                    onClick={() => togglePortfolioStock(s.sym)}
+                    style={{
+                      background: 'transparent',
+                      border: 0,
+                      cursor: 'pointer',
+                      fontSize: '15px',
+                      padding: '4px 8px',
+                      transition: 'transform 0.12s ease'
+                    }}
+                    title={isInPortfolio(s.sym) ? 'إزالة من المحفظة 🗑️' : 'إضافة إلى المحفظة +'}
+                  >
+                    {isInPortfolio(s.sym) ? '💼' : '➕'}
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
