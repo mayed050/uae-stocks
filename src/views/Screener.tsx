@@ -345,50 +345,39 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
     return groups
   }, [rows])
 
+  const sidebarSectors = useMemo(() => {
+    const list: { title: string; stocks: Stock[] }[] = []
+    SECTOR_TITLES.forEach(title => {
+      const allowedSectors = mapDFMSectorToDb(title)
+      const sectorStocks = DATA.filter(s => {
+        if (ex !== 'all' && s.ex !== ex) return false
+        if (cat !== 'all' && s.cat !== cat) return false
+        return allowedSectors.includes(s.sector)
+      })
+      if (sectorStocks.length > 0) {
+        list.push({ title, stocks: sectorStocks })
+      }
+    })
+
+    const matchedSymbols = new Set(list.flatMap(g => g.stocks.map(s => s.sym)))
+    const unmatchedStocks = DATA.filter(s => {
+      if (ex !== 'all' && s.ex !== ex) return false
+      if (cat !== 'all' && s.cat !== cat) return false
+      return !matchedSymbols.has(s.sym)
+    })
+    if (unmatchedStocks.length > 0) {
+      list.push({ title: 'قطاعات أخرى متنوعة', stocks: unmatchedStocks })
+    }
+
+    return list
+  }, [DATA, ex, cat])
+
   function toggleSort(k: SortKey) {
     if (sort === k) setDir((d) => (d === 1 ? -1 : 1))
     else { setSort(k); setDir(k === 'name' ? 1 : -1) }
   }
   const arrow = (k: SortKey) => (sort === k ? (dir === 1 ? ' ▲' : ' ▼') : '')
 
-  const handleStockClick = (m: { name: string; sym: string; price: string; pct: string; change: string; up?: boolean; flat?: boolean; sector?: string }) => {
-    const cleanSym = m.sym.replace(/\d+$/, '').toUpperCase()
-    const found = DATA.find(s => 
-      s.sym.toUpperCase() === cleanSym || 
-      s.name.toLowerCase().includes(m.name.toLowerCase())
-    )
-    if (found) {
-      onOpen(found)
-    } else {
-      const mockStock: Stock = {
-        sym: cleanSym,
-        name: `${m.name} — شركة مدرجة`,
-        ex: 'DFM',
-        sector: m.sector || 'قطاع عام',
-        cat: 'income',
-        yahoo: `${cleanSym}.AE`,
-        price: parseFloat(m.price),
-        asof: 'مايو 2026',
-        mcap: 'غير متوفرة',
-        pe: null,
-        eps: 'غير متوفر',
-        roe: 'غير متوفر',
-        net: 'غير متوفر',
-        rev: 'غير متوفر',
-        div: {
-          ps: 'غير معلن',
-          yld: m.pct || 'غير معلن',
-          freq: 'سنوي',
-          lastEnt: null,
-          exd: null,
-          rec: null,
-          pay: null,
-          agm: null
-        }
-      }
-      onOpen(mockStock)
-    }
-  }
 
   return (
     <div className="view">
@@ -635,10 +624,10 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
           
           <div className="o-widget">
             <h4 className="o-widget-h" style={{ margin: 0, border: 0, padding: 0, paddingBottom: '8px', marginBottom: '12px', borderBottom: '1px solid var(--line)' }}>
-              🗂️ فلترة قطاعات سوق دبي
+              🗂️ تصفية قطاعات الشركات ({ex === 'all' ? 'دبي وأبوظبي' : ex === 'DFM' ? 'دبي' : 'أبوظبي'})
             </h4>
             <p style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '-4px', marginBottom: '12px' }}>
-              اضغط على أي قطاع لتصفية نتائج الجدول تلقائياً، واضغط على السهم لفتح تفاصيل أي شركة.
+              اضغط على اسم القطاع لتصفيته، وافتح القائمة لعرض وتفقد تفاصيل أي سهم مباشرة.
             </p>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '520px', overflowY: 'auto', paddingRight: '2px' }}>
@@ -661,10 +650,14 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                   transition: 'all 0.12s ease'
                 }}
               >
-                📁 عرض كل القطاعات المتاحة
+                📁 عرض كل القطاعات ({DATA.filter(s => {
+                  if (ex !== 'all' && s.ex !== ex) return false
+                  if (cat !== 'all' && s.cat !== cat) return false
+                  return true
+                }).length} شركة)
               </button>
 
-              {SECTOR_MOVEMENTS.map((sec) => {
+              {sidebarSectors.map((sec) => {
                 const isExpanded = !!expandedSectors[sec.title]
                 const isActiveFilter = sector === sec.title
                 return (
@@ -699,6 +692,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                       >
                         <span style={{ color: isActiveFilter ? 'var(--brand)' : 'var(--brand2)', marginInlineEnd: '8px' }}>🔸</span>
                         {sec.title}
+                        <span style={{ fontSize: '10px', color: 'var(--muted)', marginInlineStart: '6px', fontWeight: 500 }}>({sec.stocks.length})</span>
                       </button>
                       <button 
                         onClick={() => toggleSector(sec.title)}
@@ -724,31 +718,34 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                       <div style={{ padding: '4px 8px', background: 'rgba(0,0,0,0.08)' }}>
                         <table style={{ minWidth: '100%', background: 'transparent', fontSize: '11px', borderCollapse: 'collapse' }}>
                           <tbody>
-                            {sec.stocks.map((m) => (
-                              <tr 
-                                key={m.sym} 
-                                onClick={() => handleStockClick(m)}
-                                className="rowlink"
-                                style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.02)', cursor: 'pointer' }}
-                              >
-                                <td style={{ padding: '5px 4px', textAlign: 'right', fontWeight: 700, color: 'var(--txt)' }}>
-                                  {m.name}
-                                </td>
-                                <td style={{ padding: '5px 4px', textAlign: 'center', color: 'var(--muted)' }}>
-                                  {m.price}
-                                </td>
-                                <td style={{ 
-                                  padding: '5px 4px', 
-                                  textAlign: 'left', 
-                                  fontWeight: 800,
-                                  direction: 'ltr',
-                                  color: m.flat ? 'var(--muted)' : m.up ? 'var(--good)' : 'var(--bad)',
-                                  fontSize: '10.5px'
-                                }}>
-                                  {m.pct}
-                                </td>
-                              </tr>
-                            ))}
+                            {sec.stocks.map((s) => {
+                              const d = getDailyData(s)
+                              return (
+                                <tr 
+                                  key={s.sym} 
+                                  onClick={() => onOpen(s)}
+                                  className="rowlink"
+                                  style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.02)', cursor: 'pointer' }}
+                                >
+                                  <td style={{ padding: '5px 4px', textAlign: 'right', fontWeight: 700, color: 'var(--txt)' }}>
+                                    {s.name.split('—')[0]}
+                                  </td>
+                                  <td style={{ padding: '5px 4px', textAlign: 'center', color: 'var(--muted)' }}>
+                                    {s.price !== null ? s.price.toFixed(2) : '—'}
+                                  </td>
+                                  <td style={{ 
+                                    padding: '5px 4px', 
+                                    textAlign: 'left', 
+                                    fontWeight: 800,
+                                    direction: 'ltr',
+                                    color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)',
+                                    fontSize: '10.5px'
+                                  }}>
+                                    {d.pct}
+                                  </td>
+                                </tr>
+                              )
+                            })}
                           </tbody>
                         </table>
                       </div>
