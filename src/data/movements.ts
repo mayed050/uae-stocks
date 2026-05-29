@@ -94,7 +94,7 @@ export const SECTOR_MOVEMENTS: SectorMovement[] = [
       { name: 'كهرباء ومياه دبي', sym: 'DEWA', price: '2.61', pct: '+0.38%', change: '+0.01', up: true },
       { name: 'إمباور', sym: 'EMPOWER', price: '1.59', pct: '+0.63%', change: '+0.01', up: true },
       { name: 'سالك', sym: 'SALIK', price: '5.35', pct: '-0.54%', change: '-0.03', up: false },
-      { name: 'باركن', sym: 'PARKINS', price: '3.02', pct: '+0.33%', change: '+0.01', up: true },
+      { name: 'باركن', sym: 'PARKIN', price: '3.02', pct: '+0.33%', change: '+0.01', up: true },
       { name: 'تبريد', sym: 'TABREED', price: '3.30', pct: '+0.61%', change: '+0.02', up: true }
     ]
   },

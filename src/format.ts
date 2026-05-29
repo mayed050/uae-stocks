@@ -102,11 +102,15 @@ export function parseDivPs(s: string | null | undefined): number | null {
   return val
 }
 
-/** يحسب التوزيع السنوي الإجمالي للسهم بناءً على التكرار. */
+/** يحسب التوزيع السنوي الإجمالي للسهم بناءً على التكرار الرسمي (freq). */
 export function getAnnualPs(s: Stock): number {
   const val = parseDivPs(s.div.ps) ?? 0
-  const freq = s.div.freq
-  if (freq === 'ربعي' || s.div.ps?.includes('ربع')) return val * 4
-  if (freq === 'نصف سنوي' && !s.div.ps?.includes('سنوي')) return val * 2
+  const freq = s.div.freq ?? ''
+  // الأولوية لحقل freq الرسمي — لا نعتمد على نص ps لتحديد التكرار
+  if (freq === 'ربعي') return val * 4
+  if (freq === 'نصف سنوي') return val * 2
+  if (freq === 'سنوي') return val
+  // fallback: بعض السجلات القديمة قد تضمّن التكرار في ps
+  if (s.div.ps?.includes('ربع')) return val * 4
   return val
 }

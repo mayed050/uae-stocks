@@ -22,7 +22,7 @@ const TRADINGVIEW_LOGO_MAP: Record<string, string> = {
   GFH: 'https://s3-symbol-logo.tradingview.com/gfh-financial-group--600.png',
   ALANSARI: 'https://s3-symbol-logo.tradingview.com/al-ansari-financia--600.png',
   SPINNEYS: 'https://s3-symbol-logo.tradingview.com/spinneys-1961-hold--600.png',
-  PARKINS: 'https://s3-symbol-logo.tradingview.com/parkin-company-pjs--600.png',
+  PARKIN: 'https://s3-symbol-logo.tradingview.com/parkin-company-pjs--600.png',
   AMANAT: 'https://s3-symbol-logo.tradingview.com/amanat-holdings--600.png',
 
   // أبوظبي (ADX)
@@ -69,7 +69,7 @@ const EMOJI_MAP: Record<string, string> = {
   GFH: '💵',
   ALANSARI: '💸',
   SPINNEYS: '🛒',
-  PARKINS: '🅿️',
+  PARKIN: '🅿️',
   AMANAT: '🎓',
   FAB: '🏦',
   ADCB: '🏦',

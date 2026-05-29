@@ -407,26 +407,28 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
         }
         
         @media print {
-          .sidebar, .theme-toggle-floating, .p-search-container, select, .del-btn, .controls, .print-btn, .disclaimer, .intel-grid {
-            display: none !important;
-          }
-          body {
-            background: #fff !important;
-            color: #000 !important;
-          }
-          .main {
-            padding: 0 !important;
-            max-width: 100% !important;
-          }
+          /* إخفاء جميع العناصر التفاعلية وعناصر التنقل */
+          .sidebar, .theme-toggle-floating, .p-search-container,
+          .del-btn, .controls, .print-btn, .disclaimer,
+          .intel-grid, .drip-ctrl-grid, .chart-grid,
+          .p-progress-bar ~ div, select { display: none !important; }
+          
+          /* تبسيط التخطيط للطباعة */
+          body { background: #fff !important; color: #000 !important; font-size: 12px !important; }
+          .main { padding: 0 !important; max-width: 100% !important; }
+          
+          /* تنسيق البطاقات والجداول */
           .panel, .stat, .tablewrap {
             border: 1px solid #ccc !important;
             background: #fff !important;
             box-shadow: none !important;
             color: #000 !important;
+            break-inside: avoid;
           }
-          .n, .l, .stat-sub, .panel-h, th, td {
-            color: #000 !important;
-          }
+          .stats { page-break-after: avoid; }
+          .n, .l, .stat-sub, .panel-h, th, td, h1, h3 { color: #000 !important; }
+          
+          /* حقول الإدخال تُعرض كنص عادي */
           input.p-input {
             border: none !important;
             background: transparent !important;
@@ -436,6 +438,16 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
             width: auto !important;
             text-align: right !important;
           }
+
+          /* ترويسة التقرير المطبوع */
+          .page-head::before {
+            content: "تقرير محفظة توزيعات الأسهم الإماراتية";
+            display: block;
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 4px;
+          }
+          .print-btn { display: none !important; }
         }
       `}</style>
 
@@ -487,6 +499,30 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
           <div className="stat-sub">متوسط مرجح للعائد النقدي</div>
         </div>
       </div>
+
+      {/* حالة المحفظة الفارغة */}
+      {items.length === 0 && (
+        <div style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          gap: 20, padding: '60px 20px', textAlign: 'center',
+          background: 'var(--panel)', borderRadius: 20, border: '1px dashed var(--line)',
+          margin: '24px 0'
+        }}>
+          <div style={{ fontSize: 56 }}>📂</div>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 8 }}>محفظتك فارغة</div>
+            <div style={{ color: 'var(--muted)', fontSize: 13.5, maxWidth: 360, lineHeight: 1.7 }}>
+              ابحث عن أسهم في الحقل أدناه وأضفها لتبدأ في تتبع توزيعاتك وحساب دخلك الشهري المتوقع.
+            </div>
+          </div>
+          <div style={{
+            background: 'linear-gradient(120deg, var(--brand), var(--brand2))',
+            color: '#fff', padding: '10px 22px', borderRadius: 12,
+            fontSize: 13.5, fontWeight: 700,
+            boxShadow: '0 4px 16px rgba(58,160,255,0.3)', animation: 'pulse-glow 2s infinite'
+          }}>↓ ابحث عن سهم وأضفه أدناه</div>
+        </div>
+      )}
 
       {/* 🔮 لوحة ذكاء المحفظة والحرية المالية (AI advisor & Lifestyle Roadmap) */}
       {items.length > 0 && (
