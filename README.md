@@ -1,73 +1,61 @@
-# React + TypeScript + Vite
+# مرصد الأسهم الإماراتية
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+تطبيق Next.js عربي باتجاه RTL لمتابعة الأسهم الإماراتية المحددة في سوق دبي المالي وسوق أبوظبي للأوراق المالية.
 
-Currently, two official plugins are available:
+## التشغيل
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```powershell
+npm run dev -- --hostname 127.0.0.1 --port 3000
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+ثم افتح:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```text
+http://127.0.0.1:3000
 ```
+
+## الصفحات
+
+- `/` لوحة المتابعة اليومية.
+- `/stocks` جدول جميع الأسهم مع الفرز والفلترة.
+- `/stocks/[symbol]` صفحة تفصيلية لكل سهم.
+- `/dividends` صفحة التوزيعات.
+- `/analysts` صفحة آراء المحللين.
+- `/outlook` الاتجاه المتوقع خلال ثلاثة أشهر.
+- `/compare` المقارنة بين الأسهم.
+- `/api/stocks` طبقة بيانات JSON.
+
+## البيانات
+
+يعتمد التطبيق حاليًا على لقطة البيانات المحلية الموجودة في المجلد الأب:
+
+```text
+uae_dividend_watch_data_2026-05-27.json
+```
+
+الأسعار والتداول والتوزيعات والإفصاحات مأخوذة من هذه اللقطة مع حفظ المصدر ودرجة الثقة. الحقول غير المتوفرة تظهر بوضوح بصيغة:
+
+```text
+غير متوفر من المصدر الرسمي
+```
+
+الرسوم التاريخية للسعر والتوزيعات تستخدم بيانات تجريبية منفصلة ومعلّمة داخل الواجهة بعبارة:
+
+```text
+بيانات تجريبية لغرض التطوير وليست بيانات سوق فعلية
+```
+
+## الإعدادات
+
+يمكن تعديل قائمة الأسهم أو إضافة سهم جديد من:
+
+```text
+src/config/stocks.config.ts
+```
+
+طبقات المشروع الأساسية:
+
+- `src/lib/data` جلب وتحويل البيانات.
+- `src/lib/analysis` محرك التحليل المالي والاتجاه المتوقع.
+- `src/lib/alerts` محرك التنبيهات.
+- `src/components` الواجهة والجداول والرسوم.
