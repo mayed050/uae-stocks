@@ -128,6 +128,14 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
             </div>
             {item.div.note && <div className="modal-tag">ℹ️ {item.div.note}</div>}
           </section>
+          <section className="modal-card wide" style={{ padding: '12px', minHeight: '380px' }}>
+            <h3 style={{ margin: '0 0 12px 0', fontSize: '15px' }}>📈 المخطط البياني الفني التفاعلي (TradingView)</h3>
+            <iframe
+              src={`https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${item.ex === 'ADX' ? 'ADX' : 'DFM'}:${item.sym === 'EAND' ? 'EAND' : item.sym}&interval=D&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=f1f3f6&theme=${document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'}&style=1&timezone=Exchange&locale=ar`}
+              style={{ width: '100%', height: '340px', border: 'none', borderRadius: '12px', background: 'var(--panel-solid)', display: 'block' }}
+              title={`مخطط أسعار ${item.name}`}
+            />
+          </section>
         </div>
 
         <div className="modal-foot">

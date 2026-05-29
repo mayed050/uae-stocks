@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import type { Stock } from '../data'
 import { useStocks } from '../store'
 import { parseISO } from '../lib'
-import { MONTHS_AR } from '../format'
+import { MONTHS_AR, parseYield } from '../format'
 import Avatar from '../components/Avatar'
 
 const NA = 'يلزم التحقق'
@@ -15,6 +15,10 @@ interface Ev { s: Stock; kind: 'ex' | 'pay'; date: Date; raw: string }
 export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA } = useStocks()
   const [year] = useState(2026)
+  
+  // حاسبة الحرية المالية
+  const [targetMonthly, setTargetMonthly] = useState<number>(5000)
+  const [customAvgYield, setCustomAvgYield] = useState<number>(6.5)
 
   const byMonth = useMemo(() => {
     const months: Ev[][] = Array.from({ length: 12 }, () => [])
@@ -29,11 +33,58 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
     return months
   }, [DATA, year])
 
+  const calc = useMemo(() => {
+    const annualTarget = targetMonthly * 12
+    const totalCapital = annualTarget / (customAvgYield / 100)
+    
+    // تصفية وترتيب الأسهم حسب العوائد الأعلى
+    const candidates = DATA.filter(s => {
+      const y = parseYield(s.div.yld)
+      return y !== null && s.price !== null
+    }).map(s => ({
+      s,
+      yld: parseYield(s.div.yld)!
+    })).sort((a, b) => b.yld - a.yld)
+
+    // انتقاء 5 شركات متوازنة وقطاعات متنوعة
+    const selected: { stock: Stock; yld: number; allocation: number; sharesNeeded: number; projectedAnnual: number }[] = []
+    const sectors = new Set<string>()
+    for (const c of candidates) {
+      if (selected.length >= 5) break
+      if (!sectors.has(c.s.sector)) {
+        sectors.add(c.s.sector)
+        selected.push({ stock: c.s, yld: c.yld, allocation: 0, sharesNeeded: 0, projectedAnnual: 0 })
+      }
+    }
+    if (selected.length < 5) {
+      for (const c of candidates) {
+        if (selected.length >= 5) break
+        if (!selected.some(x => x.stock.sym === c.s.sym)) {
+          selected.push({ stock: c.s, yld: c.yld, allocation: 0, sharesNeeded: 0, projectedAnnual: 0 })
+        }
+      }
+    }
+
+    const count = selected.length || 1
+    const allocPerStock = totalCapital / count
+    selected.forEach(x => {
+      x.allocation = allocPerStock
+      x.sharesNeeded = Math.round(allocPerStock / (x.stock.price ?? 1))
+      x.projectedAnnual = allocPerStock * (x.yld / 100)
+    })
+
+    return {
+      totalCapital,
+      annualTarget,
+      selected
+    }
+  }, [DATA, targetMonthly, customAvgYield])
+
   return (
     <div className="view">
       <div className="page-head">
-        <h1>تقويم التوزيعات</h1>
-        <p>تواريخ الاستبعاد والدفع عبر شهور {year} — اضغط أي بطاقة للتفاصيل</p>
+        <h1>تقويم وتخطيط التوزيعات</h1>
+        <p>مواعيد الاستحقاق لعام {year} وأدوات التخطيط المالي الذكية للتوزيعات النقدية</p>
       </div>
 
       <div className="cal-legend">
@@ -59,6 +110,91 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
             )}
           </div>
         ))}
+      </div>
+
+      {/* حاسبة الحرية المالية التفاعلية */}
+      <h2 className="sec"><span className="dot" style={{ background: 'var(--brand)' }} /> 🧮 حاسبة الحرية المالية من التوزيعات النقدية (العوائد)</h2>
+      <div className="panel" style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '22px', border: '1px solid var(--line)', background: 'var(--panel)', marginBottom: '30px', borderRadius: '18px' }}>
+        <p style={{ fontSize: '13.5px', color: 'var(--muted)', margin: 0, marginTop: '-4px' }}>
+          أدخل هدفك الشهري ومتوسط العائد المتوقع، وسيقوم النظام بتحديد رأس المال المطلوب واقتراح محفظة ذكية متنوعة ومباشرة لتبدأ بها فوراً!
+        </p>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+          <div style={{ flex: '1 1 200px' }}>
+            <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '800', marginBottom: '8px', color: 'var(--muted)' }}>💵 الدخل الشهري المستهدف (د.إ):</label>
+            <input 
+              type="number" 
+              value={targetMonthly}
+              onChange={(e) => setTargetMonthly(Math.max(100, parseInt(e.target.value) || 0))}
+              style={{ width: '100%', padding: '10px 14px', background: 'var(--chip)', color: 'var(--txt)', border: '1px solid var(--line)', borderRadius: '10px', fontSize: '16px', fontWeight: 700, outline: 'none' }}
+            />
+          </div>
+          <div style={{ flex: '1 1 200px' }}>
+            <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '800', marginBottom: '8px', color: 'var(--muted)' }}>📈 متوسط العائد المستهدف للفائدة (%):</label>
+            <input 
+              type="number" 
+              step="0.1"
+              value={customAvgYield}
+              onChange={(e) => setCustomAvgYield(Math.max(1, parseFloat(e.target.value) || 0))}
+              style={{ width: '100%', padding: '10px 14px', background: 'var(--chip)', color: 'var(--txt)', border: '1px solid var(--line)', borderRadius: '10px', fontSize: '16px', fontWeight: 700, outline: 'none' }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginTop: '10px' }}>
+          <div style={{ background: 'rgba(33, 201, 139, 0.05)', border: '1px dashed var(--good)', padding: '16px', borderRadius: '14px' }}>
+            <div style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 600 }}>إجمالي رأس المال المطلوب تقريباً</div>
+            <div style={{ fontSize: '26px', fontWeight: 800, color: 'var(--good)', marginTop: '4px' }}>
+              {Math.round(calc.totalCapital).toLocaleString('en-US')} د.إ
+            </div>
+            <div style={{ fontSize: '11px', color: 'var(--muted2)', marginTop: '2px' }}>بناءً على عائد مرجح بنسبة {customAvgYield}% سنوياً</div>
+          </div>
+          <div style={{ background: 'rgba(58, 160, 255, 0.05)', border: '1px dashed var(--brand)', padding: '16px', borderRadius: '14px' }}>
+            <div style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 600 }}>الهدف المالي السنوي الإجمالي</div>
+            <div style={{ fontSize: '26px', fontWeight: 800, color: 'var(--brand)', marginTop: '4px' }}>
+              {calc.annualTarget.toLocaleString('en-US')} د.إ
+            </div>
+            <div style={{ fontSize: '11px', color: 'var(--muted2)', marginTop: '2px' }}>يعادل تماماً {targetMonthly.toLocaleString('en-US')} د.إ شهرياً</div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: '12px' }}>
+          <h4 style={{ margin: '0 0 10px 0', fontSize: '13.5px', color: 'var(--txt)' }}>💼 سلة الاستثمار المقترحة للتنويع الفعال (توزيع تلقائي للميزانية):</h4>
+          <div className="tablewrap">
+            <table style={{ minWidth: '100%', fontSize: '12px' }}>
+              <thead>
+                <tr>
+                  <th>اسم السهم</th>
+                  <th>السعر الحالي</th>
+                  <th>عائد التوزيعات</th>
+                  <th>الحصة المقترحة</th>
+                  <th>عدد الأسهم للشراء</th>
+                  <th>التدفق السنوي المتوقع</th>
+                </tr>
+              </thead>
+              <tbody>
+                {calc.selected.map((x) => (
+                  <tr key={x.stock.sym} onClick={() => onOpen(x.stock)} className="rowlink" style={{ cursor: 'pointer' }}>
+                    <td>
+                      <span className="cellname">
+                        <Avatar sym={x.stock.sym} size={24} />
+                        <span>
+                          <span style={{ fontWeight: 700, fontSize: '12px' }}>{x.stock.name.split('—')[0]}</span>
+                          <span style={{ fontSize: '9px', color: 'var(--muted)', marginInlineStart: '4px' }}>({x.stock.sym})</span>
+                        </span>
+                      </span>
+                    </td>
+                    <td style={{ fontWeight: 600 }}>{x.stock.price?.toFixed(2)} د.إ</td>
+                    <td style={{ color: 'var(--good)', fontWeight: 700 }}>{x.stock.div.yld}</td>
+                    <td>{Math.round(x.allocation).toLocaleString('en-US')} د.إ</td>
+                    <td style={{ fontWeight: 700, color: 'var(--txt)' }}>{x.sharesNeeded.toLocaleString('en-US')} سهم</td>
+                    <td style={{ fontWeight: 700, color: 'var(--good)' }}>{Math.round(x.projectedAnnual).toLocaleString('en-US')} د.إ</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <h2 className="sec"><span className="dot" /> جدول التوزيعات الكامل</h2>

@@ -272,11 +272,68 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
         .drip-slider::-webkit-slider-thumb:hover {
           transform: scale(1.2);
         }
+        
+        @media print {
+          .sidebar, .theme-toggle-floating, .p-search-container, select, .del-btn, .controls, .print-btn, .disclaimer {
+            display: none !important;
+          }
+          body {
+            background: #fff !important;
+            color: #000 !important;
+          }
+          .main {
+            padding: 0 !important;
+            max-width: 100% !important;
+          }
+          .panel, .stat, .tablewrap {
+            border: 1px solid #ccc !important;
+            background: #fff !important;
+            box-shadow: none !important;
+            color: #000 !important;
+          }
+          .n, .l, .stat-sub, .panel-h, th, td {
+            color: #000 !important;
+          }
+          input.p-input {
+            border: none !important;
+            background: transparent !important;
+            color: #000 !important;
+            font-weight: 700 !important;
+            padding: 0 !important;
+            width: auto !important;
+            text-align: right !important;
+          }
+        }
       `}</style>
 
-      <div className="page-head">
-        <h1>حاسبة محفظة التوزيعات الذكية</h1>
-        <p>خطط وقم بمحاكاة أرباحك السنوية والشهرية بناءً على مبالغ استثمارك في الأسهم الإماراتية</p>
+      <div className="page-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', borderBottom: '1px solid var(--line)', paddingBottom: '14px', marginBottom: '22px' }}>
+        <div>
+          <h1 style={{ margin: 0 }}>حاسبة محفظة التوزيعات الذكية</h1>
+          <p style={{ margin: '4px 0 0', color: 'var(--muted)' }}>خطط وقم بمحاكاة أرباحك السنوية والشهرية بناءً على مبالغ استثمارك في الأسهم الإماراتية</p>
+        </div>
+        <button
+          onClick={() => window.print()}
+          className="print-btn"
+          style={{
+            background: 'linear-gradient(120deg, var(--brand), var(--brand2))',
+            color: '#fff',
+            border: 0,
+            borderRadius: '10px',
+            padding: '9px 16px',
+            fontSize: '13px',
+            fontWeight: 700,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            boxShadow: 'var(--shadow)',
+            transition: 'transform 0.1s ease'
+          }}
+          title="حفظ طباعة التقرير الاستثماري للمحفظة كملف PDF"
+        >
+          <span>🖨️ تصدير التقرير (PDF)</span>
+        </button>
       </div>
 
       {/* بطاقات الإحصائيات الكلية للمحفظة */}

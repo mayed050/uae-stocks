@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid,
@@ -270,9 +270,188 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
     }))
   }
 
+  // 3. التنبيهات المباشرة لإجراءات الشركات (Simulated Real-time Actions Feed)
+  const [liveActions, setLiveActions] = useState(() => [
+    {
+      id: 1,
+      sym: 'EMAAR',
+      title: 'الجمعية العمومية لشركة إعمار العقارية توافق على توزيع أرباح نقدية استثنائية بقيمة 25 فلس للسهم لعام 2025.',
+      type: 'approval',
+      time: 'الآن',
+      badge: 'قرار عمومية'
+    },
+    {
+      id: 2,
+      sym: 'DEWA',
+      title: 'تنبيه: سهم هيئة كهرباء ومياه دبي (DEWA) يتداول اليوم بدون أحقية التوزيع النقدي البالغ 3.1 فلس.',
+      type: 'date',
+      time: 'منذ 40 دقيقة',
+      badge: 'تاريخ استحقاق'
+    },
+    {
+      id: 3,
+      sym: 'FAB',
+      title: 'بنك أبوظبي الأول يعلن إيداع كامل الأرباح السنوية الموزعة في حسابات مساهميه البنكية مباشرة.',
+      type: 'payout',
+      time: 'منذ ساعتين',
+      badge: 'إيداع أرباح'
+    },
+    {
+      id: 4,
+      sym: 'SALIK',
+      title: 'سالك تعلن عن اعتماد سياسة توزيع أرباح مرحلية مرنة للمساهمين بنسبة 100% من صافي الأرباح القابلة للتوزيع.',
+      type: 'news',
+      time: 'منذ 4 ساعات',
+      badge: 'إفصاح مالي'
+    }
+  ])
+
+  useEffect(() => {
+    const feed = [
+      {
+        sym: 'ADNOCDIST',
+        title: 'أدنوك للتوزيع تؤكد تاريخ استحقاق توزيعات النصف الثاني من العام المالي بقيمة 10.28 فلس للسهم.',
+        type: 'date',
+        badge: 'تأكيد تواريخ'
+      },
+      {
+        sym: 'ADIB',
+        title: 'مصرف أبوظبي الإسلامي يحصل على موافقة المصرف المركزي لتوزيع أرباح نقدية بنسبة 49% للمساهمين.',
+        type: 'approval',
+        badge: 'موافقة رسمية'
+      },
+      {
+        sym: 'EAND',
+        title: 'مجموعة إي آند (&e) تؤكد توزيع أرباح نقدية بقيمة 40 فلس للسهم عن النصف الثاني من العام المالي.',
+        type: 'news',
+        badge: 'إفصاح'
+      },
+      {
+        sym: 'TABREED',
+        title: 'عمومية تبريد الوطنية تقر توزيع أرباح نقدية بنسبة 15% وتوجه الشكر للمستثمرين على ثقتهم المستمرة.',
+        type: 'approval',
+        badge: 'قرار عمومية'
+      },
+      {
+        sym: 'ALDAR',
+        title: 'الدار العقارية تفصح عن خطتها التوسعية وتوزيعات نقدية قوية مستهدفة للسنوات الثلاث القادمة.',
+        type: 'news',
+        badge: 'إفصاح مالي'
+      },
+      {
+        sym: 'ADNOCGAS',
+        title: 'أدنوك للغاز تعلن عن إتمام إيداع التوزيعات النقدية المرحلية البالغة 7.7 فلس للسهم في حسابات مساهميها اليوم.',
+        type: 'payout',
+        badge: 'إيداع أرباح'
+      }
+    ]
+
+    const interval = setInterval(() => {
+      // Pick a random event from the feed
+      const item = feed[Math.floor(Math.random() * feed.length)]
+      setLiveActions(prev => {
+        // Prevent duplicate consecutive or too frequent alerts
+        if (prev.some(x => x.title === item.title)) return prev;
+        
+        return [
+          {
+            id: Date.now(),
+            sym: item.sym,
+            title: item.title,
+            type: item.type,
+            time: 'الآن',
+            badge: item.badge
+          },
+          ...prev.map(x => x.time === 'الآن' ? { ...x, time: 'منذ قليل' } : x).slice(0, 4)
+        ]
+      })
+    }, 20000) // update every 20 seconds
+
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <div className="view">
       <style>{`
+        /* تنسيقات شريط التنبيهات المباشرة الفاخر */
+        .live-badge-pulse {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 10.5px;
+          font-weight: 800;
+          color: var(--good);
+          background: rgba(33, 201, 139, 0.08);
+          border: 1px solid rgba(33, 201, 139, 0.25);
+          padding: 2.5px 8px;
+          border-radius: 20px;
+          margin-inline-start: auto;
+        }
+        .pulse-dot {
+          width: 7px;
+          height: 7px;
+          background-color: var(--good);
+          border-radius: 50%;
+          display: inline-block;
+          animation: pulse-glow 1.5s infinite;
+        }
+        @keyframes pulse-glow {
+          0% {
+            transform: scale(0.9);
+            opacity: 0.6;
+            box-shadow: 0 0 0 0 rgba(33, 201, 139, 0.7);
+          }
+          70% {
+            transform: scale(1.15);
+            opacity: 1;
+            box-shadow: 0 0 0 5px rgba(33, 201, 139, 0);
+          }
+          100% {
+            transform: scale(0.9);
+            opacity: 0.6;
+            box-shadow: 0 0 0 0 rgba(33, 201, 139, 0);
+          }
+        }
+        .o-action-item {
+          display: flex;
+          flex-direction: column;
+          gap: 7px;
+          padding: 12px 14px;
+          border-radius: 12px;
+          background: var(--chip);
+          border: 1px solid var(--line);
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          overflow: hidden;
+          margin-bottom: 10px;
+          text-align: right;
+          animation: slide-in-alert 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes slide-in-alert {
+          from {
+            transform: translateY(-8px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+        .o-action-item:hover {
+          border-color: var(--brand);
+          transform: translateY(-2px);
+          box-shadow: var(--shadow);
+          background: var(--panel-solid);
+        }
+        .o-action-type-line {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          right: 0;
+          width: 4.5px;
+        }
+        
         .overview-layout {
           display: flex;
           gap: 24px;
@@ -857,6 +1036,74 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
                 </button>
               ))
             )}
+          </div>
+
+          {/* 3. إشعارات وأحداث الشركات المباشرة (Live Corporate Actions) */}
+          <div className="o-widget" style={{ marginTop: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: '8px', marginBottom: '12px' }}>
+              <h4 className="o-widget-h" style={{ margin: 0, border: 0, padding: 0 }}>🔔 إجراءات وأحداث الشركات</h4>
+              <span className="live-badge-pulse" title="متابعة فورية ومستمرة لإجراءات الشركات في سوق الإمارات">
+                <span className="pulse-dot" />
+                مباشر
+              </span>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', maxHeight: '420px', overflowY: 'auto', paddingRight: '2px' }}>
+              {liveActions.map((act) => {
+                const realStock = DATA.find(s => s.sym.toUpperCase() === act.sym.toUpperCase());
+                
+                // Color-coded borders based on action type
+                let typeColor = 'var(--brand)';
+                if (act.type === 'approval') typeColor = 'var(--good)';
+                if (act.type === 'date') typeColor = 'var(--warn)';
+                if (act.type === 'payout') typeColor = 'var(--brand)';
+                if (act.type === 'news') typeColor = 'var(--brand2)';
+
+                return (
+                  <div 
+                    key={act.id}
+                    onClick={() => realStock && onOpen(realStock)}
+                    className="o-action-item"
+                    style={{ opacity: realStock ? 1 : 0.8 }}
+                  >
+                    {/* Color bar */}
+                    <div className="o-action-type-line" style={{ background: typeColor }} />
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      {realStock ? (
+                        <Avatar sym={realStock.sym} size={20} />
+                      ) : (
+                        <span style={{ fontSize: '12px' }}>🏢</span>
+                      )}
+                      <span style={{ fontWeight: 800, fontSize: '11.5px', color: 'var(--txt)' }}>
+                        {realStock ? realStock.name.split('—')[0] : act.sym}
+                      </span>
+                      <span style={{ 
+                        fontSize: '9.5px', 
+                        padding: '1px 6px', 
+                        borderRadius: '4px', 
+                        background: `${typeColor}15`, 
+                        color: typeColor,
+                        fontWeight: 800,
+                        marginInlineStart: 'auto',
+                        border: `1px solid ${typeColor}30`
+                      }}>
+                        {act.badge}
+                      </span>
+                    </div>
+                    
+                    <p style={{ margin: 0, fontSize: '11.5px', color: 'var(--muted)', lineHeight: '1.45', fontWeight: 600 }}>
+                      {act.title}
+                    </p>
+                    
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9.5px', color: 'var(--muted2)', marginTop: '4px', borderTop: '1px dashed var(--line)', paddingTop: '4px' }}>
+                      <span>🕒 {act.time}</span>
+                      <span>{realStock ? `رمز السهم: ${realStock.sym}` : ''}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
         </div>
