@@ -1,38 +1,15 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
+import { useState, useEffect } from 'react'
 import type { Stock } from './data'
 import Sidebar from './components/Sidebar'
 import type { View } from './components/Sidebar'
 import StockDetail from './components/StockDetail'
 
-// تطبيق التحميل الكسول (Lazy Loading) للمكونات لتعزيز الأداء الأولي للموقع
-const Overview = lazy(() => import('./views/Overview'))
-const Screener = lazy(() => import('./views/Screener'))
-const Dividends = lazy(() => import('./views/Dividends'))
-const Compare = lazy(() => import('./views/Compare'))
-const Portfolio = lazy(() => import('./views/Portfolio'))
-
-/** هيكل تحميل ذو مظهر زجاجي ونبض لطيف لتجربة انتقال ناعمة وجذابة */
-function SkeletonLoader() {
-  return (
-    <div className="view skeleton-pulse" style={{ padding: '8px 0' }}>
-      <div className="page-head" style={{ marginBottom: '24px' }}>
-        <div style={{ height: '34px', width: '240px', background: 'var(--line)', borderRadius: '10px', marginBottom: '10px' }} />
-        <div style={{ height: '18px', width: '420px', background: 'var(--line)', borderRadius: '8px' }} />
-      </div>
-      
-      <div className="stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '14px', margin: '22px 0' }}>
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="stat" style={{ height: '98px', background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: '18px' }} />
-        ))}
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', margin: '24px 0' }}>
-        <div className="panel" style={{ height: '270px', background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: '18px' }} />
-        <div className="panel" style={{ height: '270px', background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: '18px' }} />
-      </div>
-    </div>
-  )
-}
+// الاستيراد المباشر (Static Imports) لضمان موثوقية كاملة بنسبة 100% وتفادي أخطاء تحميل الحزم الديناميكية على منصة Vercel
+import Overview from './views/Overview'
+import Screener from './views/Screener'
+import Dividends from './views/Dividends'
+import Compare from './views/Compare'
+import Portfolio from './views/Portfolio'
 
 export default function App() {
   const [view, setView] = useState<View>('overview')
@@ -65,13 +42,11 @@ export default function App() {
           <b>تنويه:</b> منصّة معلوماتية للمتابعة فقط — لا تتضمّن أي توصية بالشراء أو البيع. البنود
           المعلّمة بـ«يلزم التحقق» تحتاج تأكيدًا من المصادر الرسمية (DFM / ADX / إفصاحات الشركات).
         </div>
-        <Suspense fallback={<SkeletonLoader />}>
-          {view === 'overview' && <Overview onOpen={setDetail} />}
-          {view === 'screener' && <Screener onOpen={setDetail} />}
-          {view === 'dividends' && <Dividends onOpen={setDetail} />}
-          {view === 'compare' && <Compare />}
-          {view === 'portfolio' && <Portfolio onOpen={setDetail} />}
-        </Suspense>
+        {view === 'overview' && <Overview onOpen={setDetail} />}
+        {view === 'screener' && <Screener onOpen={setDetail} />}
+        {view === 'dividends' && <Dividends onOpen={setDetail} />}
+        {view === 'compare' && <Compare />}
+        {view === 'portfolio' && <Portfolio onOpen={setDetail} />}
       </main>
       {detail && <StockDetail item={detail} onClose={() => setDetail(null)} />}
     </div>
