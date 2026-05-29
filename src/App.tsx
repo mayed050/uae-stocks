@@ -56,7 +56,10 @@ export default function App() {
 
   return (
     <div className="app">
-      <Sidebar view={view} setView={setView} dark={dark} toggleTheme={toggleTheme} />
+      <Sidebar view={view} setView={setView} />
+      <button className="theme-toggle-floating" onClick={toggleTheme} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
+        {dark ? '☀️' : '🌙'}
+      </button>
       <main className="main">
         <div className="disclaimer">
           <b>تنويه:</b> منصّة معلوماتية للمتابعة فقط — لا تتضمّن أي توصية بالشراء أو البيع. البنود

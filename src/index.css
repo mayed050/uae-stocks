@@ -131,10 +131,40 @@ html[data-theme="light"] .sidebar{background:linear-gradient(180deg,#ffffff,#f1f
   font-weight:900; font-size:15px; color:#fff; background:linear-gradient(120deg,var(--brand),var(--brand2))}
 .brand-title{font-weight:800; font-size:15px}
 .brand-sub{color:var(--muted); font-size:12px}
-.theme-toggle-btn{width:36px; height:36px; border-radius:50%; border:1px solid var(--line);
-  background:var(--chip); color:var(--txt); display:grid; place-items:center; cursor:pointer;
-  transition:all .25s cubic-bezier(0.4, 0, 0.2, 1); font-size:15px; flex-shrink:0}
-.theme-toggle-btn:hover{background:var(--panel-solid); border-color:var(--brand); transform:scale(1.08) rotate(15deg); box-shadow:var(--shadow)}
+.theme-toggle-floating{
+  position: fixed;
+  top: 22px;
+  inset-inline-end: 22px;
+  z-index: 1000;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  backdrop-filter: blur(8px);
+  color: var(--txt);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 17px;
+  box-shadow: var(--shadow);
+}
+.theme-toggle-floating:hover{
+  background: var(--panel-solid);
+  border-color: var(--brand);
+  transform: scale(1.1) rotate(15deg);
+}
+@media (max-width: 900px) {
+  .theme-toggle-floating {
+    position: absolute;
+    top: 14px;
+    inset-inline-end: 14px;
+    width: 36px;
+    height: 36px;
+    font-size: 15px;
+  }
+}
 .nav{display:flex; flex-direction:column; gap:4px; margin-top:6px}
 .navitem{display:flex; align-items:center; gap:11px; width:100%; text-align:start; cursor:pointer;
   background:transparent; border:1px solid transparent; color:var(--muted); font-family:inherit;

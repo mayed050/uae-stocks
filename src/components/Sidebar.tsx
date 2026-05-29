@@ -11,13 +11,9 @@ const NAV: { v: View; label: string; icon: string }[] = [
 export default function Sidebar({
   view,
   setView,
-  dark,
-  toggleTheme,
 }: {
   view: View
   setView: (v: View) => void
-  dark: boolean
-  toggleTheme: () => void
 }) {
   return (
     <aside className="sidebar">
@@ -27,9 +23,6 @@ export default function Sidebar({
           <div className="brand-title">منصة الأسهم الإماراتية</div>
           <div className="brand-sub">دبي · أبوظبي</div>
         </div>
-        <button className="theme-toggle-btn" onClick={toggleTheme} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
-          {dark ? '☀️' : '🌙'}
-        </button>
       </div>
 
       <nav className="nav">
