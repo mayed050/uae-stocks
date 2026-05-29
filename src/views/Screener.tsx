@@ -287,15 +287,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
     localStorage.setItem('screener_display_mode', mode)
   }
 
-  // التحكم بالقوائم الموسعة للقطاعات في الفلتر الجانبي
-  const [expandedSectors, setExpandedSectors] = useState<Record<string, boolean>>({ 'البنوك': true })
 
-  const toggleSector = (title: string) => {
-    setExpandedSectors(prev => ({
-      ...prev,
-      [title]: !prev[title]
-    }))
-  }
 
   const rows = useMemo(() => {
     const term = q.trim().toLowerCase()
@@ -345,33 +337,6 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
 
     return groups
   }, [rows])
-
-  const sidebarSectors = useMemo(() => {
-    const list: { title: string; stocks: Stock[] }[] = []
-    SECTOR_TITLES.forEach(title => {
-      const allowedSectors = mapDFMSectorToDb(title)
-      const sectorStocks = DATA.filter(s => {
-        if (ex !== 'all' && s.ex !== ex) return false
-        if (cat !== 'all' && s.cat !== cat) return false
-        return allowedSectors.includes(s.sector)
-      })
-      if (sectorStocks.length > 0) {
-        list.push({ title, stocks: sectorStocks })
-      }
-    })
-
-    const matchedSymbols = new Set(list.flatMap(g => g.stocks.map(s => s.sym)))
-    const unmatchedStocks = DATA.filter(s => {
-      if (ex !== 'all' && s.ex !== ex) return false
-      if (cat !== 'all' && s.cat !== cat) return false
-      return !matchedSymbols.has(s.sym)
-    })
-    if (unmatchedStocks.length > 0) {
-      list.push({ title: 'قطاعات أخرى متنوعة', stocks: unmatchedStocks })
-    }
-
-    return list
-  }, [DATA, ex, cat])
 
   function toggleSort(k: SortKey) {
     if (sort === k) setDir((d) => (d === 1 ? -1 : 1))
@@ -620,145 +585,6 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
           )}
           
           {rows.length === 0 && <div className="empty">لا توجد نتائج مطابقة.</div>}
-        </div>
-
-        {/* العمود الأيسر الجانبي (فلتر قطاعات الشركات 30%) */}
-        <div className="overview-sidebar">
-          
-          <div className="o-widget">
-            <h4 className="o-widget-h" style={{ margin: 0, border: 0, padding: 0, paddingBottom: '8px', marginBottom: '12px', borderBottom: '1px solid var(--line)' }}>
-              🗂️ تصفية قطاعات الشركات ({ex === 'all' ? 'دبي وأبوظبي' : ex === 'DFM' ? 'دبي' : 'أبوظبي'})
-            </h4>
-            <p style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '-4px', marginBottom: '12px' }}>
-              اضغط على اسم القطاع لتصفيته، وافتح القائمة لعرض وتفقد تفاصيل أي سهم مباشرة.
-            </p>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '520px', overflowY: 'auto', paddingRight: '2px' }}>
-              <button 
-                onClick={() => setSector('all')}
-                style={{
-                  display: 'flex',
-                  width: '100%',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '9px 12px',
-                  background: sector === 'all' ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'var(--chip)',
-                  border: '1px solid var(--line)',
-                  borderRadius: '10px',
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                  color: sector === 'all' ? '#fff' : 'var(--txt)',
-                  fontWeight: 700,
-                  fontSize: '12px',
-                  transition: 'all 0.12s ease'
-                }}
-              >
-                📁 عرض كل القطاعات ({DATA.filter(s => {
-                  if (ex !== 'all' && s.ex !== ex) return false
-                  if (cat !== 'all' && s.cat !== cat) return false
-                  return true
-                }).length} شركة)
-              </button>
-
-              {sidebarSectors.map((sec) => {
-                const isExpanded = !!expandedSectors[sec.title]
-                const isActiveFilter = sector === sec.title
-                return (
-                  <div 
-                    key={sec.title} 
-                    style={{ 
-                      border: isActiveFilter ? '1px solid var(--brand)' : '1px solid var(--line)', 
-                      borderRadius: '10px', 
-                      background: isActiveFilter ? 'rgba(58, 160, 255, 0.03)' : 'rgba(255,255,255,0.01)', 
-                      overflow: 'hidden',
-                      transition: 'all 0.12s ease'
-                    }}
-                  >
-                    <div style={{ display: 'flex', width: '100%' }}>
-                      <button 
-                        onClick={() => setSector(isActiveFilter ? 'all' : sec.title)}
-                        style={{
-                          flex: 1,
-                          display: 'flex',
-                          justifyContent: 'right',
-                          alignItems: 'center',
-                          padding: '10px 12px',
-                          background: isActiveFilter ? 'rgba(58, 160, 255, 0.1)' : 'transparent',
-                          border: 0,
-                          cursor: 'pointer',
-                          fontFamily: 'inherit',
-                          color: isActiveFilter ? 'var(--brand)' : 'var(--txt)',
-                          fontWeight: 800,
-                          fontSize: '12px',
-                          textAlign: 'right'
-                        }}
-                      >
-                        <span style={{ color: isActiveFilter ? 'var(--brand)' : 'var(--brand2)', marginInlineEnd: '8px' }}>🔸</span>
-                        {sec.title}
-                        <span style={{ fontSize: '10px', color: 'var(--muted)', marginInlineStart: '6px', fontWeight: 500 }}>({sec.stocks.length})</span>
-                      </button>
-                      <button 
-                        onClick={() => toggleSector(sec.title)}
-                        style={{
-                          padding: '10px 12px',
-                          background: 'transparent',
-                          border: 0,
-                          borderInlineStart: '1px solid var(--line)',
-                          cursor: 'pointer',
-                          color: 'var(--muted)',
-                          fontSize: '11px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}
-                        title="عرض الشركات"
-                      >
-                        {isExpanded ? '▲' : '▼'}
-                      </button>
-                    </div>
-                    
-                    {isExpanded && (
-                      <div style={{ padding: '4px 8px', background: 'rgba(0,0,0,0.08)' }}>
-                        <table style={{ minWidth: '100%', background: 'transparent', fontSize: '11px', borderCollapse: 'collapse' }}>
-                          <tbody>
-                            {sec.stocks.map((s) => {
-                              const d = getDailyData(s)
-                              return (
-                                <tr 
-                                  key={s.sym} 
-                                  onClick={() => onOpen(s)}
-                                  className="rowlink"
-                                  style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.02)', cursor: 'pointer' }}
-                                >
-                                  <td style={{ padding: '5px 4px', textAlign: 'right', fontWeight: 700, color: 'var(--txt)' }}>
-                                    {s.name.split('—')[0]}
-                                  </td>
-                                  <td style={{ padding: '5px 4px', textAlign: 'center', color: 'var(--muted)' }}>
-                                    {s.price !== null ? s.price.toFixed(2) : '—'}
-                                  </td>
-                                  <td style={{ 
-                                    padding: '5px 4px', 
-                                    textAlign: 'left', 
-                                    fontWeight: 800,
-                                    direction: 'ltr',
-                                    color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)',
-                                    fontSize: '10.5px'
-                                  }}>
-                                    {d.pct}
-                                  </td>
-                                </tr>
-                              )
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
