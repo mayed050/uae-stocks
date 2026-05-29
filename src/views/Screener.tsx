@@ -136,6 +136,107 @@ const SECTOR_MOVEMENTS = [
   }
 ]
 
+const ADX_MOVEMENTS = [
+  { name: 'بنك أبوظبي الأول', sym: 'FAB', price: '14.50', change: '-0.15', pct: '-1.02%', up: false },
+  { name: 'بنك أبوظبي التجاري', sym: 'ADCB', price: '8.92', change: '+0.02', pct: '+0.22%', up: true },
+  { name: 'مصرف أبوظبي الإسلامي', sym: 'ADIB', price: '11.50', change: '+0.10', pct: '+0.88%', up: true },
+  { name: 'الدار العقارية', sym: 'ALDAR', price: '7.80', change: '+0.05', pct: '+0.64%', up: true },
+  { name: 'أبوظبي الوطنية للطاقة', sym: 'TAQA', price: '3.25', change: '-0.01', pct: '-0.31%', up: false },
+  { name: 'أدنوك للغاز', sym: 'ADNOCGAS', price: '3.31', change: '+0.01', pct: '+0.30%', up: true },
+  { name: 'أدنوك للتوزيع', sym: 'ADNOCDIST', price: '3.88', change: '-0.02', pct: '-0.51%', up: false },
+  { name: 'أدنوك للحفر', sym: 'ADNOCDRILL', price: '4.80', change: '+0.03', pct: '+0.63%', up: true },
+  { name: 'برجيل القابضة', sym: 'BURJEEL', price: '2.50', change: '+0.00', pct: '+0.00%', flat: true },
+  { name: 'الشركة العالمية القابضة', sym: 'IHC', price: '414.00', change: '+1.50', pct: '+0.36%', up: true },
+]
+
+const SECTOR_TITLES = [
+  'البنوك',
+  'الاستثمار والخدمات المالية',
+  'الصناعة',
+  'العقارات',
+  'النقل والشحن',
+  'الاتصالات',
+  'الخدمات',
+  'السلع',
+  'الرعاية الصحية والتعليم',
+  'التأمين',
+  'الأغذية',
+  'الشركات الأجنبية'
+]
+
+function getDailyData(s: Stock) {
+  const symbol = s.sym.toUpperCase()
+  const price = s.price ?? 1.0
+  
+  // Deterministic seed from symbol string
+  let seed = 0
+  for (let i = 0; i < symbol.length; i++) {
+    seed += symbol.charCodeAt(i)
+  }
+  
+  // Pseudo-random numbers using seed
+  const rand = (max: number, min = 0) => {
+    const x = Math.sin(seed++) * 10000
+    return min + (x - Math.floor(x)) * (max - min)
+  }
+
+  let change = 0
+  let pct = '0.00%'
+  let isUp = false
+  let isFlat = true
+  
+  // Find in DFM
+  let found: any = null
+  for (const sec of SECTOR_MOVEMENTS) {
+    const f = sec.stocks.find(st => st.sym.toUpperCase() === symbol)
+    if (f) { found = f; break; }
+  }
+  
+  // Find in ADX
+  if (!found) {
+    found = ADX_MOVEMENTS.find(st => st.sym.toUpperCase() === symbol)
+  }
+
+  if (found) {
+    change = parseFloat(found.change)
+    pct = found.pct
+    isUp = parseFloat(found.change) > 0
+    isFlat = parseFloat(found.change) === 0
+  } else {
+    // Generate stable mock values
+    const changePct = rand(3.5, -3.5) // -3.5% to +3.5%
+    change = Math.round((price * (changePct / 100)) * 100) / 100
+    pct = `${change >= 0 ? '+' : ''}${changePct.toFixed(2)}%`
+    isUp = change > 0
+    isFlat = change === 0
+  }
+
+  const prevClose = price - change
+  const high = Math.max(price, prevClose) * (1 + rand(0.012, 0.001))
+  const low = Math.min(price, prevClose) * (1 - rand(0.012, 0.001))
+  const open = prevClose * (1 + rand(0.004, -0.004))
+
+  const mcapVal = parseAmount(s.mcap) ?? 5 // default 5 Billion
+  const volume = Math.round((mcapVal * 150000) * rand(2.2, 0.1))
+  const value = volume * price
+  const trades = Math.round(volume * rand(0.0006, 0.00015)) + 8
+
+  return {
+    change,
+    pct,
+    volume,
+    value,
+    trades,
+    prevClose,
+    open,
+    high,
+    low,
+    isUp,
+    isFlat,
+    isDown: !isUp && !isFlat
+  }
+}
+
 const mapDFMSectorToDb = (dfmTitle: string): string[] => {
   switch (dfmTitle) {
     case 'البنوك': return ['بنوك', 'خدمات مالية']
@@ -164,6 +265,17 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
   const [dir, setDir] = useState<1 | -1>(-1)
   const [sector, setSector] = useState<'all' | string>('all')
   
+  // حفظ وتغيير وضع العرض المفضل للمستثمر
+  const [displayMode, setDisplayMode] = useState<'list' | 'sectors'>(() => {
+    const saved = localStorage.getItem('screener_display_mode')
+    return (saved === 'list' || saved === 'sectors') ? saved : 'list'
+  })
+
+  const changeDisplayMode = (mode: 'list' | 'sectors') => {
+    setDisplayMode(mode)
+    localStorage.setItem('screener_display_mode', mode)
+  }
+
   // التحكم بالقوائم الموسعة للقطاعات في الفلتر الجانبي
   const [expandedSectors, setExpandedSectors] = useState<Record<string, boolean>>({ 'البنوك': true })
 
@@ -202,6 +314,26 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
       return ((av as number) - (bv as number)) * dir
     })
   }, [DATA, q, ex, cat, sector, sort, dir])
+
+  const sectorGroups = useMemo(() => {
+    const groups: { title: string; stocks: Stock[] }[] = []
+    
+    SECTOR_TITLES.forEach(title => {
+      const allowedSectors = mapDFMSectorToDb(title)
+      const sectorStocks = rows.filter(s => allowedSectors.includes(s.sector))
+      if (sectorStocks.length > 0) {
+        groups.push({ title, stocks: sectorStocks })
+      }
+    })
+
+    const matchedSymbols = new Set(groups.flatMap(g => g.stocks.map(s => s.sym)))
+    const unmatchedStocks = rows.filter(s => !matchedSymbols.has(s.sym))
+    if (unmatchedStocks.length > 0) {
+      groups.push({ title: 'قطاعات أخرى متنوعة', stocks: unmatchedStocks })
+    }
+
+    return groups
+  }, [rows])
 
   function toggleSort(k: SortKey) {
     if (sort === k) setDir((d) => (d === 1 ? -1 : 1))
@@ -279,65 +411,212 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                 إلغاء فلتر القطاع: {sector} ✕
               </button>
             )}
+            
+            {/* زر التبديل الفاخر لطريقة العرض */}
+            <div className="o-toggle-container" style={{ marginInlineStart: 'auto', display: 'inline-flex', gap: '6px', background: 'var(--chip)', padding: '4px', borderRadius: '10px', border: '1px solid var(--line)' }}>
+              <button 
+                className={'o-toggle-btn' + (displayMode === 'list' ? ' active' : '')} 
+                onClick={() => changeDisplayMode('list')}
+                style={{
+                  border: 0,
+                  background: displayMode === 'list' ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'transparent',
+                  color: displayMode === 'list' ? '#fff' : 'var(--muted)',
+                  fontSize: '12px',
+                  padding: '6px 12px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontWeight: 700,
+                  fontFamily: 'inherit',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                📋 جدول موحد
+              </button>
+              <button 
+                className={'o-toggle-btn' + (displayMode === 'sectors' ? ' active' : '')} 
+                onClick={() => changeDisplayMode('sectors')}
+                style={{
+                  border: 0,
+                  background: displayMode === 'sectors' ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'transparent',
+                  color: displayMode === 'sectors' ? '#fff' : 'var(--muted)',
+                  fontSize: '12px',
+                  padding: '6px 12px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontWeight: 700,
+                  fontFamily: 'inherit',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                🗂️ حسب القطاعات
+              </button>
+            </div>
           </div>
 
-          <div className="tablewrap">
-            <table className="screener">
-              <thead>
-                <tr>
-                  <th className="sortable" onClick={() => toggleSort('name')}>السهم{arrow('name')}</th>
-                  <th>السوق</th>
-                  <th className="sortable" onClick={() => toggleSort('price')}>السعر{arrow('price')}</th>
-                  <th className="sortable" onClick={() => toggleSort('pe')}>P/E{arrow('pe')}</th>
-                  <th>EPS</th>
-                  <th className="sortable" onClick={() => toggleSort('mcap')}>القيمة السوقية{arrow('mcap')}</th>
-                  <th>صافي الربح</th>
-                  <th className="sortable" onClick={() => toggleSort('yield')}>العائد{arrow('yield')}</th>
-                  <th>التصنيف</th>
-                  <th>المحفظة</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((s) => (
-                  <tr key={s.sym} onClick={() => onOpen(s)} className="rowlink">
-                    <td>
-                      <span className="cellname">
-                        <Avatar sym={s.sym} size={30} />
-                        <span>
-                          <span className="cn-name">{s.name}</span>
-                          <span className="cn-sym">{s.sym}</span>
-                        </span>
-                      </span>
-                    </td>
-                    <td><span className={'exch ex-' + s.ex}>{s.ex}</span></td>
-                    <td>{cell(s.price !== null ? s.price.toFixed(2) : null)}</td>
-                    <td>{cell(s.pe)}</td>
-                    <td>{cell(s.eps)}</td>
-                    <td>{cell(s.mcap)}</td>
-                    <td>{cell(s.net)}</td>
-                    <td>{cell(s.div.yld)}</td>
-                    <td><span className={'ribbon cat-' + s.cat}>{CAT_LABEL[s.cat]}</span></td>
-                    <td onClick={(e) => e.stopPropagation()}>
-                      <button 
-                        onClick={() => togglePortfolioStock(s.sym)}
-                        style={{
-                          background: 'transparent',
-                          border: 0,
-                          cursor: 'pointer',
-                          fontSize: '15px',
-                          padding: '4px 8px',
-                          transition: 'transform 0.12s ease'
-                        }}
-                        title={isInPortfolio(s.sym) ? 'إزالة من المحفظة 🗑️' : 'إضافة إلى المحفظة +'}
-                      >
-                        {isInPortfolio(s.sym) ? '💼' : '➕'}
-                      </button>
-                    </td>
+          {displayMode === 'list' ? (
+            <div className="tablewrap">
+              <table className="screener">
+                <thead>
+                  <tr>
+                    <th className="sortable" onClick={() => toggleSort('name')}>السهم{arrow('name')}</th>
+                    <th>السوق</th>
+                    <th className="sortable" onClick={() => toggleSort('price')}>السعر{arrow('price')}</th>
+                    <th className="sortable" onClick={() => toggleSort('pe')}>P/E{arrow('pe')}</th>
+                    <th>EPS</th>
+                    <th className="sortable" onClick={() => toggleSort('mcap')}>القيمة السوقية{arrow('mcap')}</th>
+                    <th>صافي الربح</th>
+                    <th className="sortable" onClick={() => toggleSort('yield')}>العائد{arrow('yield')}</th>
+                    <th>التصنيف</th>
+                    <th>المحفظة</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {rows.map((s) => (
+                    <tr key={s.sym} onClick={() => onOpen(s)} className="rowlink">
+                      <td>
+                        <span className="cellname">
+                          <Avatar sym={s.sym} size={30} />
+                          <span>
+                            <span className="cn-name">{s.name}</span>
+                            <span className="cn-sym">{s.sym}</span>
+                          </span>
+                        </span>
+                      </td>
+                      <td><span className={'exch ex-' + s.ex}>{s.ex}</span></td>
+                      <td>{cell(s.price !== null ? s.price.toFixed(2) : null)}</td>
+                      <td>{cell(s.pe)}</td>
+                      <td>{cell(s.eps)}</td>
+                      <td>{cell(s.mcap)}</td>
+                      <td>{cell(s.net)}</td>
+                      <td>{cell(s.div.yld)}</td>
+                      <td><span className={'ribbon cat-' + s.cat}>{CAT_LABEL[s.cat]}</span></td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <button 
+                          onClick={() => togglePortfolioStock(s.sym)}
+                          style={{
+                            background: 'transparent',
+                            border: 0,
+                            cursor: 'pointer',
+                            fontSize: '15px',
+                            padding: '4px 8px',
+                            transition: 'transform 0.12s ease'
+                          }}
+                          title={isInPortfolio(s.sym) ? 'إزالة من المحفظة 🗑️' : 'إضافة إلى المحفظة +'}
+                        >
+                          {isInPortfolio(s.sym) ? '💼' : '➕'}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+              {sectorGroups.map(group => (
+                <div key={group.title} className="panel" style={{ border: '1px solid var(--line)', background: 'var(--panel)', padding: '16px', borderRadius: '18px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
+                    <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: 'var(--brand)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ color: 'var(--brand2)' }}>🔸</span>
+                      {group.title}
+                      <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 500 }}>({group.stocks.length} شركات مطابقة)</span>
+                    </h3>
+                  </div>
+                  <div className="tablewrap">
+                    <table className="screener" style={{ width: '100%', minWidth: '980px' }}>
+                      <thead>
+                        <tr>
+                          <th>اسم السهم</th>
+                          <th>آخر سعر</th>
+                          <th>التغير</th>
+                          <th>التغير (%)</th>
+                          <th>حجم التداول</th>
+                          <th>القيمة اليومية</th>
+                          <th>الصفقات</th>
+                          <th>الإغلاق السابق</th>
+                          <th>سعر الفتح</th>
+                          <th>الأعلى</th>
+                          <th>الأدنى</th>
+                          <th style={{ width: '140px', textAlign: 'center' }}>المدى اليومي (أدنى/أعلى)</th>
+                          <th style={{ textAlign: 'center' }}>المحفظة</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {group.stocks.map(s => {
+                          const d = getDailyData(s)
+                          const percent = d.high > d.low ? ((s.price ?? 1) - d.low) / (d.high - d.low) * 100 : 50
+                          return (
+                            <tr key={s.sym} onClick={() => onOpen(s)} className="rowlink">
+                              <td>
+                                <span className="cellname">
+                                  <Avatar sym={s.sym} size={28} />
+                                  <span>
+                                    <span className="cn-name">{s.name.split('—')[0]}</span>
+                                    <span className="cn-sym">{s.sym} <span className={'exch ex-' + s.ex} style={{ fontSize: '9px', padding: '1px 5px', borderRadius: '4px' }}>{s.ex}</span></span>
+                                  </span>
+                                </span>
+                              </td>
+                              <td style={{ fontWeight: 700 }}>{cell(s.price !== null ? s.price.toFixed(2) : null)}</td>
+                              <td style={{ fontWeight: 800, direction: 'ltr', color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)' }}>
+                                {d.isFlat ? '0.00' : `${d.isUp ? '▲ +' : '▼ '}${Math.abs(d.change).toFixed(2)}`}
+                              </td>
+                              <td style={{ fontWeight: 800, direction: 'ltr', color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)' }}>
+                                {d.pct}
+                              </td>
+                              <td>{d.volume.toLocaleString('en-US')}</td>
+                              <td>{Math.round(d.value).toLocaleString('en-US')} د.إ</td>
+                              <td>{d.trades.toLocaleString('en-US')}</td>
+                              <td>{d.prevClose.toFixed(2)}</td>
+                              <td>{d.open.toFixed(2)}</td>
+                              <td style={{ color: 'var(--good)' }}>{d.high.toFixed(2)}</td>
+                              <td style={{ color: 'var(--bad)' }}>{d.low.toFixed(2)}</td>
+                              <td onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', direction: 'ltr', justifyContent: 'center' }}>
+                                  <span style={{ fontSize: '9px', color: 'var(--muted2)', fontWeight: 600 }}>{d.low.toFixed(2)}</span>
+                                  <div style={{ position: 'relative', width: '60px', height: '4px', background: 'var(--line)', borderRadius: '2px' }} title={`أعلى سعر اليوم: ${d.high.toFixed(2)} — أدنى سعر اليوم: ${d.low.toFixed(2)}`}>
+                                    <div style={{
+                                      position: 'absolute',
+                                      left: `${Math.min(100, Math.max(0, percent))}%`,
+                                      top: '50%',
+                                      transform: 'translate(-50%, -50%)',
+                                      width: '8px',
+                                      height: '8px',
+                                      borderRadius: '50%',
+                                      background: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)',
+                                      border: '1.5px solid #fff',
+                                      boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
+                                    }} />
+                                  </div>
+                                  <span style={{ fontSize: '9px', color: 'var(--muted2)', fontWeight: 600 }}>{d.high.toFixed(2)}</span>
+                                </div>
+                              </td>
+                              <td onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center' }}>
+                                <button 
+                                  onClick={() => togglePortfolioStock(s.sym)}
+                                  style={{
+                                    background: 'transparent',
+                                    border: 0,
+                                    cursor: 'pointer',
+                                    fontSize: '14px',
+                                    padding: '4px 8px',
+                                    transition: 'transform 0.12s ease'
+                                  }}
+                                  title={isInPortfolio(s.sym) ? 'إزالة من المحفظة 🗑️' : 'إضافة إلى المحفظة +'}
+                                >
+                                  {isInPortfolio(s.sym) ? '💼' : '➕'}
+                                </button>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          
           {rows.length === 0 && <div className="empty">لا توجد نتائج مطابقة.</div>}
         </div>
 
