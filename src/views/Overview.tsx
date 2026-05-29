@@ -260,15 +260,7 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
   const [heatmapMetric, setHeatmapMetric] = useState<'yield' | 'pe' | 'mcap'>('yield')
   // التحكم بتبويب حركة السوق (دبي / أبوظبي)
   const [marketTab, setMarketTab] = useState<'dubai' | 'adx'>('dubai')
-  // التحكم بالقوائم الموسعة للقطاعات
-  const [expandedSectors, setExpandedSectors] = useState<Record<string, boolean>>({ 'البنوك': true })
 
-  const toggleSector = (title: string) => {
-    setExpandedSectors(prev => ({
-      ...prev,
-      [title]: !prev[title]
-    }))
-  }
 
   // 3. التنبيهات المباشرة لإجراءات الشركات (Simulated Real-time Actions Feed)
   const [liveActions, setLiveActions] = useState(() => [
@@ -847,7 +839,7 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
                     transition: 'all 0.15s ease'
                   }}
                 >
-                  دبي (القطاعات)
+                  دبي
                 </button>
                 <button 
                   onClick={() => setMarketTab('adx')} 
@@ -870,88 +862,46 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
             </div>
             
             {marketTab === 'dubai' ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '440px', overflowY: 'auto', paddingRight: '2px' }}>
-                {SECTOR_MOVEMENTS.map((sec) => {
-                  const isExpanded = !!expandedSectors[sec.title]
-                  return (
-                    <div key={sec.title} style={{ border: '1px solid var(--line)', borderRadius: '10px', background: 'rgba(255,255,255,0.01)', overflow: 'hidden' }}>
-                      <button 
-                        onClick={() => toggleSector(sec.title)}
-                        style={{
-                          display: 'flex',
-                          width: '100%',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          padding: '10px 12px',
-                          background: 'var(--chip)',
-                          border: 0,
-                          cursor: 'pointer',
-                          fontFamily: 'inherit',
-                          color: 'var(--txt)',
-                          fontWeight: 800,
-                          fontSize: '12.5px',
-                          textAlign: 'right'
-                        }}
-                      >
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ color: 'var(--brand2)', fontSize: '8px' }}>🔸</span>
-                          {sec.title}
-                        </span>
-                        <span style={{ fontSize: '10.5px', color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span>({sec.stocks.length} شركة)</span>
-                          <span>{isExpanded ? '▲' : '▼'}</span>
-                        </span>
-                      </button>
-                      
-                      {isExpanded && (
-                        <div style={{ padding: '4px 8px', background: 'transparent' }}>
-                          <table style={{ minWidth: '100%', background: 'transparent', fontSize: '11.5px', borderCollapse: 'collapse' }}>
-                            <thead>
-                              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                                <th style={{ padding: '4px', color: 'var(--muted)', textAlign: 'right', fontWeight: 700 }}>الاسم</th>
-                                <th style={{ padding: '4px', color: 'var(--muted)', textAlign: 'center', fontWeight: 700 }}>السعر</th>
-                                <th style={{ padding: '4px', color: 'var(--muted)', textAlign: 'left', fontWeight: 700 }}>التغير</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {sec.stocks.map((m) => {
-                                const realStock = DATA.find(s => s.sym.toUpperCase() === m.sym.replace(/\d+$/, '').toUpperCase() || s.name.toLowerCase().includes(m.name.toLowerCase()))
-                                if (!realStock) return null
-                                const d = getDailyData(realStock)
-                                return (
-                                  <tr 
-                                    key={realStock.sym} 
-                                    onClick={() => onOpen(realStock)}
-                                    className="rowlink"
-                                    style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.02)', cursor: 'pointer' }}
-                                  >
-                                    <td style={{ padding: '6px 4px', textAlign: 'right' }}>
-                                      <span style={{ fontWeight: 700, display: 'block', color: 'var(--txt)', fontSize: '11.5px' }}>{realStock.name.split('—')[0]}</span>
-                                      <span style={{ fontSize: '9.5px', color: 'var(--muted2)', fontWeight: 600 }}>{realStock.sym}</span>
-                                    </td>
-                                    <td style={{ padding: '6px 4px', textAlign: 'center', fontWeight: 700, color: 'var(--txt)' }}>
-                                      {realStock.price !== null ? realStock.price.toFixed(2) : '—'}
-                                    </td>
-                                    <td style={{ 
-                                      padding: '6px 4px', 
-                                      textAlign: 'left', 
-                                      fontWeight: 800,
-                                      direction: 'ltr',
-                                      color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)',
-                                      fontSize: '11px'
-                                    }}>
-                                      {d.pct}
-                                    </td>
-                                  </tr>
-                                )
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
+              <div style={{ maxHeight: '440px', overflowY: 'auto', paddingRight: '2px' }}>
+                <table style={{ minWidth: '100%', background: 'transparent', fontSize: '12px', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid var(--line)' }}>
+                      <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'right', fontWeight: 700 }}>الاسم</th>
+                      <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'center', fontWeight: 700 }}>السعر</th>
+                      <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'left', fontWeight: 700 }}>التغير</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {DATA.filter(s => s.ex === 'DFM').map((realStock) => {
+                      const d = getDailyData(realStock)
+                      return (
+                        <tr 
+                          key={realStock.sym} 
+                          onClick={() => onOpen(realStock)}
+                          className="rowlink"
+                          style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', cursor: 'pointer' }}
+                        >
+                          <td style={{ padding: '7px 4px', textAlign: 'right' }}>
+                            <span style={{ fontWeight: 700, display: 'block', color: 'var(--txt)' }}>{realStock.name.split('—')[0]}</span>
+                            <span style={{ fontSize: '10px', color: 'var(--muted2)', fontWeight: 600 }}>{realStock.sym}</span>
+                          </td>
+                          <td style={{ padding: '7px 4px', textAlign: 'center', fontWeight: 700, color: 'var(--txt)' }}>
+                            {realStock.price !== null ? realStock.price.toFixed(2) : '—'}
+                          </td>
+                          <td style={{ 
+                            padding: '7px 4px', 
+                            textAlign: 'left', 
+                            fontWeight: 800,
+                            direction: 'ltr',
+                            color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)'
+                          }}>
+                            {d.pct}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
               </div>
             ) : (
               <table style={{ minWidth: '100%', background: 'transparent', fontSize: '12px', borderCollapse: 'collapse' }}>
