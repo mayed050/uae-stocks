@@ -253,9 +253,12 @@ th.sortable:hover{color:var(--txt)}
 
 @media (max-width:900px){
   .app{flex-direction:column}
-  .sidebar{width:auto; flex:none; height:auto; position:static; flex-direction:row; flex-wrap:wrap; align-items:center}
-  .sidebar .nav{flex-direction:row; flex-wrap:wrap; margin:0}
-  .sidebar-foot{margin:0 0 0 auto; flex-direction:row; align-items:center}
+  .sidebar{width:auto; flex:none; height:auto; position:static; flex-direction:row; flex-wrap:wrap; align-items:center; padding:12px 14px; gap:12px}
+  .brand{padding:0; margin-bottom:0}
+  .sidebar .nav{flex-direction:row; flex-wrap:wrap; gap:4px; margin:0}
+  .sidebar .navitem{width:auto; padding:8px 12px; font-size:13px; gap:6px}
+  .sidebar-foot{margin-inline-start:auto; flex-direction:row; align-items:center; gap:8px}
+  .sidebar-foot .navitem{padding:8px 12px; font-size:13px}
   .sidebar-note{display:none}
   .modal-grid,.modal-divgrid{grid-template-columns:1fr}
 }
