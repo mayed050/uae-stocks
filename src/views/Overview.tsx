@@ -157,6 +157,90 @@ const ADX_MOVEMENTS = [
   { name: 'الشركة العالمية القابضة', sym: 'IHC', price: '414.00', change: '+1.50', pct: '+0.36%', up: true },
 ]
 
+interface MovementStock {
+  name: string
+  sym: string
+  price: string
+  change: string
+  pct: string
+  up?: boolean
+  flat?: boolean
+}
+
+function getDailyData(s: Stock) {
+  const symbol = s.sym.toUpperCase()
+  const price = s.price ?? 1.0
+  
+  // Deterministic seed from symbol string
+  let seed = 0
+  for (let i = 0; i < symbol.length; i++) {
+    seed += symbol.charCodeAt(i)
+  }
+  
+  // Pseudo-random numbers using seed
+  const rand = (max: number, min = 0) => {
+    const x = Math.sin(seed++) * 10000
+    return min + (x - Math.floor(x)) * (max - min)
+  }
+
+  let change: number
+  let pct: string
+  let isUp: boolean
+  let isFlat: boolean
+  
+  // Find in DFM
+  let found: MovementStock | null = null
+  for (const sec of SECTOR_MOVEMENTS) {
+    const f = sec.stocks.find(st => st.sym.toUpperCase() === symbol)
+    if (f) { found = f; break; }
+  }
+  
+  // Find in ADX
+  if (!found) {
+    found = ADX_MOVEMENTS.find(st => st.sym.toUpperCase() === symbol) as MovementStock | undefined ?? null
+  }
+
+  if (found) {
+    change = parseFloat(found.change)
+    pct = found.pct
+    isUp = parseFloat(found.change) > 0
+    isFlat = parseFloat(found.change) === 0
+  } else {
+    // Generate stable mock values
+    const changePct = rand(3.5, -3.5) // -3.5% to +3.5%
+    change = Math.round((price * (changePct / 100)) * 100) / 100
+    pct = `${change >= 0 ? '+' : ''}${changePct.toFixed(2)}%`
+    isUp = change > 0
+    isFlat = change === 0
+  }
+
+  const prevClose = price - change
+  const high = Math.max(price, prevClose) * (1 + rand(0.012, 0.001))
+  const low = Math.min(price, prevClose) * (1 - rand(0.012, 0.001))
+  const open = prevClose * (1 + rand(0.004, -0.004))
+
+  const rawMcap = parseAmount(s.mcap) ?? 5e9
+  const mcapVal = rawMcap > 1e6 ? rawMcap / 1e9 : rawMcap
+  const volume = Math.round((mcapVal * 150000) * rand(2.2, 0.1))
+  const value = volume * price
+  const trades = Math.round(volume * rand(0.00005, 0.00001)) + 3
+
+  return {
+    change,
+    pct,
+    volume,
+    value,
+    trades,
+    prevClose,
+    open,
+    high,
+    low,
+    isUp,
+    isFlat,
+    isDown: !isUp && !isFlat
+  }
+}
+
 export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA, lastUpdated } = useStocks()
   const {
@@ -184,45 +268,6 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
       ...prev,
       [title]: !prev[title]
     }))
-  }
-
-  const handleStockClick = (m: { name: string; sym: string; price: string; pct: string; change: string; up?: boolean; flat?: boolean; sector?: string }) => {
-    const cleanSym = m.sym.replace(/\d+$/, '').toUpperCase()
-    const found = DATA.find(s => 
-      s.sym.toUpperCase() === cleanSym || 
-      s.name.toLowerCase().includes(m.name.toLowerCase())
-    )
-    if (found) {
-      onOpen(found)
-    } else {
-      const mockStock: Stock = {
-        sym: cleanSym,
-        name: `${m.name} — شركة مدرجة`,
-        ex: 'DFM',
-        sector: m.sector || 'قطاع عام',
-        cat: 'income',
-        yahoo: `${cleanSym}.AE`,
-        price: parseFloat(m.price),
-        asof: 'مايو 2026',
-        mcap: 'غير متوفرة',
-        pe: null,
-        eps: 'غير متوفر',
-        roe: 'غير متوفر',
-        net: 'غير متوفر',
-        rev: 'غير متوفر',
-        div: {
-          ps: 'غير معلن',
-          yld: m.pct || 'غير معلن',
-          freq: 'سنوي',
-          lastEnt: null,
-          exd: null,
-          rec: null,
-          pay: null,
-          agm: null
-        }
-      }
-      onOpen(mockStock)
-    }
   }
 
   return (
@@ -692,30 +737,31 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
                             <tbody>
                               {sec.stocks.map((m) => {
                                 const realStock = DATA.find(s => s.sym.toUpperCase() === m.sym.replace(/\d+$/, '').toUpperCase() || s.name.toLowerCase().includes(m.name.toLowerCase()))
-                                const displayPrice = realStock?.price !== null && realStock?.price !== undefined ? realStock.price.toFixed(2) : m.price
+                                if (!realStock) return null
+                                const d = getDailyData(realStock)
                                 return (
                                   <tr 
-                                    key={m.sym} 
-                                    onClick={() => handleStockClick(m)}
+                                    key={realStock.sym} 
+                                    onClick={() => onOpen(realStock)}
                                     className="rowlink"
                                     style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.02)', cursor: 'pointer' }}
                                   >
                                     <td style={{ padding: '6px 4px', textAlign: 'right' }}>
-                                      <span style={{ fontWeight: 700, display: 'block', color: 'var(--txt)', fontSize: '11.5px' }}>{m.name}</span>
-                                      <span style={{ fontSize: '9.5px', color: 'var(--muted2)', fontWeight: 600 }}>{m.sym.replace(/\d+$/, '')}</span>
+                                      <span style={{ fontWeight: 700, display: 'block', color: 'var(--txt)', fontSize: '11.5px' }}>{realStock.name.split('—')[0]}</span>
+                                      <span style={{ fontSize: '9.5px', color: 'var(--muted2)', fontWeight: 600 }}>{realStock.sym}</span>
                                     </td>
                                     <td style={{ padding: '6px 4px', textAlign: 'center', fontWeight: 700, color: 'var(--txt)' }}>
-                                      {displayPrice}
+                                      {realStock.price !== null ? realStock.price.toFixed(2) : '—'}
                                     </td>
                                     <td style={{ 
                                       padding: '6px 4px', 
                                       textAlign: 'left', 
                                       fontWeight: 800,
                                       direction: 'ltr',
-                                      color: m.flat ? 'var(--muted)' : m.up ? 'var(--good)' : 'var(--bad)',
+                                      color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)',
                                       fontSize: '11px'
                                     }}>
-                                      {m.pct}
+                                      {d.pct}
                                     </td>
                                   </tr>
                                 )
@@ -740,29 +786,30 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
                 <tbody>
                   {ADX_MOVEMENTS.map((m) => {
                     const realStock = DATA.find(s => s.sym.toUpperCase() === m.sym.toUpperCase())
-                    const displayPrice = realStock?.price !== null && realStock?.price !== undefined ? realStock.price.toFixed(2) : m.price
+                    if (!realStock) return null
+                    const d = getDailyData(realStock)
                     return (
                       <tr 
-                        key={m.sym} 
-                        onClick={() => handleStockClick(m)}
+                        key={realStock.sym} 
+                        onClick={() => onOpen(realStock)}
                         className="rowlink"
                         style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', cursor: 'pointer' }}
                       >
                         <td style={{ padding: '7px 4px', textAlign: 'right' }}>
-                          <span style={{ fontWeight: 700, display: 'block', color: 'var(--txt)' }}>{m.name}</span>
-                          <span style={{ fontSize: '10px', color: 'var(--muted2)', fontWeight: 600 }}>{m.sym}</span>
+                          <span style={{ fontWeight: 700, display: 'block', color: 'var(--txt)' }}>{realStock.name.split('—')[0]}</span>
+                          <span style={{ fontSize: '10px', color: 'var(--muted2)', fontWeight: 600 }}>{realStock.sym}</span>
                         </td>
                         <td style={{ padding: '7px 4px', textAlign: 'center', fontWeight: 700, color: 'var(--txt)' }}>
-                          {displayPrice}
+                          {realStock.price !== null ? realStock.price.toFixed(2) : '—'}
                         </td>
                         <td style={{ 
                           padding: '7px 4px', 
                           textAlign: 'left', 
                           fontWeight: 800,
                           direction: 'ltr',
-                          color: m.flat ? 'var(--muted)' : m.up ? 'var(--good)' : 'var(--bad)'
+                          color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)'
                         }}>
-                          {m.pct}
+                          {d.pct}
                         </td>
                       </tr>
                     )
