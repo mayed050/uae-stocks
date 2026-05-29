@@ -20,6 +20,143 @@ function StatCard({ n, l, sub, alert }: { n: React.ReactNode; l: string; sub?: s
   )
 }
 
+const SECTOR_MOVEMENTS = [
+  {
+    title: 'البنوك',
+    stocks: [
+      { name: 'الإمارات دبي الوطني', sym: 'EMIRATESNBD', price: '10.15', pct: '-0.49%', change: '-0.05', up: false },
+      { name: 'بنك دبي الإسلامي', sym: 'DIB', price: '5.12', pct: '+0.39%', change: '+0.02', up: true },
+      { name: 'بنك دبي التجاري', sym: 'CBD', price: '5.25', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'مصرف عجمان', sym: 'AJMANBANK', price: '1.50', pct: '-0.66%', change: '-0.01', up: false },
+      { name: 'جي اف اتش', sym: 'GFH', price: '0.29', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'مصرف السلام - السودان', sym: 'SALAMSUDAN', price: '1.10', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'مصرف السلام - البحرين', sym: 'SALAM_BAH', price: '0.90', pct: '-1.10%', change: '-0.01', up: false },
+      { name: 'بنك المشرق', sym: 'MASHREQ', price: '202.00', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'مصرف الشارقة الإسلامي', sym: 'SIB', price: '1.85', pct: '+0.54%', change: '+0.01', up: true },
+      { name: 'أملاك للتمويل', sym: 'AMLAK', price: '0.81', pct: '+2.53%', change: '+0.02', up: true },
+      { name: 'دار التكافل', sym: 'DARTAKAFUL', price: '0.75', pct: '-1.32%', change: '-0.01', up: false },
+      { name: 'تمويل', sym: 'TAMWEEL', price: '1.20', pct: '0.00%', change: '+0.00', flat: true }
+    ]
+  },
+  {
+    title: 'الاستثمار والخدمات المالية',
+    stocks: [
+      { name: 'دبي للاستثمار', sym: 'DIC', price: '2.20', pct: '+0.45%', change: '+0.01', up: true },
+      { name: 'شعاع القابضة', sym: 'SHUAA', price: '0.95', pct: '-2.06%', change: '-0.02', up: false },
+      { name: 'سوق دبي المالي', sym: 'DFM', price: '1.34', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'اكتتاب', sym: 'EKTTITAB', price: '0.25', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'المدينة', sym: 'ALMADINA', price: '0.45', pct: '+2.27%', change: '+0.01', up: true },
+      { name: 'بيت التمويل الخليجي', sym: 'GFH2', price: '0.29', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'الخليجية للاستثمار', sym: 'GGICO', price: '0.35', pct: '-2.78%', change: '-0.01', up: false },
+      { name: 'الصكوك الوطنية', sym: 'NATIONALBONDS', price: '1.00', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'دبي المالي', sym: 'DFM2', price: '1.34', pct: '0.00%', change: '+0.00', flat: true }
+    ]
+  },
+  {
+    title: 'الصناعة',
+    stocks: [
+      { name: 'الوطنية للأسمنت', sym: 'NCC', price: '2.50', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'الإسمنت الوطنية', sym: 'NCC2', price: '2.50', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'أسمنت الوطنية', sym: 'NCC3', price: '2.50', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'أسمنت الخليج', sym: 'GCEM', price: '0.70', pct: '-1.41%', change: '-0.01', up: false },
+      { name: 'الجبس الوطنية', sym: 'NGR', price: '1.80', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'أسمنت الاتحاد', sym: 'UCC', price: '1.15', pct: '0.00%', change: '+0.00', flat: true }
+    ]
+  },
+  {
+    title: 'العقارات',
+    stocks: [
+      { name: 'إعمار العقارية', sym: 'EMAAR', price: '8.28', pct: '+0.73%', change: '+0.06', up: true },
+      { name: 'إعمار للتطوير', sym: 'EMAARDEV', price: '8.00', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'ديار للتطوير', sym: 'DEYAAR', price: '0.70', pct: '+0.57%', change: '+0.00', up: true },
+      { name: 'الاتحاد العقارية', sym: 'UPP', price: '0.35', pct: '-2.78%', change: '-0.01', up: false },
+      { name: 'دريك آند سكل', sym: 'DSI', price: '0.36', pct: '+1.41%', change: '+0.00', up: true },
+      { name: 'منازل', sym: 'MANAZEL', price: '0.35', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'إشراق', sym: 'ESHRAQ', price: '0.40', pct: '0.00%', change: '+0.00', flat: true }
+    ]
+  },
+  {
+    title: 'النقل والشحن',
+    stocks: [
+      { name: 'العربية للطيران', sym: 'AIRARABIA', price: '2.45', pct: '+0.41%', change: '+0.01', up: true },
+      { name: 'أرامكس', sym: 'ARAMEX', price: '2.30', pct: '-0.86%', change: '-0.02', up: false },
+      { name: 'الخليج للملاحة', sym: 'GULFNAV', price: '5.92', pct: '-1.50%', change: '-0.09', up: false }
+    ]
+  },
+  {
+    title: 'الاتصالات',
+    stocks: [
+      { name: 'دو', sym: 'DU', price: '11.20', pct: '+0.45%', change: '+0.05', up: true }
+    ]
+  },
+  {
+    title: 'الخدمات',
+    stocks: [
+      { name: 'تبريد', sym: 'TABREED', price: '3.30', pct: '+0.61%', change: '+0.02', up: true },
+      { name: 'غانم', sym: 'GHANIM', price: '1.50', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'الإمارات للمرطبات', sym: 'ERC', price: '3.20', pct: '-1.54%', change: '-0.05', up: false },
+      { name: 'تيكوم', sym: 'TECOM', price: '3.30', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'بلدكو', sym: 'BALDCO', price: '1.10', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'سالك', sym: 'SALIK', price: '3.65', pct: '-0.54%', change: '-0.02', up: false }
+    ]
+  },
+  {
+    title: 'السلع',
+    stocks: [
+      { name: 'دي إكس بي', sym: 'DXB', price: '0.08', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'ماركة', sym: 'MARKA', price: '0.12', pct: '0.00%', change: '+0.00', flat: true }
+    ]
+  },
+  {
+    title: 'الرعاية الصحية والتعليم',
+    stocks: [
+      { name: 'أمانات القابضة', sym: 'AMANAT', price: '1.07', pct: '+0.94%', change: '+0.01', up: true },
+      { name: 'تعليم', sym: 'TAALEEM', price: '3.50', pct: '0.00%', change: '+0.00', flat: true }
+    ]
+  },
+  {
+    title: 'التأمين',
+    stocks: [
+      { name: 'دبي الوطنية للتأمين', sym: 'DNIR', price: '4.20', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'أمان', sym: 'AMAN', price: '0.50', pct: '-1.96%', change: '-0.01', up: false },
+      { name: 'سلامة', sym: 'SALAMA', price: '0.45', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'دار التكافل', sym: 'DARTAKAFUL2', price: '0.75', pct: '-1.32%', change: '-0.01', up: false },
+      { name: 'تكافل الإمارات', sym: 'TE', price: '0.35', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'الصقر للتأمين', sym: 'ASIC', price: '1.50', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'البحيرة للتأمين', sym: 'ABIC', price: '2.20', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'أليانز', sym: 'ALLIANZ', price: '1.00', pct: '0.00%', change: '+0.00', flat: true }
+    ]
+  },
+  {
+    title: 'الأغذية',
+    stocks: [
+      { name: 'بلدنا', sym: 'BALADNA', price: '1.20', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'أغذية', sym: 'AGTHIA', price: '5.50', pct: '+0.92%', change: '+0.05', up: true }
+    ]
+  },
+  {
+    title: 'الشركات الأجنبية',
+    stocks: [
+      { name: 'أوراسكوم', sym: 'ORASCOM', price: '3.50', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'إشراق', sym: 'ESHRAQ2', price: '0.40', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'مصرف السلام - السودان', sym: 'SALAMSUDAN2', price: '1.10', pct: '0.00%', change: '+0.00', flat: true }
+    ]
+  }
+]
+
+const ADX_MOVEMENTS = [
+  { name: 'بنك أبوظبي الأول', sym: 'FAB', price: '14.50', change: '-0.15', pct: '-1.02%', up: false },
+  { name: 'بنك أبوظبي التجاري', sym: 'ADCB', price: '8.92', change: '+0.02', pct: '+0.22%', up: true },
+  { name: 'مصرف أبوظبي الإسلامي', sym: 'ADIB', price: '11.50', change: '+0.10', pct: '+0.88%', up: true },
+  { name: 'الدار العقارية', sym: 'ALDAR', price: '7.80', change: '+0.05', pct: '+0.64%', up: true },
+  { name: 'أبوظبي الوطنية للطاقة', sym: 'TAQA', price: '3.25', change: '-0.01', pct: '-0.31%', up: false },
+  { name: 'أدنوك للغاز', sym: 'ADNOCGAS', price: '3.31', change: '+0.01', pct: '+0.30%', up: true },
+  { name: 'أدنوك للتوزيع', sym: 'ADNOCDIST', price: '3.88', change: '-0.02', pct: '-0.51%', up: false },
+  { name: 'أدنوك للحفر', sym: 'ADNOCDRILL', price: '4.80', change: '+0.03', pct: '+0.63%', up: true },
+  { name: 'برجيل القابضة', sym: 'BURJEEL', price: '2.50', change: '+0.00', pct: '+0.00%', flat: true },
+  { name: 'الشركة العالمية القابضة', sym: 'IHC', price: '414.00', change: '+1.50', pct: '+0.36%', up: true },
+]
+
 export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA, lastUpdated } = useStocks()
   const {
@@ -37,6 +174,56 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
   
   // التحكم بنوع خريطة السوق الحرارية
   const [heatmapMetric, setHeatmapMetric] = useState<'yield' | 'pe' | 'mcap'>('yield')
+  // التحكم بتبويب حركة السوق (دبي / أبوظبي)
+  const [marketTab, setMarketTab] = useState<'dubai' | 'adx'>('dubai')
+  // التحكم بالقوائم الموسعة للقطاعات
+  const [expandedSectors, setExpandedSectors] = useState<Record<string, boolean>>({ 'البنوك': true })
+
+  const toggleSector = (title: string) => {
+    setExpandedSectors(prev => ({
+      ...prev,
+      [title]: !prev[title]
+    }))
+  }
+
+  const handleStockClick = (m: { name: string; sym: string; price: string; pct: string; change: string; up?: boolean; flat?: boolean; sector?: string }) => {
+    const cleanSym = m.sym.replace(/\d+$/, '').toUpperCase()
+    const found = DATA.find(s => 
+      s.sym.toUpperCase() === cleanSym || 
+      s.name.toLowerCase().includes(m.name.toLowerCase())
+    )
+    if (found) {
+      onOpen(found)
+    } else {
+      const mockStock: Stock = {
+        sym: cleanSym,
+        name: `${m.name} — شركة مدرجة`,
+        ex: 'DFM',
+        sector: m.sector || 'قطاع عام',
+        cat: 'income',
+        yahoo: `${cleanSym}.AE`,
+        price: parseFloat(m.price),
+        asof: 'مايو 2026',
+        mcap: 'غير متوفرة',
+        pe: null,
+        eps: 'غير متوفر',
+        roe: 'غير متوفر',
+        net: 'غير متوفر',
+        rev: 'غير متوفر',
+        div: {
+          ps: 'غير معلن',
+          yld: m.pct || 'غير معلن',
+          freq: 'سنوي',
+          lastEnt: null,
+          exd: null,
+          rec: null,
+          pay: null,
+          agm: null
+        }
+      }
+      onOpen(mockStock)
+    }
+  }
 
   return (
     <div className="view">
@@ -416,61 +603,176 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
         {/* العمود الأيسر الجانبي (المعلومات المحلّية الرديفة 30%) */}
         <div className="overview-sidebar">
           
-          {/* 1. مؤشرات أسواق الإمارات المحلية */}
+          {/* 1. لوحة قطاعات وأسعار الشركات (مطابقة تماماً للصورة) */}
           <div className="o-widget">
-            <h4 className="o-widget-h">🇦🇪 مؤشرات الأسواق الإماراتية</h4>
-            <div className="o-index-item">
-              <span style={{ fontWeight: 700 }}>سوق دبي المالي (DFMGI)</span>
-              <span style={{ color: 'var(--good)', fontWeight: 800 }}>4,285.40 (+0.45%) ▲</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: '8px', marginBottom: '12px' }}>
+              <h4 className="o-widget-h" style={{ margin: 0, border: 0, padding: 0 }}>📊 أسعار الشركات</h4>
+              <div style={{ display: 'flex', gap: '4px', background: 'var(--chip)', padding: '2.5px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                <button 
+                  onClick={() => setMarketTab('dubai')} 
+                  style={{
+                    border: 0,
+                    background: marketTab === 'dubai' ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'transparent',
+                    color: marketTab === 'dubai' ? '#fff' : 'var(--muted)',
+                    fontSize: '11px',
+                    padding: '3px 9px',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    fontWeight: 700,
+                    fontFamily: 'inherit',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  دبي (القطاعات)
+                </button>
+                <button 
+                  onClick={() => setMarketTab('adx')} 
+                  style={{
+                    border: 0,
+                    background: marketTab === 'adx' ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'transparent',
+                    color: marketTab === 'adx' ? '#fff' : 'var(--muted)',
+                    fontSize: '11px',
+                    padding: '3px 9px',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    fontWeight: 700,
+                    fontFamily: 'inherit',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  أبوظبي
+                </button>
+              </div>
             </div>
-            <div className="o-index-item">
-              <span style={{ fontWeight: 700 }}>سوق أبوظبي للأوراق المالية (ADI)</span>
-              <span style={{ color: 'var(--bad)', fontWeight: 800 }}>9,142.15 (-0.24%) ▼</span>
-            </div>
-            <div className="o-index-item">
-              <span style={{ color: 'var(--muted)' }}>متوسط عوائد التوزيعات:</span>
-              <span style={{ fontWeight: 700, color: 'var(--good)' }}>{stats.avgYield.toFixed(2)}%</span>
-            </div>
-            <div className="o-index-item">
-              <span style={{ color: 'var(--muted)' }}>متوسط مكرر الربحية:</span>
-              <span style={{ fontWeight: 700, color: 'var(--brand)' }}>{stats.avgPe.toFixed(1)}x</span>
-            </div>
+            
+            {marketTab === 'dubai' ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '440px', overflowY: 'auto', paddingRight: '2px' }}>
+                {SECTOR_MOVEMENTS.map((sec) => {
+                  const isExpanded = !!expandedSectors[sec.title]
+                  return (
+                    <div key={sec.title} style={{ border: '1px solid var(--line)', borderRadius: '10px', background: 'rgba(255,255,255,0.01)', overflow: 'hidden' }}>
+                      <button 
+                        onClick={() => toggleSector(sec.title)}
+                        style={{
+                          display: 'flex',
+                          width: '100%',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '10px 12px',
+                          background: 'var(--chip)',
+                          border: 0,
+                          cursor: 'pointer',
+                          fontFamily: 'inherit',
+                          color: 'var(--txt)',
+                          fontWeight: 800,
+                          fontSize: '12.5px',
+                          textAlign: 'right'
+                        }}
+                      >
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ color: 'var(--brand2)', fontSize: '8px' }}>🔸</span>
+                          {sec.title}
+                        </span>
+                        <span style={{ fontSize: '10.5px', color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span>({sec.stocks.length} شركة)</span>
+                          <span>{isExpanded ? '▲' : '▼'}</span>
+                        </span>
+                      </button>
+                      
+                      {isExpanded && (
+                        <div style={{ padding: '4px 8px', background: 'transparent' }}>
+                          <table style={{ minWidth: '100%', background: 'transparent', fontSize: '11.5px', borderCollapse: 'collapse' }}>
+                            <thead>
+                              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                                <th style={{ padding: '4px', color: 'var(--muted)', textAlign: 'right', fontWeight: 700 }}>الاسم</th>
+                                <th style={{ padding: '4px', color: 'var(--muted)', textAlign: 'center', fontWeight: 700 }}>السعر</th>
+                                <th style={{ padding: '4px', color: 'var(--muted)', textAlign: 'left', fontWeight: 700 }}>التغير</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {sec.stocks.map((m) => {
+                                const realStock = DATA.find(s => s.sym.toUpperCase() === m.sym.replace(/\d+$/, '').toUpperCase() || s.name.toLowerCase().includes(m.name.toLowerCase()))
+                                const displayPrice = realStock?.price !== null && realStock?.price !== undefined ? realStock.price.toFixed(2) : m.price
+                                return (
+                                  <tr 
+                                    key={m.sym} 
+                                    onClick={() => handleStockClick(m)}
+                                    className="rowlink"
+                                    style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.02)', cursor: 'pointer' }}
+                                  >
+                                    <td style={{ padding: '6px 4px', textAlign: 'right' }}>
+                                      <span style={{ fontWeight: 700, display: 'block', color: 'var(--txt)', fontSize: '11.5px' }}>{m.name}</span>
+                                      <span style={{ fontSize: '9.5px', color: 'var(--muted2)', fontWeight: 600 }}>{m.sym.replace(/\d+$/, '')}</span>
+                                    </td>
+                                    <td style={{ padding: '6px 4px', textAlign: 'center', fontWeight: 700, color: 'var(--txt)' }}>
+                                      {displayPrice}
+                                    </td>
+                                    <td style={{ 
+                                      padding: '6px 4px', 
+                                      textAlign: 'left', 
+                                      fontWeight: 800,
+                                      direction: 'ltr',
+                                      color: m.flat ? 'var(--muted)' : m.up ? 'var(--good)' : 'var(--bad)',
+                                      fontSize: '11px'
+                                    }}>
+                                      {m.pct}
+                                    </td>
+                                  </tr>
+                                )
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <table style={{ minWidth: '100%', background: 'transparent', fontSize: '12px', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--line)' }}>
+                    <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'right', fontWeight: 700 }}>الاسم</th>
+                    <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'center', fontWeight: 700 }}>السعر</th>
+                    <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'left', fontWeight: 700 }}>التغير</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ADX_MOVEMENTS.map((m) => {
+                    const realStock = DATA.find(s => s.sym.toUpperCase() === m.sym.toUpperCase())
+                    const displayPrice = realStock?.price !== null && realStock?.price !== undefined ? realStock.price.toFixed(2) : m.price
+                    return (
+                      <tr 
+                        key={m.sym} 
+                        onClick={() => handleStockClick(m)}
+                        className="rowlink"
+                        style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', cursor: 'pointer' }}
+                      >
+                        <td style={{ padding: '7px 4px', textAlign: 'right' }}>
+                          <span style={{ fontWeight: 700, display: 'block', color: 'var(--txt)' }}>{m.name}</span>
+                          <span style={{ fontSize: '10px', color: 'var(--muted2)', fontWeight: 600 }}>{m.sym}</span>
+                        </td>
+                        <td style={{ padding: '7px 4px', textAlign: 'center', fontWeight: 700, color: 'var(--txt)' }}>
+                          {displayPrice}
+                        </td>
+                        <td style={{ 
+                          padding: '7px 4px', 
+                          textAlign: 'left', 
+                          fontWeight: 800,
+                          direction: 'ltr',
+                          color: m.flat ? 'var(--muted)' : m.up ? 'var(--good)' : 'var(--bad)'
+                        }}>
+                          {m.pct}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            )}
           </div>
 
-          {/* 2. تغذية الأخبار وإفصاحات التوزيعات المحلية */}
-          <div className="o-widget">
-            <h4 className="o-widget-h">📢 أحدث إفصاحات وأخبار التوزيعات</h4>
-            <div className="o-news-item">
-              <div className="o-news-title">إعمار العقارية تعتمد توزيع أرباح نقدية مرحلية للمساهمين بقيمة 50 فلس للسهم.</div>
-              <div className="o-news-meta">
-                <span>سوق دبي المالي</span>
-                <span>منذ ساعتين</span>
-              </div>
-            </div>
-            <div className="o-news-item">
-              <div className="o-news-title">ديوا (DEWA) تعلن تحويل التوزيعات النقدية لحسابات المساهمين البنكية بقيمة 3.1 فلس.</div>
-              <div className="o-news-meta">
-                <span>إفصاح رسمي</span>
-                <span>منذ يوم واحد</span>
-              </div>
-            </div>
-            <div className="o-news-item">
-              <div className="o-news-title">أدنوك للغاز تقر توزيع أرباح إجمالية استثنائية بنسبة عائد تفوق 5.4% عن النصف الأول.</div>
-              <div className="o-news-meta">
-                <span>سوق أبوظبي</span>
-                <span>منذ يومين</span>
-              </div>
-            </div>
-            <div className="o-news-item">
-              <div className="o-news-title">بنك أبوظبي الأول (FAB) يؤكد متانة مركزه المالي ويعلن جدول مناقشة أرباح المساهمين.</div>
-              <div className="o-news-meta">
-                <span>إفصاح بنكي</span>
-                <span>منذ 3 أيام</span>
-              </div>
-            </div>
-          </div>
-
-          {/* 3. التنبيهات المباشرة القريبة (Mini Calendar) */}
+          {/* 2. التنبيهات المباشرة القريبة (Mini Calendar) */}
           <div className="o-widget">
             <h4 className="o-widget-h">⏰ تنبيهات التواريخ القادمة</h4>
             {alertRows.length === 0 ? (
