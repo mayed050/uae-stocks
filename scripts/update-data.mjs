@@ -1,5 +1,4 @@
-// يجلب أسعار أسهم سوق دبي (DFM) يوميًا من Yahoo Finance ويحدّث public/data.json.
-// أسهم أبوظبي (ADX) لا يغطّيها Yahoo، لذا تبقى قيمها كما هي (يدوية).
+// يجلب أسعار أسهم سوق دبي (DFM) من Yahoo Finance وأسعار أسهم سوق أبوظبي (ADX) من TradingView تلقائياً ويحدّث public/data.json.
 // التشغيل: node scripts/update-data.mjs   (يتطلب Node 18+ لوجود fetch المدمج)
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
@@ -16,7 +15,8 @@ const UA =
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
-async function fetchQuote(symbol) {
+// جلب الأسعار من Yahoo Finance لأسهم دبي (DFM)
+async function fetchYahooQuote(symbol) {
   const url = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(
     symbol,
   )}?interval=1d&range=1d`
@@ -32,6 +32,27 @@ async function fetchQuote(symbol) {
   }
 }
 
+// جلب الأسعار من TradingView لأسهم أبوظبي (ADX)
+async function fetchTvQuote(symbol) {
+  const url = `https://www.tradingview.com/symbols/${encodeURIComponent(symbol)}/`
+  const res = await fetch(url, { headers: { 'User-Agent': UA } })
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  const html = await res.text()
+
+  const offersIdx = html.indexOf('"offers"')
+  if (offersIdx === -1) throw new Error('no offers block found')
+
+  const slice = html.slice(offersIdx, offersIdx + 300)
+  const match = slice.match(/"price"\s*:\s*"([0-9.]+)"/)
+  if (!match) throw new Error('no price found in offers block')
+
+  return {
+    price: parseFloat(match[1]),
+    time: new Date(),
+    currency: 'AED',
+  }
+}
+
 function isoDate(d) {
   return d.toISOString().slice(0, 10)
 }
@@ -43,22 +64,39 @@ async function main() {
   let ok = 0
   let fail = 0
   for (const s of data.stocks) {
-    if (!s.priceAuto || !s.yahoo) continue
-    try {
-      const q = await fetchQuote(s.yahoo)
-      s.price = Math.round(q.price * 1000) / 1000
-      s.asof = isoDate(q.time)
-      ok++
-      console.log(`✓ ${s.sym.padEnd(12)} ${s.price} ${q.currency}`)
-    } catch (e) {
-      fail++
-      console.warn(`✗ ${s.sym.padEnd(12)} ${e.message} — أبقيت القيمة السابقة`)
+    if (!s.priceAuto) continue
+
+    // 1. تحديث أسهم دبي المالي (DFM)
+    if (s.ex === 'DFM' && s.yahoo) {
+      try {
+        const q = await fetchYahooQuote(s.yahoo)
+        s.price = Math.round(q.price * 1000) / 1000
+        s.asof = isoDate(q.time)
+        ok++
+        console.log(`✓ DFM: ${s.sym.padEnd(12)} ${s.price} ${q.currency}`)
+      } catch (e) {
+        fail++
+        console.warn(`✗ DFM: ${s.sym.padEnd(12)} ${e.message} — أبقيت القيمة السابقة`)
+      }
+    }
+    // 2. تحديث أسهم سوق أبوظبي للأوراق المالية (ADX)
+    else if (s.ex === 'ADX' && s.tradingview) {
+      try {
+        const q = await fetchTvQuote(s.tradingview)
+        s.price = Math.round(q.price * 1000) / 1000
+        s.asof = isoDate(q.time)
+        ok++
+        console.log(`✓ ADX: ${s.sym.padEnd(12)} ${s.price} ${q.currency}`)
+      } catch (e) {
+        fail++
+        console.warn(`✗ ADX: ${s.sym.padEnd(12)} ${e.message} — أبقيت القيمة السابقة`)
+      }
     }
     await sleep(300)
   }
 
   data.lastUpdated = new Date().toISOString()
-  data.source = ok > 0 ? 'yahoo+manual' : 'manual'
+  data.source = ok > 0 ? 'yahoo+tradingview' : 'manual'
 
   mkdirSync(dirname(OUT), { recursive: true })
   writeFileSync(OUT, JSON.stringify(data, null, 2) + '\n', 'utf8')
@@ -68,7 +106,8 @@ async function main() {
   if (ok === 0) process.exit(1)
 }
 
-main().catch((e) => {
+main().catch(e => {
   console.error('خطأ غير متوقع:', e)
   process.exit(1)
 })
+
