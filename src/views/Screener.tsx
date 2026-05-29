@@ -522,21 +522,22 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                     </h3>
                   </div>
                   <div className="tablewrap">
-                    <table className="screener" style={{ width: '100%', minWidth: '980px' }}>
+                    <table className="screener" style={{ width: '100%', minWidth: '1020px' }}>
                       <thead>
                         <tr>
-                          <th>اسم السهم</th>
+                          <th>اسم الشركة</th>
+                          <th style={{ textAlign: 'center' }}>القيمة الاسمية</th>
+                          <th style={{ width: '130px', textAlign: 'center' }}>المدى اليومي (أدنى/أعلى)</th>
                           <th>آخر سعر</th>
                           <th>التغير</th>
                           <th>التغير (%)</th>
-                          <th>حجم التداول</th>
-                          <th>القيمة اليومية</th>
+                          <th>حجم التداول (سهم)</th>
+                          <th>قيمة التداول</th>
                           <th>الصفقات</th>
                           <th>الإغلاق السابق</th>
                           <th>سعر الفتح</th>
                           <th>الأعلى</th>
                           <th>الأدنى</th>
-                          <th style={{ width: '140px', textAlign: 'center' }}>المدى اليومي (أدنى/أعلى)</th>
                           <th style={{ textAlign: 'center' }}>المحفظة</th>
                         </tr>
                       </thead>
@@ -555,24 +556,11 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                                   </span>
                                 </span>
                               </td>
-                              <td style={{ fontWeight: 700 }}>{cell(s.price !== null ? s.price.toFixed(2) : null)}</td>
-                              <td style={{ fontWeight: 800, direction: 'ltr', color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)' }}>
-                                {d.isFlat ? '0.00' : `${d.isUp ? '▲ +' : '▼ '}${Math.abs(d.change).toFixed(2)}`}
-                              </td>
-                              <td style={{ fontWeight: 800, direction: 'ltr', color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)' }}>
-                                {d.pct}
-                              </td>
-                              <td>{d.volume.toLocaleString('en-US')}</td>
-                              <td>{Math.round(d.value).toLocaleString('en-US')} د.إ</td>
-                              <td>{d.trades.toLocaleString('en-US')}</td>
-                              <td>{d.prevClose.toFixed(2)}</td>
-                              <td>{d.open.toFixed(2)}</td>
-                              <td style={{ color: 'var(--good)' }}>{d.high.toFixed(2)}</td>
-                              <td style={{ color: 'var(--bad)' }}>{d.low.toFixed(2)}</td>
+                              <td style={{ textAlign: 'center', color: 'var(--muted)', fontWeight: 600 }}>1.00</td>
                               <td onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', direction: 'ltr', justifyContent: 'center' }}>
                                   <span style={{ fontSize: '9px', color: 'var(--muted2)', fontWeight: 600 }}>{d.low.toFixed(2)}</span>
-                                  <div style={{ position: 'relative', width: '60px', height: '4px', background: 'var(--line)', borderRadius: '2px' }} title={`أعلى سعر اليوم: ${d.high.toFixed(2)} — أدنى سعر اليوم: ${d.low.toFixed(2)}`}>
+                                  <div style={{ position: 'relative', width: '50px', height: '4px', background: 'var(--line)', borderRadius: '2px' }} title={`أعلى سعر اليوم: ${d.high.toFixed(2)} — أدنى سعر اليوم: ${d.low.toFixed(2)}`}>
                                     <div style={{
                                       position: 'absolute',
                                       left: `${Math.min(100, Math.max(0, percent))}%`,
@@ -589,6 +577,20 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                                   <span style={{ fontSize: '9px', color: 'var(--muted2)', fontWeight: 600 }}>{d.high.toFixed(2)}</span>
                                 </div>
                               </td>
+                              <td style={{ fontWeight: 700 }}>{cell(s.price !== null ? s.price.toFixed(2) : null)}</td>
+                              <td style={{ fontWeight: 800, direction: 'ltr', color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)' }}>
+                                {d.isFlat ? '0.00' : `${d.isUp ? '▲ +' : '▼ '}${Math.abs(d.change).toFixed(2)}`}
+                              </td>
+                              <td style={{ fontWeight: 800, direction: 'ltr', color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)' }}>
+                                {d.pct}
+                              </td>
+                              <td>{d.volume.toLocaleString('en-US')}</td>
+                              <td>{Math.round(d.value).toLocaleString('en-US')} د.إ</td>
+                              <td>{d.trades.toLocaleString('en-US')}</td>
+                              <td>{d.prevClose.toFixed(2)}</td>
+                              <td>{d.open.toFixed(2)}</td>
+                              <td style={{ color: 'var(--good)' }}>{d.high.toFixed(2)}</td>
+                              <td style={{ color: 'var(--bad)' }}>{d.low.toFixed(2)}</td>
                               <td onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center' }}>
                                 <button 
                                   onClick={() => togglePortfolioStock(s.sym)}
