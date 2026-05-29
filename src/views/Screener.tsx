@@ -25,7 +25,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
 
   const rows = useMemo(() => {
     const term = q.trim().toLowerCase()
-    let list = DATA.filter((s) => {
+    const list = DATA.filter((s) => {
       if (ex !== 'all' && s.ex !== ex) return false
       if (cat !== 'all' && s.cat !== cat) return false
       if (sector !== 'all' && s.sector !== sector) return false

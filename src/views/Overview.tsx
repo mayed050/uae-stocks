@@ -43,7 +43,7 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
       DATA.map((s) => ({ s, u: upcoming(s) }))
         .filter((r): r is { s: Stock; u: Upcoming } => r.u !== null && isAlert(r.u))
         .sort((a, b) => (a.u.n ?? 9999) - (b.u.n ?? 9999)),
-    [],
+    [DATA],
   )
 
   const sectorData = useMemo(() => {
@@ -58,7 +58,7 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
         .filter((d): d is { sym: string; y: number } => d.y !== null)
         .sort((a, b) => b.y - a.y)
         .slice(0, 8),
-    [],
+    [DATA],
   )
 
   const peData = useMemo(
@@ -66,7 +66,7 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
       DATA.filter((s) => s.pe !== null)
         .map((s) => ({ sym: s.sym, pe: s.pe as number }))
         .sort((a, b) => a.pe - b.pe),
-    [],
+    [DATA],
   )
 
   const monthData = useMemo(() => {
@@ -84,7 +84,7 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
     () =>
       DATA.map((s) => ({ s, y: parseYield(s.div.yld) }))
         .sort((a, b) => (b.y ?? -1) - (a.y ?? -1)),
-    [],
+    [DATA],
   )
   const maxY = Math.max(...heat.map((h) => h.y ?? 0))
 
