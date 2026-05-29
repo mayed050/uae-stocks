@@ -56,8 +56,10 @@ export function upcoming(item: Stock): Upcoming | null {
   return null
 }
 
-/** هل يقع ضمن نافذة التنبيه (≤30 يومًا) أو توزيع مُراقب بلا تاريخ. */
+/** هل يقع ضمن نافذة التنبيه (0–30 يومًا مستقبلاً) أو توزيع مُراقب بلا تاريخ. */
 export function isAlert(u: Upcoming | null): boolean {
   if (!u) return false
-  return Boolean(u.watch) || (u.n !== null && u.n <= 30)
+  // فقط التوزيعات القادمة خلال 30 يوماً، أو العناصر المراقبة (watch) بدون تاريخ
+  // التواريخ الماضية (n < 0) لا تُشعل تنبيهاً — تُعرض فقط في جدول التقويم
+  return Boolean(u.watch) || (u.n !== null && u.n >= 0 && u.n <= 30)
 }
