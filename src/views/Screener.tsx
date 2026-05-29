@@ -164,6 +164,16 @@ const SECTOR_TITLES = [
   'الشركات الأجنبية'
 ]
 
+interface MovementStock {
+  name: string
+  sym: string
+  price: string
+  change: string
+  pct: string
+  up?: boolean
+  flat?: boolean
+}
+
 function getDailyData(s: Stock) {
   const symbol = s.sym.toUpperCase()
   const price = s.price ?? 1.0
@@ -180,13 +190,13 @@ function getDailyData(s: Stock) {
     return min + (x - Math.floor(x)) * (max - min)
   }
 
-  let change = 0
-  let pct = '0.00%'
-  let isUp = false
-  let isFlat = true
+  let change: number
+  let pct: string
+  let isUp: boolean
+  let isFlat: boolean
   
   // Find in DFM
-  let found: any = null
+  let found: MovementStock | null = null
   for (const sec of SECTOR_MOVEMENTS) {
     const f = sec.stocks.find(st => st.sym.toUpperCase() === symbol)
     if (f) { found = f; break; }
@@ -194,7 +204,7 @@ function getDailyData(s: Stock) {
   
   // Find in ADX
   if (!found) {
-    found = ADX_MOVEMENTS.find(st => st.sym.toUpperCase() === symbol)
+    found = ADX_MOVEMENTS.find(st => st.sym.toUpperCase() === symbol) as MovementStock | undefined ?? null
   }
 
   if (found) {
