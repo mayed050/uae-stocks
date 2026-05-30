@@ -4,32 +4,11 @@ import type { Stock, Exchange, Category } from '../data'
 import { useStocks, usePortfolio } from '../store'
 import { parseYield, parseAmount } from '../format'
 import Avatar from '../components/Avatar'
-import { SECTOR_MOVEMENTS } from '../data/movements'
 import { getDailyData } from '@/market'
 import { cell } from '@/components/ui/cell'
+import { SECTOR_TITLES, mapDFMSectorToDb } from '@/data/sectors'
 
 type SortKey = 'name' | 'price' | 'pe' | 'yield' | 'mcap'
-
-const SECTOR_TITLES = SECTOR_MOVEMENTS.map(s => s.title)
-
-
-const mapDFMSectorToDb = (dfmTitle: string): string[] => {
-  switch (dfmTitle) {
-    case 'البنوك': return ['بنوك', 'خدمات مالية']
-    case 'الاستثمار والخدمات المالية': return ['استثمار', 'خدمات مالية', 'استثمار / متنوع']
-    case 'الصناعة': return ['صناعة / طاقة', 'بتروكيماويات']
-    case 'العقارات': return ['عقار']
-    case 'النقل والشحن': return ['طيران / نقل', 'نقل / خدمات', 'نقل / طاقة']
-    case 'الاتصالات': return ['اتصالات']
-    case 'الخدمات': return ['مرافق', 'بنية تحتية / رسوم', 'خدمات استهلاكية']
-    case 'السلع': return ['تجزئة / استهلاك', 'خدمات استهلاكية']
-    case 'الرعاية الصحية والتعليم': return ['رعاية / تعليم', 'رعاية صحية']
-    case 'التأمين': return ['تأمين']
-    case 'الأغذية': return ['تجزئة / استهلاك']
-    case 'الشركات الأجنبية': return ['استثمار', 'بنوك']
-    default: return [dfmTitle]
-  }
-}
 
 export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA } = useStocks()
