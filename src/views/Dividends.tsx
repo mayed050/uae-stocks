@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import type { Stock } from '../data'
 import { useStocks } from '../store'
 import { parseISO } from '../lib'
-import { MONTHS_AR, parseYield } from '../format'
+import { MONTHS_AR, parseYield, getAnnualPs } from '../format'
 import Avatar from '../components/Avatar'
 
 const NA = 'يلزم التحقق'
@@ -34,8 +34,8 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
   }, [DATA, year])
 
   const calc = useMemo(() => {
-    const annualTarget = targetMonthly * 12
-    const totalCapital = annualTarget / (customAvgYield / 100)
+    const annualTarget = (targetMonthly || 0) * 12
+    const totalCapital = customAvgYield > 0 ? annualTarget / (customAvgYield / 100) : 0
     
     // تصفية وترتيب الأسهم حسب العوائد الأعلى
     const candidates = DATA.filter(s => {
@@ -68,9 +68,12 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
     const count = selected.length || 1
     const allocPerStock = totalCapital / count
     selected.forEach(x => {
+      const price = x.stock.price ?? 1.0
       x.allocation = allocPerStock
-      x.sharesNeeded = Math.round(allocPerStock / (x.stock.price ?? 1))
-      x.projectedAnnual = allocPerStock * (x.yld / 100)
+      x.sharesNeeded = price > 0 ? Math.round(allocPerStock / price) : 0
+      // الحساب الرياضي الدقيق للتوزيع المتوقع عبر دالة getAnnualPs المشتركة
+      const annualPs = getAnnualPs(x.stock)
+      x.projectedAnnual = x.sharesNeeded * annualPs
     })
 
     return {
@@ -124,8 +127,11 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
             <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '800', marginBottom: '8px', color: 'var(--muted)' }}>💵 الدخل الشهري المستهدف (د.إ):</label>
             <input 
               type="number" 
-              value={targetMonthly}
-              onChange={(e) => setTargetMonthly(Math.max(100, parseInt(e.target.value) || 0))}
+              value={targetMonthly || ''}
+              onChange={(e) => {
+                const val = e.target.value === '' ? 0 : parseInt(e.target.value)
+                setTargetMonthly(isNaN(val) ? 0 : val)
+              }}
               style={{ width: '100%', padding: '10px 14px', background: 'var(--chip)', color: 'var(--txt)', border: '1px solid var(--line)', borderRadius: '10px', fontSize: '16px', fontWeight: 700, outline: 'none' }}
             />
           </div>
@@ -134,8 +140,11 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
             <input 
               type="number" 
               step="0.1"
-              value={customAvgYield}
-              onChange={(e) => setCustomAvgYield(Math.max(1, parseFloat(e.target.value) || 0))}
+              value={customAvgYield || ''}
+              onChange={(e) => {
+                const val = e.target.value === '' ? 0 : parseFloat(e.target.value)
+                setCustomAvgYield(isNaN(val) ? 0 : val)
+              }}
               style={{ width: '100%', padding: '10px 14px', background: 'var(--chip)', color: 'var(--txt)', border: '1px solid var(--line)', borderRadius: '10px', fontSize: '16px', fontWeight: 700, outline: 'none' }}
             />
           </div>

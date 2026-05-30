@@ -23,8 +23,8 @@ export const SECTOR_MOVEMENTS: SectorMovement[] = [
   {
     title: 'البنوك',
     stocks: [
-      { name: 'الإمارات دبي الوطني', sym: 'EMIRATESNBD', price: '10.15', pct: '-0.49%', change: '-0.05', up: false },
-      { name: 'بنك دبي الإسلامي', sym: 'DIB', price: '5.12', pct: '+0.39%', change: '+0.02', up: true },
+      { name: 'الإمارات دبي الوطني', sym: 'EMIRATESNBD', price: '27.62', pct: '-0.18%', change: '-0.05', up: false },
+      { name: 'بنك دبي الإسلامي', sym: 'DIB', price: '7.40', pct: '+0.27%', change: '+0.02', up: true },
       { name: 'بنك دبي التجاري', sym: 'CBD', price: '5.25', pct: '0.00%', change: '+0.00', flat: true },
       { name: 'مصرف عجمان', sym: 'AJMANBANK', price: '1.50', pct: '-0.66%', change: '-0.01', up: false },
       { name: 'جي اف اتش', sym: 'GFH', price: '0.29', pct: '0.00%', change: '+0.00', flat: true },
@@ -42,7 +42,7 @@ export const SECTOR_MOVEMENTS: SectorMovement[] = [
     stocks: [
       { name: 'دبي للاستثمار', sym: 'DIC', price: '2.20', pct: '+0.45%', change: '+0.01', up: true },
       { name: 'شعاع القابضة', sym: 'SHUAA', price: '0.95', pct: '-2.06%', change: '-0.02', up: false },
-      { name: 'سوق دبي المالي', sym: 'DFM', price: '1.34', pct: '0.00%', change: '+0.00', flat: true },
+      { name: 'سوق دبي المالي', sym: 'DFM', price: '1.35', pct: '0.00%', change: '+0.00', flat: true },
       { name: 'اكتتاب', sym: 'EKTTITAB', price: '0.25', pct: '0.00%', change: '+0.00', flat: true },
       { name: 'المدينة', sym: 'ALMADINA', price: '0.45', pct: '+2.27%', change: '+0.01', up: true },
       { name: 'بيت التمويل الخليجي', sym: 'GFH2', price: '0.29', pct: '0.00%', change: '+0.00', flat: true },
@@ -108,7 +108,7 @@ export const SECTOR_MOVEMENTS: SectorMovement[] = [
   {
     title: 'الرعاية الصحية والتعليم',
     stocks: [
-      { name: 'أمانات القابضة', sym: 'AMANAT', price: '1.07', pct: '+0.94%', change: '+0.01', up: true },
+      { name: 'أمانات القابضة', sym: 'AMANAT', price: '1.05', pct: '+0.96%', change: '+0.01', up: true },
       { name: 'تعليم', sym: 'TAALEEM', price: '3.50', pct: '0.00%', change: '+0.00', flat: true }
     ]
   },
