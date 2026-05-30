@@ -6,6 +6,7 @@ import { parseYield, parseAmount } from '@/format'
 import Avatar from '@/components/Avatar'
 import { getDailyData } from '@/market'
 import { cell } from '@/components/ui/cell'
+import StatCard from '@/components/ui/StatCard'
 import { SECTOR_TITLES, mapDFMSectorToDb } from '@/data/sectors'
 
 type SortKey = 'name' | 'price' | 'pe' | 'yield' | 'mcap'
@@ -88,12 +89,28 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
   }
   const arrow = (k: SortKey) => (sort === k ? (dir === 1 ? ' ▲' : ' ▼') : '')
 
+  // ملخّص حيّ للنتائج المطابقة للفلتر الحالي (يتحدّث تلقائياً)
+  const summary = useMemo(() => {
+    const yields = rows.map((s) => parseYield(s.div.yld)).filter((x): x is number => x !== null)
+    const avgYield = yields.length ? yields.reduce((a, b) => a + b, 0) / yields.length : 0
+    const dfm = rows.filter((s) => s.ex === 'DFM').length
+    const adx = rows.filter((s) => s.ex === 'ADX').length
+    const secMap = new Map<string, number>()
+    rows.forEach((s) => secMap.set(s.sector, (secMap.get(s.sector) ?? 0) + 1))
+    const topSectors = [...secMap.entries()]
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 6)
+    return { avgYield, dfm, adx, topSectors }
+  }, [rows])
+  const maxSectorCount = Math.max(1, ...summary.topSectors.map((s) => s.count))
+
 
   return (
     <div className="view">
       <div className="page-head">
         <h1>مستكشف الأسهم</h1>
-        <p>كل المؤشرات المالية لـ {DATA.length} سهمًا — اضغط أي صف للتفاصيل الكاملة</p>
+        <p>عرض <b style={{ color: 'var(--brand)' }}>{rows.length}</b> من {DATA.length} سهمًا مطابقًا للفلتر — اضغط أي صف للتفاصيل الكاملة</p>
       </div>
 
       <div className="overview-layout">
@@ -329,6 +346,44 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
           )}
           
           {rows.length === 0 && <div className="empty">لا توجد نتائج مطابقة.</div>}
+        </div>
+
+        {/* الشريط الجانبي: ملخّص حيّ للنتائج المطابقة */}
+        <div className="overview-sidebar">
+          <div className="o-widget">
+            <h4 className="o-widget-h">🔎 ملخّص النتائج</h4>
+
+            <div className="stats" style={{ gridTemplateColumns: '1fr 1fr', gap: '10px', margin: '0 0 14px' }}>
+              <StatCard color="var(--brand)" value={rows.length} label="أسهم مطابقة" />
+              <StatCard color="var(--good)" value={`${summary.avgYield.toFixed(2)}%`} label="متوسط العائد" />
+            </div>
+
+            <div className="o-index-item">
+              <span style={{ color: 'var(--muted)' }}>سوق دبي (DFM)</span>
+              <b style={{ color: 'var(--brand)' }}>{summary.dfm}</b>
+            </div>
+            <div className="o-index-item">
+              <span style={{ color: 'var(--muted)' }}>سوق أبوظبي (ADX)</span>
+              <b style={{ color: 'var(--good)' }}>{summary.adx}</b>
+            </div>
+
+            {summary.topSectors.length > 0 && (
+              <div style={{ marginTop: '14px' }}>
+                <div style={{ fontSize: '11.5px', fontWeight: 800, color: 'var(--muted)', marginBottom: '8px' }}>التوزيع القطاعي</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
+                  {summary.topSectors.map((s) => (
+                    <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--txt)', flex: '0 0 90px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</span>
+                      <div style={{ flex: 1, height: '8px', background: 'var(--chip)', borderRadius: '99px', overflow: 'hidden' }}>
+                        <div style={{ width: `${(s.count / maxSectorCount) * 100}%`, height: '100%', background: 'linear-gradient(90deg, var(--brand), var(--brand2))', borderRadius: '99px' }} />
+                      </div>
+                      <b style={{ fontSize: '11px', color: 'var(--muted)', flex: '0 0 18px', textAlign: 'left' }}>{s.count}</b>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
