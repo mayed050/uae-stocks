@@ -3,7 +3,23 @@ import type { Stock } from '@/data'
 import { useStocks, usePortfolio } from '@/store'
 import { fmtAmount } from '@/format'
 import Avatar from '@/components/Avatar'
+import SimBadge from '@/components/ui/SimBadge'
 import { getTechnicalData, generateHistoricalData } from './tradingSim'
+
+// تجميع التبويبات التسعة في 4 مجموعات لتقليل الحمل الإدراكي
+const TAB_GROUPS = {
+  overview: ['trading', 'summary'],
+  financial: ['data', 'reports'],
+  governance: ['disclosures', 'agm', 'corporate'],
+  ownership: ['shareholders', 'foreign'],
+} as const
+type TabGroup = keyof typeof TAB_GROUPS
+const GROUP_LABELS: Record<TabGroup, string> = {
+  overview: 'نظرة عامة',
+  financial: 'البيانات والتقارير',
+  governance: 'الإفصاحات والحوكمة',
+  ownership: 'الملكية',
+}
 
 export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA } = useStocks()
@@ -19,10 +35,9 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
     return defaultStock ? defaultStock.sym : DATA[0]?.sym
   })
 
-  // التبويب النشط داخل تفاصيل السهم (9 تبويبات)
-  const [activeTab, setActiveTab] = useState<
-    'trading' | 'summary' | 'data' | 'disclosures' | 'reports' | 'agm' | 'corporate' | 'shareholders' | 'foreign'
-  >('trading')
+  // المجموعة النشطة (4 مجموعات تضم التبويبات التسعة)
+  const [group, setGroup] = useState<TabGroup>('overview')
+  const show = (t: string) => (TAB_GROUPS[group] as readonly string[]).includes(t)
 
   // تصفية الأسهم المعروضة في القائمة اليمنى بناء على السوق والبحث
   const filteredStocks = useMemo(() => {
@@ -515,69 +530,30 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
             </div>
           </div>
 
-          {/* شريط التبويبات التسعة المطابق للصورة */}
+          {/* شريط التبويبات المُجمَّعة (4 مجموعات) */}
           <div className="financial-tabs-nav">
-            <button
-              onClick={() => setActiveTab('trading')}
-              className={`financial-tab-btn ${activeTab === 'trading' ? 'active' : ''}`}
-            >
-              التداول
-            </button>
-            <button
-              onClick={() => setActiveTab('summary')}
-              className={`financial-tab-btn ${activeTab === 'summary' ? 'active' : ''}`}
-            >
-              ملخص يومي
-            </button>
-            <button
-              onClick={() => setActiveTab('data')}
-              className={`financial-tab-btn ${activeTab === 'data' ? 'active' : ''}`}
-            >
-              البيانات
-            </button>
-            <button
-              onClick={() => setActiveTab('disclosures')}
-              className={`financial-tab-btn ${activeTab === 'disclosures' ? 'active' : ''}`}
-            >
-              الإفصاحات
-            </button>
-            <button
-              onClick={() => setActiveTab('reports')}
-              className={`financial-tab-btn ${activeTab === 'reports' ? 'active' : ''}`}
-            >
-              التقارير
-            </button>
-            <button
-              onClick={() => setActiveTab('agm')}
-              className={`financial-tab-btn ${activeTab === 'agm' ? 'active' : ''}`}
-            >
-              الاجتماعات العامة
-            </button>
-            <button
-              onClick={() => setActiveTab('corporate')}
-              className={`financial-tab-btn ${activeTab === 'corporate' ? 'active' : ''}`}
-            >
-              إجراءات الشركات
-            </button>
-            <button
-              onClick={() => setActiveTab('shareholders')}
-              className={`financial-tab-btn ${activeTab === 'shareholders' ? 'active' : ''}`}
-            >
-              أكبر المساهمين
-            </button>
-            <button
-              onClick={() => setActiveTab('foreign')}
-              className={`financial-tab-btn ${activeTab === 'foreign' ? 'active' : ''}`}
-            >
-              الاستثمارات الأجنبية
-            </button>
+            {(Object.keys(TAB_GROUPS) as TabGroup[]).map((g) => (
+              <button
+                key={g}
+                onClick={() => setGroup(g)}
+                className={`financial-tab-btn ${group === g ? 'active' : ''}`}
+              >
+                {GROUP_LABELS[g]}
+              </button>
+            ))}
           </div>
 
           {/* محتوى التبويبات الفعلي */}
           <div style={{ width: '100%' }}>
+
+            {(group === 'overview' || group === 'financial') && (
+              <div style={{ marginBottom: '12px' }}>
+                <SimBadge title="أرقام التداول والأحجام والمدى اليومي/السنوي في هذه المجموعة توضيحية مُولّدة خوارزمياً، وليست بيانات سوق رسمية لحظية.">أرقام التداول توضيحية</SimBadge>
+              </div>
+            )}
             
             {/* 1. تبويب التداول (شبكة المقاييس الـ 19 الرباعية بالترتيب الدقيق المعروض في صورتك) */}
-            {activeTab === 'trading' && (
+            {show('trading') && (
               <div className="metrics-quad-grid">
                 
                 {/* العمود الأول: المقاييس السعرية الأساسية */}
@@ -680,7 +656,7 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
             )}
 
             {/* 2. تبويب ملخص يومي */}
-            {activeTab === 'summary' && (
+            {show('summary') && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%' }}>
                 
                 {/* الجزء العلوي: العنوان والتاريخ وزر التحميل المماثل للصورة المرفقة */}
@@ -759,7 +735,7 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
             )}
 
             {/* 3. تبويب البيانات الأساسية (Fundamentals) */}
-            {activeTab === 'data' && (
+            {show('data') && (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
                 <div style={{ background: 'var(--chip)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)', textAlign: 'center' }}>
                   <div style={{ fontSize: '11.5px', color: 'var(--muted)', fontWeight: 700, marginBottom: '6px' }}>مكرر الربحية (P/E)</div>
@@ -785,7 +761,7 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
             )}
 
             {/* 4. تبويب الإفصاحات */}
-            {activeTab === 'disclosures' && (
+            {show('disclosures') && (
               <div>
                 <div className="disclosure-card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#ff6b00', fontWeight: 800 }}>
@@ -811,7 +787,7 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
             )}
 
             {/* 5. تبويب التقارير */}
-            {activeTab === 'reports' && (
+            {show('reports') && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--chip)', padding: '12px 16px', borderRadius: '10px', border: '1px solid var(--line)' }}>
                   <div>
@@ -831,7 +807,7 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
             )}
 
             {/* 6. تبويب الاجتماعات العامة */}
-            {activeTab === 'agm' && (
+            {show('agm') && (
               <div style={{ background: 'var(--chip)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
                   <span style={{ color: 'var(--muted)', fontWeight: 700 }}>تاريخ آخر جمعية عمومية:</span>
@@ -853,7 +829,7 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
             )}
 
             {/* 7. تبويب إجراءات الشركات (التوزيعات وتواريخها) */}
-            {activeTab === 'corporate' && (
+            {show('corporate') && (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
                 <div style={{ background: 'var(--chip)', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--line)' }}>
                   <span style={{ fontSize: '11px', color: 'var(--muted)', display: 'block', fontWeight: 700 }}>تاريخ الاستحقاق (Ex-Date)</span>
@@ -875,7 +851,7 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
             )}
 
             {/* 8. تبويب أكبر المساهمين */}
-            {activeTab === 'shareholders' && (
+            {show('shareholders') && (
               <div style={{ background: 'var(--chip)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)' }}>
                 <h4 style={{ margin: '0 0 12px 0', color: 'var(--txt)', borderBottom: '1px solid var(--line)', paddingBottom: '6px' }}>👥 هيكل كبار مساهمي شركة {currentStock.name.split('—')[0]}</h4>
                 <table style={{ width: '100%', fontSize: '12px', borderCollapse: 'collapse' }}>
@@ -908,7 +884,7 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
             )}
 
             {/* 9. تبويب الاستثمارات الأجنبية */}
-            {activeTab === 'foreign' && (
+            {show('foreign') && (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
                 <div style={{ background: 'var(--chip)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)', textAlign: 'center' }}>
                   <div style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 700, marginBottom: '6px' }}>الحد الأقصى لتملك الأجانب</div>
