@@ -7,8 +7,9 @@ import type { Stock } from '../data'
 import { useStocks, useMarketStats, usePortfolio } from '../store'
 import { fmtAmount, parseYield, parseAmount } from '../format'
 import Avatar from '../components/Avatar'
-import { SECTOR_MOVEMENTS, ADX_MOVEMENTS } from '../data/movements'
-import type { MovementStock } from '../data/movements'
+import { ADX_MOVEMENTS } from '../data/movements'
+import { getDailyData, generateHistoricalData, generateSparklineData } from '../market'
+import './overview.css'
 
 const PALETTE = ['#3aa0ff', '#7c5cff', '#21c98b', '#ffb020', '#ff5a72', '#36c5d8', '#e26bd0', '#9bd13a']
 
@@ -20,151 +21,6 @@ function fmtTradingValue(val: number) {
     return `${(val / 1e3).toFixed(1)} ألف د.إ`
   }
   return `${val.toFixed(0)} د.إ`
-}
-
-function getDailyData(s: Stock) {
-  const symbol = s.sym.toUpperCase()
-  const price = s.price ?? 1.0
-  
-  // Deterministic seed from symbol string
-  let seed = 0
-  for (let i = 0; i < symbol.length; i++) {
-    seed += symbol.charCodeAt(i)
-  }
-  
-  // Pseudo-random numbers using stable seed (fixed per symbol, doesn't drift across re-renders)
-  let localSeed = seed
-  const rand = (max: number, min = 0) => {
-    const x = Math.sin(localSeed++) * 10000
-    return min + (x - Math.floor(x)) * (max - min)
-  }
-
-  let change: number
-  let pct: string
-  let isUp: boolean
-  let isFlat: boolean
-  
-  // Find in DFM
-  let found: MovementStock | null = null
-  for (const sec of SECTOR_MOVEMENTS) {
-    const f = sec.stocks.find(st => st.sym.toUpperCase() === symbol)
-    if (f) { found = f; break; }
-  }
-  
-  // Find in ADX
-  if (!found) {
-    found = ADX_MOVEMENTS.find(st => st.sym.toUpperCase() === symbol) as MovementStock | undefined ?? null
-  }
-
-  if (found) {
-    change = parseFloat(found.change)
-    pct = found.pct
-    isUp = parseFloat(found.change) > 0
-    isFlat = parseFloat(found.change) === 0
-  } else {
-    // Generate stable mock values
-    const changePct = rand(3.5, -3.5) // -3.5% to +3.5%
-    change = Math.round((price * (changePct / 100)) * 100) / 100
-    pct = `${change >= 0 ? '+' : ''}${changePct.toFixed(2)}%`
-    isUp = change > 0
-    isFlat = change === 0
-  }
-
-  const prevClose = price - change
-  const high = Math.max(price, prevClose) * (1 + rand(0.012, 0.001))
-  const low = Math.min(price, prevClose) * (1 - rand(0.012, 0.001))
-  const open = prevClose * (1 + rand(0.004, -0.004))
-
-  const rawMcap = parseAmount(s.mcap) ?? 5e9
-  const mcapVal = rawMcap > 1e6 ? rawMcap / 1e9 : rawMcap
-  const volume = Math.round((mcapVal * 150000) * rand(2.2, 0.1))
-  const value = volume * price
-  const trades = Math.round(volume * rand(0.00005, 0.00001)) + 3
-
-  return {
-    change,
-    pct,
-    volume,
-    value,
-    trades,
-    prevClose,
-    open,
-    high,
-    low,
-    isUp,
-    isFlat,
-    isDown: !isUp && !isFlat
-  }
-}
-
-function generateHistoricalData(sym: string, timeframe: string, currentPrice: number) {
-  let seed = 0
-  for (let i = 0; i < sym.length; i++) {
-    seed += sym.charCodeAt(i)
-  }
-
-  const points = ({ '1W': 7, '1M': 30, '3M': 90, '6M': 120, '1Y': 250 } as Record<string, number>)[timeframe] ?? 365
-
-  const data = []
-  let price = currentPrice
-  const isUpTrend = seed % 2 === 0
-  const volatility = 0.012
-  const today = new Date()
-  
-  for (let i = points - 1; i >= 0; i--) {
-    const date = new Date(today)
-    date.setDate(today.getDate() - i)
-    const label = (timeframe === '1W' || timeframe === '1M')
-      ? date.toLocaleDateString('ar-AE', { day: 'numeric', month: 'short' })
-      : date.toLocaleDateString('ar-AE', { month: 'short', year: '2-digit' })
-
-    data.push({
-      date: label,
-      price: parseFloat(price.toFixed(2))
-    })
-
-    const changePct = (Math.sin(seed + i) * volatility) + (isUpTrend ? -0.0006 : 0.0006)
-    price = price * (1 - changePct)
-  }
-
-  data[data.length - 1].price = currentPrice
-  const prices = data.map(d => d.price)
-  const high = Math.max(...prices)
-  const low = Math.min(...prices)
-  const open = data[0].price
-  const close = currentPrice
-  const change = close - open
-  const changePct = (change / open) * 100
-  const isOverallUp = change >= 0
-
-  return {
-    data,
-    high,
-    low,
-    open,
-    close,
-    change,
-    changePct,
-    isOverallUp
-  }
-}
-
-function generateSparklineData(sym: string, currentPrice: number) {
-  let seed = 0
-  for (let i = 0; i < sym.length; i++) {
-    seed += sym.charCodeAt(i)
-  }
-  const points = 10
-  const data = []
-  let price = currentPrice
-  const isUpTrend = seed % 2 === 0
-  
-  for (let i = points - 1; i >= 0; i--) {
-    data.push(price)
-    const changePct = (Math.sin(seed + i) * 0.008) + (isUpTrend ? -0.0004 : 0.0004)
-    price = price * (1 - changePct)
-  }
-  return data.reverse()
 }
 
 export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
@@ -202,11 +58,10 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
 
   // تصفية وفرز قائمة حركة السوق بناء على التبويب المختار
   const movementStocks = useMemo(() => {
-    const stocksWithData = DATA.map(s => ({
-      s,
-      d: getDailyData(s),
-      pctNum: parseFloat(getDailyData(s).pct.replace('%', ''))
-    }))
+    const stocksWithData = DATA.map(s => {
+      const d = getDailyData(s)
+      return { s, d, pctNum: parseFloat(d.pct.replace('%', '')) }
+    })
 
     if (movementTab === 'gainers') {
       return stocksWithData
@@ -378,330 +233,6 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
 
   return (
     <div className="view">
-      <style>{`
-        /* تنسيقات شريط التنبيهات المباشرة الفاخر */
-        .live-badge-pulse {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 10.5px;
-          font-weight: 800;
-          color: var(--good);
-          background: rgba(33, 201, 139, 0.08);
-          border: 1px solid rgba(33, 201, 139, 0.25);
-          padding: 2.5px 8px;
-          border-radius: 20px;
-          margin-inline-start: auto;
-        }
-        .pulse-dot {
-          width: 7px;
-          height: 7px;
-          background-color: var(--good);
-          border-radius: 50%;
-          display: inline-block;
-          animation: pulse-glow 1.5s infinite;
-        }
-        @keyframes pulse-glow {
-          0% {
-            transform: scale(0.9);
-            opacity: 0.6;
-            box-shadow: 0 0 0 0 rgba(33, 201, 139, 0.7);
-          }
-          70% {
-            transform: scale(1.15);
-            opacity: 1;
-            box-shadow: 0 0 0 5px rgba(33, 201, 139, 0);
-          }
-          100% {
-            transform: scale(0.9);
-            opacity: 0.6;
-            box-shadow: 0 0 0 0 rgba(33, 201, 139, 0);
-          }
-        }
-        .o-action-item {
-          display: flex;
-          flex-direction: column;
-          gap: 7px;
-          padding: 12px 14px;
-          border-radius: 12px;
-          background: var(--chip);
-          border: 1px solid var(--line);
-          cursor: pointer;
-          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-          position: relative;
-          overflow: hidden;
-          margin-bottom: 10px;
-          text-align: right;
-          animation: slide-in-alert 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        @keyframes slide-in-alert {
-          from {
-            transform: translateY(-8px);
-            opacity: 0;
-          }
-          to {
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-        .o-action-item:hover {
-          border-color: var(--brand);
-          transform: translateY(-2px);
-          box-shadow: var(--shadow);
-          background: var(--panel-solid);
-        }
-        /* لوحة الرسم البياني التفاعلي المتطور لأسعار وحركة الأسهم */
-        .chart-dashboard-container {
-          display: flex;
-          gap: 20px;
-          align-items: stretch;
-          width: 100%;
-          direction: rtl;
-        }
-        .chart-dashboard-left {
-          flex: 1;
-          min-width: 0;
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-        .chart-dashboard-right {
-          width: 260px;
-          flex: 0 0 260px;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          max-height: 480px;
-          overflow-y: auto;
-          border-inline-start: 1px solid var(--line);
-          padding-inline-start: 12px;
-        }
-        .chart-stock-item {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          padding: 10px 12px;
-          border-radius: 10px;
-          border: 1px solid var(--line);
-          background: var(--chip);
-          cursor: pointer;
-          transition: all 0.15s ease;
-          text-align: right;
-        }
-        .chart-stock-item:hover {
-          border-color: var(--brand);
-          background: var(--panel-solid);
-        }
-        .chart-stock-item.active {
-          border-color: #ff6b00;
-          background: rgba(255, 107, 0, 0.04);
-        }
-        .chart-timeframe-btn {
-          border: 0;
-          background: transparent;
-          color: var(--muted);
-          cursor: pointer;
-          font-size: 11px;
-          font-weight: 700;
-          padding: 4px 10px;
-          border-radius: 6px;
-          transition: all 0.15s ease;
-          font-family: inherit;
-        }
-        .chart-timeframe-btn.active {
-          background: #ff6b00;
-          color: #fff;
-        }
-        @media (max-width: 768px) {
-          .chart-dashboard-container {
-            flex-direction: column;
-          }
-          .chart-dashboard-right {
-            width: 100%;
-            flex: none;
-            max-height: 140px;
-            flex-direction: row;
-            overflow-x: auto;
-            overflow-y: hidden;
-            border-inline-start: 0;
-            border-bottom: 1px solid var(--line);
-            padding-inline-start: 0;
-            padding-bottom: 12px;
-          }
-          .chart-stock-item {
-            min-width: 140px;
-            flex-shrink: 0;
-          }
-        }
-        .o-action-type-line {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          right: 0;
-          width: 4.5px;
-        }
-        .movement-row {
-          transition: all 0.15s ease;
-        }
-        .movement-row:hover {
-          background: rgba(255, 107, 0, 0.04) !important;
-          transform: scale(1.002);
-        }
-        
-        .overview-layout {
-          display: flex;
-          gap: 24px;
-          align-items: flex-start;
-          width: 100%;
-        }
-        .overview-main {
-          flex: 1;
-          min-width: 0;
-        }
-        .overview-sidebar {
-          width: 320px;
-          flex: 0 0 320px;
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-          position: sticky;
-          top: 24px;
-        }
-        .o-widget {
-          background: var(--panel);
-          backdrop-filter: blur(8px);
-          border: 1px solid var(--line);
-          border-radius: var(--radius);
-          padding: 16px;
-          box-shadow: var(--shadow);
-        }
-        .o-widget-h {
-          font-size: 14px;
-          font-weight: 800;
-          margin: 0 0 12px;
-          border-bottom: 1px solid var(--line);
-          padding-bottom: 8px;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          color: var(--txt);
-        }
-        .o-index-item {
-          display: flex;
-          justify-content: space-between;
-          padding: 8px 0;
-          border-bottom: 1px dashed var(--line);
-          font-size: 12.5px;
-        }
-        .o-index-item:last-child {
-          border-bottom: 0;
-        }
-        .o-news-item {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          padding: 8px 0;
-          border-bottom: 1px dashed var(--line);
-        }
-        .o-news-item:last-child {
-          border-bottom: 0;
-        }
-        .o-news-title {
-          font-size: 12.5px;
-          font-weight: 700;
-          color: var(--txt);
-          line-height: 1.4;
-          text-align: right;
-        }
-        .o-news-meta {
-          display: flex;
-          justify-content: space-between;
-          font-size: 10.5px;
-          color: var(--muted2);
-        }
-        .o-lead-list {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-        }
-        .o-lead-item {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 8px 10px;
-          border-radius: 12px;
-          background: var(--chip);
-          border: 1px solid var(--line);
-          cursor: pointer;
-          transition: border-color 0.15s, transform 0.12s;
-        }
-        .o-lead-item:hover {
-          border-color: var(--brand);
-          transform: translateY(-2px);
-        }
-        .o-lead-right {
-          margin-inline-start: auto;
-          text-align: left;
-          font-weight: 700;
-        }
-        .o-badge-good {
-          color: var(--good);
-          background: rgba(33, 201, 139, 0.1);
-          border: 1px solid rgba(33, 201, 139, 0.3);
-          font-size: 11px;
-          padding: 2px 6px;
-          border-radius: 6px;
-        }
-        .o-badge-brand {
-          color: var(--brand);
-          background: rgba(58, 160, 255, 0.1);
-          border: 1px solid rgba(58, 160, 255, 0.3);
-          font-size: 11px;
-          padding: 2px 6px;
-          border-radius: 6px;
-        }
-        .o-badge-warn {
-          color: var(--warn);
-          background: rgba(255, 176, 32, 0.1);
-          border: 1px solid rgba(255, 176, 32, 0.3);
-          font-size: 11px;
-          padding: 2px 6px;
-          border-radius: 6px;
-        }
-        .o-toggle-container {
-          display: inline-flex;
-          gap: 6px;
-          background: var(--chip);
-          padding: 4px;
-          border-radius: 10px;
-          border: 1px solid var(--line);
-        }
-        .o-toggle-btn {
-          border: 0;
-          background: transparent;
-          color: var(--muted);
-          cursor: pointer;
-          font-family: inherit;
-          font-size: 12.5px;
-          padding: 6px 12px;
-          border-radius: 8px;
-          transition: 0.15s;
-        }
-        .o-toggle-btn.active {
-          background: linear-gradient(120deg, var(--brand), var(--brand2));
-          color: #fff;
-        }
-        @media (max-width: 1100px) {
-          .overview-layout {
-            flex-direction: column;
-          }
-          .overview-sidebar {
-            width: 100%;
-            flex: none;
-            position: static;
-          }
-        }
-      `}</style>
 
       <div className="page-head">
         <h1>نظرة عامة على الأسهم والأسواق</h1>
@@ -808,7 +339,7 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
                           <Cell key={i} fill={PALETTE[i % PALETTE.length]} stroke="var(--panel-solid)" />
                         ))}
                       </Pie>
-                      <Tooltip contentStyle={tipStyle} formatter={(val, name) => [`${val} شركات مدرجة`, name]} />
+                      <Tooltip contentStyle={tipStyle} formatter={(val, name) => [`${String(val)} شركات مدرجة`, name]} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -1032,6 +563,7 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
               <div>
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900, color: '#ff6b00', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   🟠 حركة السوق
+                  <span className="sim-badge" title="التغيّرات والأحجام والصفقات هنا قيم توضيحية مُولّدة خوارزمياً للعرض، وليست تداولاً حقيقياً لحظياً.">بيانات توضيحية</span>
                 </h3>
                 <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'var(--muted)', fontWeight: 600 }}>
                   قائمة مرتبة حسب {
@@ -1595,9 +1127,9 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
           <div className="o-widget" style={{ marginTop: '10px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: '8px', marginBottom: '12px' }}>
               <h4 className="o-widget-h" style={{ margin: 0, border: 0, padding: 0 }}>🔔 إجراءات وأحداث الشركات</h4>
-              <span className="live-badge-pulse" title="متابعة فورية ومستمرة لإجراءات الشركات في سوق الإمارات">
+              <span className="live-badge-pulse" title="عرض توضيحي لإجراءات الشركات يتجدّد تلقائياً — أمثلة محاكاة وليست إفصاحات رسمية لحظية. تأكّد من المصادر الرسمية (DFM / ADX).">
                 <span className="pulse-dot" />
-                مباشر
+                عرض تجريبي
               </span>
             </div>
             

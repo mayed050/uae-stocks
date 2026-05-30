@@ -123,7 +123,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
 
   // ب. جدول التدفق النقدي المتوقع للأرباح شهرياً
   const monthlyData = useMemo(() => {
-    const months = new Array(12).fill(0)
+    const months = new Array<number>(12).fill(0)
     items.forEach(item => {
       const payDate = parseISO(item.stock.div.pay)
       const nextPayDate = parseISO(item.stock.div.nextPay)
@@ -655,7 +655,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
                 <CartesianGrid vertical={false} stroke="var(--line)" />
                 <XAxis dataKey="name" tick={{ fill: 'var(--muted)', fontSize: 11 }} interval={0} angle={-35} textAnchor="end" height={60} />
                 <YAxis tick={{ fill: 'var(--muted)', fontSize: 12 }} />
-                <Tooltip contentStyle={tipStyle} formatter={(val) => [`${val} درهم`, 'توزيعات مستلمة']} />
+                <Tooltip contentStyle={tipStyle} formatter={(val) => [`${String(val)} درهم`, 'توزيعات مستلمة']} />
                 <Bar dataKey="amount" fill="#7c5cff" radius={[6, 6, 0, 0]}>
                   {monthlyData.some(d => d.amount > 0) && (
                     <LabelList dataKey="amount" position="top" formatter={(val) => typeof val === 'number' && val > 0 ? String(val) : ''} fill="var(--txt)" fontSize={9} />

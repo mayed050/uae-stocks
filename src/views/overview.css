@@ -1,0 +1,339 @@
+/* أنماط صفحة النظرة العامة — منقولة من كتلة <style> المضمّنة إلى ملف مستقل
+   لتقليل حجم Overview.tsx وجعل الأنماط (مثل pulse-glow) متاحة عالمياً بثبات. */
+
+/* شارة توضّح أن القيم المعروضة محاكاة وليست بيانات سوق حقيقية لحظية */
+.sim-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--chip);
+  border: 1px dashed var(--line);
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  cursor: help;
+}
+
+        /* تنسيقات شريط التنبيهات المباشرة الفاخر */
+        .live-badge-pulse {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 10.5px;
+          font-weight: 800;
+          color: var(--good);
+          background: rgba(33, 201, 139, 0.08);
+          border: 1px solid rgba(33, 201, 139, 0.25);
+          padding: 2.5px 8px;
+          border-radius: 20px;
+          margin-inline-start: auto;
+        }
+        .pulse-dot {
+          width: 7px;
+          height: 7px;
+          background-color: var(--good);
+          border-radius: 50%;
+          display: inline-block;
+          animation: pulse-glow 1.5s infinite;
+        }
+        @keyframes pulse-glow {
+          0% {
+            transform: scale(0.9);
+            opacity: 0.6;
+            box-shadow: 0 0 0 0 rgba(33, 201, 139, 0.7);
+          }
+          70% {
+            transform: scale(1.15);
+            opacity: 1;
+            box-shadow: 0 0 0 5px rgba(33, 201, 139, 0);
+          }
+          100% {
+            transform: scale(0.9);
+            opacity: 0.6;
+            box-shadow: 0 0 0 0 rgba(33, 201, 139, 0);
+          }
+        }
+        .o-action-item {
+          display: flex;
+          flex-direction: column;
+          gap: 7px;
+          padding: 12px 14px;
+          border-radius: 12px;
+          background: var(--chip);
+          border: 1px solid var(--line);
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          overflow: hidden;
+          margin-bottom: 10px;
+          text-align: right;
+          animation: slide-in-alert 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes slide-in-alert {
+          from {
+            transform: translateY(-8px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+        .o-action-item:hover {
+          border-color: var(--brand);
+          transform: translateY(-2px);
+          box-shadow: var(--shadow);
+          background: var(--panel-solid);
+        }
+        /* لوحة الرسم البياني التفاعلي المتطور لأسعار وحركة الأسهم */
+        .chart-dashboard-container {
+          display: flex;
+          gap: 20px;
+          align-items: stretch;
+          width: 100%;
+          direction: rtl;
+        }
+        .chart-dashboard-left {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+        .chart-dashboard-right {
+          width: 260px;
+          flex: 0 0 260px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          max-height: 480px;
+          overflow-y: auto;
+          border-inline-start: 1px solid var(--line);
+          padding-inline-start: 12px;
+        }
+        .chart-stock-item {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          padding: 10px 12px;
+          border-radius: 10px;
+          border: 1px solid var(--line);
+          background: var(--chip);
+          cursor: pointer;
+          transition: all 0.15s ease;
+          text-align: right;
+        }
+        .chart-stock-item:hover {
+          border-color: var(--brand);
+          background: var(--panel-solid);
+        }
+        .chart-stock-item.active {
+          border-color: #ff6b00;
+          background: rgba(255, 107, 0, 0.04);
+        }
+        .chart-timeframe-btn {
+          border: 0;
+          background: transparent;
+          color: var(--muted);
+          cursor: pointer;
+          font-size: 11px;
+          font-weight: 700;
+          padding: 4px 10px;
+          border-radius: 6px;
+          transition: all 0.15s ease;
+          font-family: inherit;
+        }
+        .chart-timeframe-btn.active {
+          background: #ff6b00;
+          color: #fff;
+        }
+        @media (max-width: 768px) {
+          .chart-dashboard-container {
+            flex-direction: column;
+          }
+          .chart-dashboard-right {
+            width: 100%;
+            flex: none;
+            max-height: 140px;
+            flex-direction: row;
+            overflow-x: auto;
+            overflow-y: hidden;
+            border-inline-start: 0;
+            border-bottom: 1px solid var(--line);
+            padding-inline-start: 0;
+            padding-bottom: 12px;
+          }
+          .chart-stock-item {
+            min-width: 140px;
+            flex-shrink: 0;
+          }
+        }
+        .o-action-type-line {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          right: 0;
+          width: 4.5px;
+        }
+        .movement-row {
+          transition: all 0.15s ease;
+        }
+        .movement-row:hover {
+          background: rgba(255, 107, 0, 0.04) !important;
+          transform: scale(1.002);
+        }
+        
+        .overview-layout {
+          display: flex;
+          gap: 24px;
+          align-items: flex-start;
+          width: 100%;
+        }
+        .overview-main {
+          flex: 1;
+          min-width: 0;
+        }
+        .overview-sidebar {
+          width: 320px;
+          flex: 0 0 320px;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          position: sticky;
+          top: 24px;
+        }
+        .o-widget {
+          background: var(--panel);
+          backdrop-filter: blur(8px);
+          border: 1px solid var(--line);
+          border-radius: var(--radius);
+          padding: 16px;
+          box-shadow: var(--shadow);
+        }
+        .o-widget-h {
+          font-size: 14px;
+          font-weight: 800;
+          margin: 0 0 12px;
+          border-bottom: 1px solid var(--line);
+          padding-bottom: 8px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: var(--txt);
+        }
+        .o-index-item {
+          display: flex;
+          justify-content: space-between;
+          padding: 8px 0;
+          border-bottom: 1px dashed var(--line);
+          font-size: 12.5px;
+        }
+        .o-index-item:last-child {
+          border-bottom: 0;
+        }
+        .o-news-item {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          padding: 8px 0;
+          border-bottom: 1px dashed var(--line);
+        }
+        .o-news-item:last-child {
+          border-bottom: 0;
+        }
+        .o-news-title {
+          font-size: 12.5px;
+          font-weight: 700;
+          color: var(--txt);
+          line-height: 1.4;
+          text-align: right;
+        }
+        .o-news-meta {
+          display: flex;
+          justify-content: space-between;
+          font-size: 10.5px;
+          color: var(--muted2);
+        }
+        .o-lead-list {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .o-lead-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 8px 10px;
+          border-radius: 12px;
+          background: var(--chip);
+          border: 1px solid var(--line);
+          cursor: pointer;
+          transition: border-color 0.15s, transform 0.12s;
+        }
+        .o-lead-item:hover {
+          border-color: var(--brand);
+          transform: translateY(-2px);
+        }
+        .o-lead-right {
+          margin-inline-start: auto;
+          text-align: left;
+          font-weight: 700;
+        }
+        .o-badge-good {
+          color: var(--good);
+          background: rgba(33, 201, 139, 0.1);
+          border: 1px solid rgba(33, 201, 139, 0.3);
+          font-size: 11px;
+          padding: 2px 6px;
+          border-radius: 6px;
+        }
+        .o-badge-brand {
+          color: var(--brand);
+          background: rgba(58, 160, 255, 0.1);
+          border: 1px solid rgba(58, 160, 255, 0.3);
+          font-size: 11px;
+          padding: 2px 6px;
+          border-radius: 6px;
+        }
+        .o-badge-warn {
+          color: var(--warn);
+          background: rgba(255, 176, 32, 0.1);
+          border: 1px solid rgba(255, 176, 32, 0.3);
+          font-size: 11px;
+          padding: 2px 6px;
+          border-radius: 6px;
+        }
+        .o-toggle-container {
+          display: inline-flex;
+          gap: 6px;
+          background: var(--chip);
+          padding: 4px;
+          border-radius: 10px;
+          border: 1px solid var(--line);
+        }
+        .o-toggle-btn {
+          border: 0;
+          background: transparent;
+          color: var(--muted);
+          cursor: pointer;
+          font-family: inherit;
+          font-size: 12.5px;
+          padding: 6px 12px;
+          border-radius: 8px;
+          transition: 0.15s;
+        }
+        .o-toggle-btn.active {
+          background: linear-gradient(120deg, var(--brand), var(--brand2));
+          color: #fff;
+        }
+        @media (max-width: 1100px) {
+          .overview-layout {
+            flex-direction: column;
+          }
+          .overview-sidebar {
+            width: 100%;
+            flex: none;
+            position: static;
+          }
+        }
+      

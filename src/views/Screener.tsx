@@ -4,8 +4,8 @@ import type { Stock, Exchange, Category } from '../data'
 import { useStocks, usePortfolio } from '../store'
 import { parseYield, parseAmount } from '../format'
 import Avatar from '../components/Avatar'
-import { SECTOR_MOVEMENTS, ADX_MOVEMENTS } from '../data/movements'
-import type { MovementStock } from '../data/movements'
+import { SECTOR_MOVEMENTS } from '../data/movements'
+import { getDailyData } from '../market'
 
 const NA = 'يلزم التحقق'
 type SortKey = 'name' | 'price' | 'pe' | 'yield' | 'mcap'
@@ -17,81 +17,6 @@ function cell(x: string | number | null | undefined) {
 
 const SECTOR_TITLES = SECTOR_MOVEMENTS.map(s => s.title)
 
-
-function getDailyData(s: Stock) {
-  const symbol = s.sym.toUpperCase()
-  const price = s.price ?? 1.0
-  
-  // Deterministic seed from symbol string
-  let seed = 0
-  for (let i = 0; i < symbol.length; i++) {
-    seed += symbol.charCodeAt(i)
-  }
-  
-  // Pseudo-random numbers using stable seed (fixed per symbol, doesn't drift across re-renders)
-  let localSeed = seed
-  const rand = (max: number, min = 0) => {
-    const x = Math.sin(localSeed++) * 10000
-    return min + (x - Math.floor(x)) * (max - min)
-  }
-
-  let change: number
-  let pct: string
-  let isUp: boolean
-  let isFlat: boolean
-  
-  // Find in DFM
-  let found: MovementStock | null = null
-  for (const sec of SECTOR_MOVEMENTS) {
-    const f = sec.stocks.find(st => st.sym.toUpperCase() === symbol)
-    if (f) { found = f; break; }
-  }
-  
-  // Find in ADX
-  if (!found) {
-    found = ADX_MOVEMENTS.find(st => st.sym.toUpperCase() === symbol) as MovementStock | undefined ?? null
-  }
-
-  if (found) {
-    change = parseFloat(found.change)
-    pct = found.pct
-    isUp = parseFloat(found.change) > 0
-    isFlat = parseFloat(found.change) === 0
-  } else {
-    // Generate stable mock values
-    const changePct = rand(3.5, -3.5) // -3.5% to +3.5%
-    change = Math.round((price * (changePct / 100)) * 100) / 100
-    pct = `${change >= 0 ? '+' : ''}${changePct.toFixed(2)}%`
-    isUp = change > 0
-    isFlat = change === 0
-  }
-
-  const prevClose = price - change
-  const high = Math.max(price, prevClose) * (1 + rand(0.012, 0.001))
-  const low = Math.min(price, prevClose) * (1 - rand(0.012, 0.001))
-  const open = prevClose * (1 + rand(0.004, -0.004))
-
-  const rawMcap = parseAmount(s.mcap) ?? 5e9
-  const mcapVal = rawMcap > 1e6 ? rawMcap / 1e9 : rawMcap
-  const volume = Math.round((mcapVal * 150000) * rand(2.2, 0.1))
-  const value = volume * price
-  const trades = Math.round(volume * rand(0.00005, 0.00001)) + 3
-
-  return {
-    change,
-    pct,
-    volume,
-    value,
-    trades,
-    prevClose,
-    open,
-    high,
-    low,
-    isUp,
-    isFlat,
-    isDown: !isUp && !isFlat
-  }
-}
 
 const mapDFMSectorToDb = (dfmTitle: string): string[] => {
   switch (dfmTitle) {
@@ -119,7 +44,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
   const [cat, setCat] = useState<'all' | Category>('all')
   const [sort, setSort] = useState<SortKey>('mcap')
   const [dir, setDir] = useState<1 | -1>(-1)
-  const [sector, setSector] = useState<'all' | string>('all')
+  const [sector, setSector] = useState<string>('all')
   
   // حفظ وتغيير وضع العرض المفضل للمستثمر
   const [displayMode, setDisplayMode] = useState<'list' | 'sectors'>(() => {
@@ -159,7 +84,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
       const av = val(a), bv = val(b)
       if (typeof av === 'string' || typeof bv === 'string')
         return String(av).localeCompare(String(bv), 'ar') * dir
-      return ((av as number) - (bv as number)) * dir
+      return (av - bv) * dir
     })
   }, [DATA, q, ex, cat, sector, sort, dir])
 
@@ -208,12 +133,12 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
             </div>
             <div className="chips">
               {([['all', 'كل الأسواق'], ['DFM', 'دبي'], ['ADX', 'أبوظبي']] as const).map(([v, l]) => (
-                <button key={v} className="chip" aria-pressed={ex === v} onClick={() => setEx(v as typeof ex)}>{l}</button>
+                <button key={v} className="chip" aria-pressed={ex === v} onClick={() => setEx(v)}>{l}</button>
               ))}
             </div>
             <div className="chips">
               {([['all', 'كل التصنيفات'], ['income', 'دخل مستقر'], ['growth', 'نمو'], ['risk', 'مخاطر أعلى']] as const).map(([v, l]) => (
-                <button key={v} className="chip" aria-pressed={cat === v} onClick={() => setCat(v as typeof cat)}>{l}</button>
+                <button key={v} className="chip" aria-pressed={cat === v} onClick={() => setCat(v)}>{l}</button>
               ))}
             </div>
             {sector !== 'all' && (

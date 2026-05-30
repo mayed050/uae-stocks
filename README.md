@@ -1,73 +1,65 @@
-# React + TypeScript + Vite
+# منصّة الأسهم وتوزيعات الأرباح الإماراتية 🇦🇪
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+منصّة ويب عربية (واجهة من اليمين إلى اليسار) لمتابعة أسهم الشركات المدرجة في **سوق دبي المالي (DFM)** و**سوق أبوظبي للأوراق المالية (ADX)**، مع التركيز على **توزيعات الأرباح النقدية** وتخطيط دخل المحفظة.
 
-Currently, two official plugins are available:
+> ⚠️ **تنويه:** منصّة معلوماتية للمتابعة فقط — لا تتضمّن أي توصية بشراء أو بيع. بعض القيم
+> (الأسعار التاريخية، حركة اليوم، الأحجام، وتنبيهات «العرض التجريبي») مُولّدة خوارزمياً للعرض
+> فقط وليست بيانات سوق حقيقية لحظية. تأكّد دائماً من المصادر الرسمية: DFM / ADX / إفصاحات الشركات.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## المزايا
 
-## React Compiler
+- **📊 نظرة عامة** — مؤشرات الأسواق، رسم بياني تفاعلي للأسعار، حركة السوق (المرتفعة/المنخفضة/النشطة)، خريطة حرارية حسب العائد/مكرر الربحية/القيمة السوقية، ومتتبّع تواريخ التوزيعات القادمة.
+- **🔎 مستكشف الأسهم** — جدول قابل للفرز والتصفية حسب السوق والتصنيف والقطاع، بعرض موحّد أو مجمّع قطاعياً.
+- **💵 التوزيعات** — تقويم تواريخ الاستحقاق والدفع.
+- **📈 النتائج المالية** — مؤشرات الأداء وملخّصات الشركات.
+- **⚖️ المقارنة** — مقارنة بصرية متعددة المحاور بين الأسهم.
+- **💼 حاسبة المحفظة** — حساب الدخل السنوي/الشهري المتوقّع من التوزيعات، مستشار تنويع، محاكي إعادة استثمار الأرباح (DRIP)، أهداف حياتية مغطّاة بالأرباح، وتصدير تقرير PDF. تُحفظ المحفظة والهدف محلياً في المتصفح (`localStorage`).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## التقنيات
 
-## Expanding the ESLint configuration
+- **React 19** + **TypeScript** + **Vite 8** (Rolldown)
+- **Recharts** للرسوم البيانية
+- **Tailwind CSS 4** + متغيّرات CSS (دعم الوضعين الفاتح والداكن)
+- بدون مكتبة توجيه — التنقّل عبر حالة بسيطة في `App.tsx`
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## التشغيل محلياً
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev        # خادم تطوير على http://localhost:5173
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## الأوامر المتاحة
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+| الأمر | الوظيفة |
+|-------|---------|
+| `npm run dev` | تشغيل خادم التطوير مع إعادة التحميل الساخن |
+| `npm run build` | فحص الأنواع (`tsc -b`) ثم بناء الإنتاج |
+| `npm run preview` | معاينة حزمة الإنتاج محلياً |
+| `npm run lint` | تشغيل ESLint |
+| `npm run update-data` | تحديث ملف البيانات عبر `scripts/update-data.mjs` |
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## مصدر البيانات
+
+تُحمّل البيانات وقت التشغيل من `public/data.json`؛ وفي حال تعذّر ذلك يُعتمد على نسخة احتياطية
+مُضمّنة في `src/seed.json`. أنواع البيانات معرّفة في `src/data.ts`.
+
+## بنية المشروع
+
 ```
+src/
+├── main.tsx            نقطة الدخول، تغلّف App بمزوّد البيانات
+├── App.tsx             التخطيط: شريط جانبي + تنقّل سفلي للجوال + سمة فاتح/داكن
+├── store.tsx           سياق البيانات + خطافات usePortfolio و useMarketStats
+├── data.ts             الأنواع (Stock/Dividend) واستيراد seed.json
+├── market.ts           أدوات بيانات السوق المحاكاة (مشتركة بين الصفحات)
+├── lib.ts              حساب التواريخ القادمة والتنبيهات
+├── format.ts           تحليل الأرقام العربية وحساب العوائد
+├── views/              الصفحات الست (+ overview.css لأنماط النظرة العامة)
+└── components/         Sidebar · StockDetail · Avatar · Snowflake
+```
+
+## النشر
+
+يدعم المشروع النشر على **Vercel** و**GitHub Pages**. عند البناء داخل GitHub Actions
+يُضبط المسار الأساسي تلقائياً إلى `/uae-stocks/` (انظر `vite.config.ts`).

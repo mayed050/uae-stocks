@@ -59,8 +59,8 @@ export function StocksProvider({ children }: { children: ReactNode }) {
     const saved = localStorage.getItem('dividend_portfolio')
     if (saved) {
       try {
-        const parsed = JSON.parse(saved)
-        if (Array.isArray(parsed)) return parsed
+        const parsed: unknown = JSON.parse(saved)
+        if (Array.isArray(parsed)) return parsed as { sym: string; amount: number; shares: number }[]
       } catch {
         // العودة للافتراضي في حال حدوث مشكلة
       }
@@ -319,7 +319,7 @@ export function useMarketStats() {
 
   // 7. تواريخ استحقاق التوزيعات شهرياً
   const monthData = useMemo(() => {
-    const counts = new Array(12).fill(0)
+    const counts = new Array<number>(12).fill(0)
     DATA.forEach((s) => {
       ;[s.div.exd, s.div.nextExd, s.div.pay, s.div.nextPay].forEach((d) => {
         const dt = parseISO(d ?? null)
