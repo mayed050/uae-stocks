@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { CAT_LABEL } from '@/data'
 import type { Stock } from '@/data'
 import { useStocks } from '@/store'
@@ -52,6 +52,27 @@ export default function Compare() {
     )
   }
 
+  // من يتصدّر أكثر الفئات القابلة للمقارنة (للمقاييس ذات «الأفضل»)
+  const leaderboard = useMemo(() => {
+    const wins = new Map<string, number>()
+    picked.forEach((s) => wins.set(s.sym, 0))
+    let scored = 0
+    METRICS.forEach((m) => {
+      const getVal = m.val
+      const better = m.better
+      if (!getVal || !better) return
+      const vals = picked
+        .map((s) => ({ sym: s.sym, v: getVal(s) }))
+        .filter((x): x is { sym: string; v: number } => x.v !== null)
+      if (vals.length < 2) return
+      scored++
+      const best = better === 'higher' ? Math.max(...vals.map((x) => x.v)) : Math.min(...vals.map((x) => x.v))
+      vals.filter((x) => x.v === best).forEach((x) => wins.set(x.sym, (wins.get(x.sym) ?? 0) + 1))
+    })
+    const ranked = [...wins.entries()].map(([sym, count]) => ({ sym, count })).sort((a, b) => b.count - a.count)
+    return { ranked, scored }
+  }, [picked])
+
   return (
     <div className="view">
       <div className="page-head">
@@ -77,7 +98,21 @@ export default function Compare() {
       {picked.length === 0 ? (
         <div className="empty">اختر سهماً واحداً على الأقل من القائمة أعلاه لبدء المقارنة الفورية.</div>
       ) : (
-        <div className="compare-wrap">
+        <>
+          {leaderboard.ranked.length > 0 && leaderboard.ranked[0].count > 0 && (
+            <div className="panel" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', padding: '14px 18px', marginBottom: '18px' }}>
+              <span style={{ fontSize: '22px' }}>🏆</span>
+              <div>
+                <div style={{ fontWeight: 800, fontSize: '14px', color: 'var(--txt)' }}>
+                  الأكثر تصدّراً: <span style={{ color: 'var(--good)' }}>{leaderboard.ranked[0].sym}</span> — تصدّر {leaderboard.ranked[0].count} من {leaderboard.scored} فئة مقارَنة
+                </div>
+                <div style={{ fontSize: '11.5px', color: 'var(--muted)', marginTop: '3px' }}>
+                  {leaderboard.ranked.map((r) => `${r.sym}: ${r.count}`).join('  ·  ')}
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="compare-wrap">
           {/* مخطط رادار التوزيعات Snowflake والرمز اللوني */}
           <div className="panel" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h3 className="panel-h" style={{ width: '100%', textAlign: 'right' }}>الملف الوصفي والتقييم المقارن (Snowflake Radar)</h3>
@@ -174,6 +209,7 @@ export default function Compare() {
             </table>
           </div>
         </div>
+        </>
       )}
     </div>
   )
