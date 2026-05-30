@@ -99,7 +99,10 @@ function generateHistoricalData(s: Stock) {
   ]
 
   let currentClose = basePrice
-  const rows: any[] = []
+  const rows: {
+    date: string; open: number; high: number; low: number; trades: number;
+    volume: number; value: number; close: number; prevClose: number; change: number; changePct: number;
+  }[] = []
 
   for (let i = 0; i < dates.length; i++) {
     // محاكاة التغير اليومي

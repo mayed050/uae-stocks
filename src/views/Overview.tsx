@@ -103,13 +103,7 @@ function generateHistoricalData(sym: string, timeframe: string, currentPrice: nu
     seed += sym.charCodeAt(i)
   }
 
-  let points = 30
-  if (timeframe === '1W') points = 7
-  else if (timeframe === '1M') points = 30
-  else if (timeframe === '3M') points = 90
-  else if (timeframe === '6M') points = 120
-  else if (timeframe === '1Y') points = 250
-  else points = 365
+  const points = ({ '1W': 7, '1M': 30, '3M': 90, '6M': 120, '1Y': 250 } as Record<string, number>)[timeframe] ?? 365
 
   const data = []
   let price = currentPrice
@@ -120,12 +114,9 @@ function generateHistoricalData(sym: string, timeframe: string, currentPrice: nu
   for (let i = points - 1; i >= 0; i--) {
     const date = new Date(today)
     date.setDate(today.getDate() - i)
-    let label = ''
-    if (timeframe === '1W' || timeframe === '1M') {
-      label = date.toLocaleDateString('ar-AE', { day: 'numeric', month: 'short' })
-    } else {
-      label = date.toLocaleDateString('ar-AE', { month: 'short', year: '2-digit' })
-    }
+    const label = (timeframe === '1W' || timeframe === '1M')
+      ? date.toLocaleDateString('ar-AE', { day: 'numeric', month: 'short' })
+      : date.toLocaleDateString('ar-AE', { month: 'short', year: '2-digit' })
 
     data.push({
       date: label,
@@ -912,7 +903,7 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
                           color: 'var(--txt)',
                           textAlign: 'right'
                         }}
-                        formatter={(val: any) => [`${parseFloat(val).toFixed(2)} د.إ`, 'السعر']}
+                        formatter={(val) => [`${Number(val).toFixed(2)} د.إ`, 'السعر']}
                       />
                       <Area
                         type="monotone"
@@ -1481,8 +1472,8 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
               ) : (
                 filteredAlertRows.slice(0, 4).map(({ s, u }) => {
                   const daysLeft = u.n;
-                  let countdownBadge = null;
-                  
+                  let countdownBadge;
+
                   if (daysLeft === null) {
                     countdownBadge = <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '6px', background: 'var(--chip)', border: '1px solid var(--line)', color: 'var(--muted)', fontWeight: 700 }}>متوقع</span>;
                   } else if (daysLeft === 0) {
