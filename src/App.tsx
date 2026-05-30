@@ -10,6 +10,7 @@ import Screener from './views/Screener'
 import Dividends from './views/Dividends'
 import Compare from './views/Compare'
 import Portfolio from './views/Portfolio'
+import Financials from './views/Financials'
 
 export default function App() {
   const [view, setView] = useState<View>('overview')
@@ -62,6 +63,7 @@ export default function App() {
         {view === 'overview' && <Overview onOpen={setDetail} />}
         {view === 'screener' && <Screener onOpen={setDetail} />}
         {view === 'dividends' && <Dividends onOpen={setDetail} />}
+        {view === 'financials' && <Financials onOpen={setDetail} />}
         {view === 'compare' && <Compare />}
         {view === 'portfolio' && <Portfolio onOpen={setDetail} />}
       </main>

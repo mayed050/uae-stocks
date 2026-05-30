@@ -1,9 +1,10 @@
-export type View = 'overview' | 'screener' | 'dividends' | 'compare' | 'portfolio'
+export type View = 'overview' | 'screener' | 'dividends' | 'compare' | 'portfolio' | 'financials'
 
 const NAV: { v: View; label: string; icon: string }[] = [
   { v: 'overview', label: 'نظرة عامة', icon: '📊' },
   { v: 'screener', label: 'مستكشف الأسهم', icon: '🔎' },
   { v: 'dividends', label: 'التوزيعات', icon: '💵' },
+  { v: 'financials', label: 'النتائج المالية', icon: '📈' },
   { v: 'compare', label: 'المقارنة', icon: '⚖️' },
   { v: 'portfolio', label: 'حاسبة المحفظة', icon: '💼' },
 ]
