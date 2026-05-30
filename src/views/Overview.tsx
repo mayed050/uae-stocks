@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import {
-  PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, CartesianGrid,
+  PieChart, Pie, Cell, XAxis, YAxis, Tooltip,
+  ResponsiveContainer, CartesianGrid, AreaChart, Area,
 } from 'recharts'
 import type { Stock } from '../data'
 import { useStocks, useMarketStats, usePortfolio } from '../store'
@@ -97,12 +97,90 @@ function getDailyData(s: Stock) {
   }
 }
 
+function generateHistoricalData(sym: string, timeframe: string, currentPrice: number) {
+  let seed = 0
+  for (let i = 0; i < sym.length; i++) {
+    seed += sym.charCodeAt(i)
+  }
+
+  let points = 30
+  if (timeframe === '1W') points = 7
+  else if (timeframe === '1M') points = 30
+  else if (timeframe === '3M') points = 90
+  else if (timeframe === '6M') points = 120
+  else if (timeframe === '1Y') points = 250
+  else points = 365
+
+  const data = []
+  let price = currentPrice
+  const isUpTrend = seed % 2 === 0
+  const volatility = 0.012
+  const today = new Date()
+  
+  for (let i = points - 1; i >= 0; i--) {
+    const date = new Date(today)
+    date.setDate(today.getDate() - i)
+    let label = ''
+    if (timeframe === '1W' || timeframe === '1M') {
+      label = date.toLocaleDateString('ar-AE', { day: 'numeric', month: 'short' })
+    } else {
+      label = date.toLocaleDateString('ar-AE', { month: 'short', year: '2-digit' })
+    }
+
+    data.push({
+      date: label,
+      price: parseFloat(price.toFixed(2))
+    })
+
+    const changePct = (Math.sin(seed + i) * volatility) + (isUpTrend ? -0.0006 : 0.0006)
+    price = price * (1 - changePct)
+  }
+
+  data[data.length - 1].price = currentPrice
+  const prices = data.map(d => d.price)
+  const high = Math.max(...prices)
+  const low = Math.min(...prices)
+  const open = data[0].price
+  const close = currentPrice
+  const change = close - open
+  const changePct = (change / open) * 100
+  const isOverallUp = change >= 0
+
+  return {
+    data,
+    high,
+    low,
+    open,
+    close,
+    change,
+    changePct,
+    isOverallUp
+  }
+}
+
+function generateSparklineData(sym: string, currentPrice: number) {
+  let seed = 0
+  for (let i = 0; i < sym.length; i++) {
+    seed += sym.charCodeAt(i)
+  }
+  const points = 10
+  const data = []
+  let price = currentPrice
+  const isUpTrend = seed % 2 === 0
+  
+  for (let i = points - 1; i >= 0; i--) {
+    data.push(price)
+    const changePct = (Math.sin(seed + i) * 0.008) + (isUpTrend ? -0.0004 : 0.0004)
+    price = price * (1 - changePct)
+  }
+  return data.reverse()
+}
+
 export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA, lastUpdated } = useStocks()
   const {
     alertRows,
     sectorData,
-    monthData,
     maxYield,
     maxMcap
   } = useMarketStats()
@@ -118,6 +196,11 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
   const [trackerFilter, setTrackerFilter] = useState<'all' | 'portfolio'>('all')
   // إشعار التأكيد العائم لزر التنبيه
   const [toastMessage, setToastMessage] = useState<string | null>(null)
+  
+  // السهم النشط المختار للرسم البياني المتطور
+  const [selectedChartSym, setSelectedChartSym] = useState<string>('DEWA')
+  // الفترة الزمنية النشطة للرسم البياني
+  const [chartTimeframe, setChartTimeframe] = useState<'1W' | '1M' | '3M' | '6M' | '1Y' | 'ALL'>('3M')
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg)
@@ -162,6 +245,16 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
     }
     return alertRows
   }, [alertRows, trackerFilter, isInPortfolio])
+
+  // الحصول على بيانات السهم المختار للرسم البياني وتوليد تاريخه
+  const selectedChartStock = useMemo(() => {
+    const s = DATA.find(st => st.sym.toUpperCase() === selectedChartSym.toUpperCase()) ?? DATA[0]
+    const history = generateHistoricalData(s.sym, chartTimeframe, s.price ?? 1.0)
+    return {
+      stock: s,
+      ...history
+    }
+  }, [DATA, selectedChartSym, chartTimeframe])
 
   // حساب إجمالي الصفقات وحجم التداول اليومي التراكمي للأسواق الإماراتية
   const marketActivity = useMemo(() => {
@@ -365,6 +458,89 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
           transform: translateY(-2px);
           box-shadow: var(--shadow);
           background: var(--panel-solid);
+        }
+        /* لوحة الرسم البياني التفاعلي المتطور لأسعار وحركة الأسهم */
+        .chart-dashboard-container {
+          display: flex;
+          gap: 20px;
+          align-items: stretch;
+          width: 100%;
+          direction: rtl;
+        }
+        .chart-dashboard-left {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+        .chart-dashboard-right {
+          width: 260px;
+          flex: 0 0 260px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          max-height: 480px;
+          overflow-y: auto;
+          border-inline-start: 1px solid var(--line);
+          padding-inline-start: 12px;
+        }
+        .chart-stock-item {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          padding: 10px 12px;
+          border-radius: 10px;
+          border: 1px solid var(--line);
+          background: var(--chip);
+          cursor: pointer;
+          transition: all 0.15s ease;
+          text-align: right;
+        }
+        .chart-stock-item:hover {
+          border-color: var(--brand);
+          background: var(--panel-solid);
+        }
+        .chart-stock-item.active {
+          border-color: #ff6b00;
+          background: rgba(255, 107, 0, 0.04);
+        }
+        .chart-timeframe-btn {
+          border: 0;
+          background: transparent;
+          color: var(--muted);
+          cursor: pointer;
+          font-size: 11px;
+          font-weight: 700;
+          padding: 4px 10px;
+          border-radius: 6px;
+          transition: all 0.15s ease;
+          font-family: inherit;
+        }
+        .chart-timeframe-btn.active {
+          background: #ff6b00;
+          color: #fff;
+        }
+        @media (max-width: 768px) {
+          .chart-dashboard-container {
+            flex-direction: column;
+          }
+          .chart-dashboard-right {
+            width: 100%;
+            flex: none;
+            max-height: 140px;
+            flex-direction: row;
+            overflow-x: auto;
+            overflow-y: hidden;
+            border-inline-start: 0;
+            border-bottom: 1px solid var(--line);
+            padding-inline-start: 0;
+            padding-bottom: 12px;
+          }
+          .chart-stock-item {
+            min-width: 140px;
+            flex-shrink: 0;
+          }
         }
         .o-action-type-line {
           position: absolute;
@@ -625,43 +801,237 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
             </div>
           </div>
 
-          {/* قسم التحليل والرسوم البيانية الهيكلية */}
-          <div className="chart-grid">
+          {/* قسم التحليل والرسوم البيانية الهيكلية وتوزيع القطاعات */}
+          <div className="chart-grid" style={{ gridTemplateColumns: '1fr', marginBottom: '20px' }}>
             {/* توزيع القطاعات */}
-            <div className="panel">
-              <h3 className="panel-h">توزيع هيكل السوق حسب القطاعات</h3>
-              <ResponsiveContainer width="100%" height={260}>
-                <PieChart>
-                  <Pie data={sectorData} dataKey="value" nameKey="name" innerRadius={55} outerRadius={95} paddingAngle={2}>
-                    {sectorData.map((_, i) => (
-                      <Cell key={i} fill={PALETTE[i % PALETTE.length]} stroke="var(--panel-solid)" />
-                    ))}
-                  </Pie>
-                  <Tooltip contentStyle={tipStyle} formatter={(val, name) => [`${val} شركات مدرجة`, name]} />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="legend">
-                {sectorData.map((d, i) => (
-                  <span key={d.name} className="legend-item">
-                    <i style={{ background: PALETTE[i % PALETTE.length] }} />
-                    {d.name} ({d.value})
-                  </span>
-                ))}
+            <div className="panel" style={{ padding: '20px', borderRadius: '16px' }}>
+              <h3 className="panel-h" style={{ borderBottom: '1px solid var(--line)', paddingBottom: '10px', marginBottom: '16px', fontSize: '14.5px', fontWeight: 800 }}>
+                📊 توزيع هيكل السوق حسب القطاعات
+              </h3>
+              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '24px', justifyContent: 'center' }}>
+                <div style={{ flex: '1 1 220px', maxWidth: '280px' }}>
+                  <ResponsiveContainer width="100%" height={180}>
+                    <PieChart>
+                      <Pie data={sectorData} dataKey="value" nameKey="name" innerRadius={45} outerRadius={75} paddingAngle={2}>
+                        {sectorData.map((_, i) => (
+                          <Cell key={i} fill={PALETTE[i % PALETTE.length]} stroke="var(--panel-solid)" />
+                        ))}
+                      </Pie>
+                      <Tooltip contentStyle={tipStyle} formatter={(val, name) => [`${val} شركات مدرجة`, name]} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="legend" style={{ flex: '1 1 300px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px', border: 0, padding: 0 }}>
+                  {sectorData.map((d, i) => (
+                    <span key={d.name} className="legend-item" style={{ fontSize: '11.5px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+                      <i style={{ background: PALETTE[i % PALETTE.length], width: '10px', height: '10px', borderRadius: '3px', display: 'inline-block' }} />
+                      {d.name} ({d.value})
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* توزيع كثافة التواريخ والأحداث */}
-            <div className="panel">
-              <h3 className="panel-h">كثافة أحداث وتواريخ التوزيعات شهرياً</h3>
-              <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={monthData} margin={{ top: 18 }}>
-                  <CartesianGrid vertical={false} stroke="var(--line)" />
-                  <XAxis dataKey="m" tick={{ fill: 'var(--muted)', fontSize: 10 }} interval={0} angle={-35} textAnchor="end" height={60} />
-                  <YAxis allowDecimals={false} tick={{ fill: 'var(--muted)', fontSize: 12 }} />
-                  <Tooltip contentStyle={tipStyle} formatter={(val) => [`${val} حدث مالي متوقع`, 'التواريخ']} />
-                  <Bar dataKey="count" fill="#7c5cff" radius={[6, 6, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+          {/* 📈 لوحة الرسم البياني التفاعلي المتطور لأسعار وحركة الأسهم الفردية (حركة الأسهم والرسم البياني) */}
+          <div className="panel" style={{ marginBottom: '24px', padding: '24px', borderRadius: '16px' }}>
+            <div className="chart-dashboard-container">
+              
+              {/* القسم الأيسر: الرسم البياني والمؤشرات الفنية (يمثل 70% من العرض) */}
+              <div className="chart-dashboard-left">
+                
+                {/* رأس لوحة الرسم البياني (اسم السهم وتفاصيل التغير المؤقتة والفترات الزمنية) */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '12px', borderBottom: '1px solid var(--line)', paddingBottom: '12px' }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '16.5px', fontWeight: 900, color: 'var(--txt)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Avatar sym={selectedChartStock.stock.sym} size={28} />
+                      {selectedChartStock.stock.sym} — {selectedChartStock.stock.name.split('—')[0]}
+                    </h3>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
+                      <span style={{ fontSize: '22px', fontWeight: '900', color: 'var(--txt)' }}>
+                        {selectedChartStock.stock.price?.toFixed(2)} د.إ
+                      </span>
+                      <span style={{
+                        fontSize: '12px',
+                        fontWeight: '800',
+                        color: selectedChartStock.isOverallUp ? 'var(--good)' : 'var(--bad)',
+                        direction: 'ltr'
+                      }}>
+                        {selectedChartStock.isOverallUp ? '▲' : '▼'} {selectedChartStock.change.toFixed(2)} ({selectedChartStock.changePct.toFixed(2)}%)
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* أزرار تحديد المدى الزمني للرسم البياني */}
+                  <div style={{ display: 'flex', gap: '3px', background: 'var(--chip)', padding: '3px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                    {(['1W', '1M', '3M', '6M', '1Y', 'ALL'] as const).map((tf) => {
+                      const tfLabel = tf === '1W' ? 'أسبوع' : tf === '1M' ? 'شهر' : tf === '3M' ? '3 أشهر' : tf === '6M' ? '6 أشهر' : tf === '1Y' ? 'سنة' : 'الكل';
+                      return (
+                        <button
+                          key={tf}
+                          onClick={() => setChartTimeframe(tf)}
+                          className={`chart-timeframe-btn ${chartTimeframe === tf ? 'active' : ''}`}
+                        >
+                          {tfLabel}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* مساحة الرسم البياني التفاعلي المتجاوب مع تلوين ديناميكي للاتجاه */}
+                <div style={{ width: '100%', height: '250px', position: 'relative', marginTop: '10px' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={selectedChartStock.data} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="chartColorGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={selectedChartStock.isOverallUp ? '#21c98b' : '#ff5a72'} stopOpacity={0.25}/>
+                          <stop offset="95%" stopColor={selectedChartStock.isOverallUp ? '#21c98b' : '#ff5a72'} stopOpacity={0.0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid vertical={false} stroke="var(--line)" strokeDasharray="3 3" />
+                      <XAxis
+                        dataKey="date"
+                        tick={{ fill: 'var(--muted)', fontSize: 10 }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        domain={['auto', 'auto']}
+                        orientation="right"
+                        tick={{ fill: 'var(--muted)', fontSize: 10 }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          background: 'var(--panel-solid)',
+                          border: '1px solid var(--line)',
+                          borderRadius: 8,
+                          fontSize: '11.5px',
+                          color: 'var(--txt)',
+                          textAlign: 'right'
+                        }}
+                        formatter={(val: any) => [`${parseFloat(val).toFixed(2)} د.إ`, 'السعر']}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="price"
+                        stroke={selectedChartStock.isOverallUp ? '#21c98b' : '#ff5a72'}
+                        strokeWidth={2}
+                        fillOpacity={1}
+                        fill="url(#chartColorGrad)"
+                        animationDuration={600}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* جدول البيانات والملخص الفني السفلي للسهم المختار */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginTop: '10px', borderTop: '1px solid var(--line)', paddingTop: '16px' }}>
+                  
+                  {/* العمود الأيمن: مؤشرات الأسعار الفنية */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', borderBottom: '1px dashed var(--line)', paddingBottom: '4px' }}>
+                      <span style={{ color: 'var(--muted)' }}>الأعلى سعر:</span>
+                      <b style={{ color: 'var(--txt)' }}>{selectedChartStock.high.toFixed(2)} د.إ</b>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', borderBottom: '1px dashed var(--line)', paddingBottom: '4px' }}>
+                      <span style={{ color: 'var(--muted)' }}>الأدنى سعر:</span>
+                      <b style={{ color: 'var(--txt)' }}>{selectedChartStock.low.toFixed(2)} د.إ</b>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', borderBottom: '1px dashed var(--line)', paddingBottom: '4px' }}>
+                      <span style={{ color: 'var(--muted)' }}>سعر الافتتاح:</span>
+                      <b style={{ color: 'var(--txt)' }}>{selectedChartStock.open.toFixed(2)} د.إ</b>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                      <span style={{ color: 'var(--muted)' }}>إغلاق السهم الحالي:</span>
+                      <b style={{ color: 'var(--txt)' }}>{selectedChartStock.close.toFixed(2)} د.إ</b>
+                    </div>
+                  </div>
+
+                  {/* العمود الأيسر: مؤشرات التغير والعوائد */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', borderBottom: '1px dashed var(--line)', paddingBottom: '4px' }}>
+                      <span style={{ color: 'var(--muted)' }}>مقدار التغير اليومي:</span>
+                      <b style={{ color: selectedChartStock.stock.price !== null && getDailyData(selectedChartStock.stock).change >= 0 ? 'var(--good)' : 'var(--bad)', direction: 'ltr' }}>
+                        {selectedChartStock.stock.price !== null ? (getDailyData(selectedChartStock.stock).change >= 0 ? '+' : '') : ''}{selectedChartStock.stock.price !== null ? getDailyData(selectedChartStock.stock).change.toFixed(2) : '—'}
+                      </b>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', borderBottom: '1px dashed var(--line)', paddingBottom: '4px' }}>
+                      <span style={{ color: 'var(--muted)' }}>نسبة التغير اليومي:</span>
+                      <b style={{ color: selectedChartStock.stock.price !== null && getDailyData(selectedChartStock.stock).change >= 0 ? 'var(--good)' : 'var(--bad)', direction: 'ltr' }}>
+                        {getDailyData(selectedChartStock.stock).pct}
+                      </b>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                      <span style={{ color: 'var(--muted)' }}>العائد النقدي (%) الحالي:</span>
+                      <b style={{ color: 'var(--good)' }}>{selectedChartStock.stock.div.yld ?? '—'}</b>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* القسم الأيمن: قائمة اختيار ومتابعة الأسهم التفاعلية مع شارات الحركة Sparklines */}
+              <div className="chart-dashboard-right">
+                <div style={{ paddingBottom: '6px', borderBottom: '1px solid var(--line)', marginBottom: '4px' }}>
+                  <b style={{ fontSize: '11px', color: 'var(--muted)', display: 'block', textAlign: 'right' }}>الأسهم القيادية المتاحة</b>
+                </div>
+                {DATA.filter(st => ['DEWA', 'EMAAR', 'FAB', 'SALIK', 'ADNOCDIST', 'ADIB', 'EAND', 'DIB'].includes(st.sym.toUpperCase())).map((stock) => {
+                  const isActive = stock.sym.toUpperCase() === selectedChartSym.toUpperCase();
+                  const stockDaily = getDailyData(stock);
+                  
+                  // توليد Sparkline
+                  const sparkPoints = generateSparklineData(stock.sym, stock.price ?? 1);
+                  const minP = Math.min(...sparkPoints);
+                  const maxP = Math.max(...sparkPoints);
+                  const normalizedPoints = sparkPoints.map((p, idx) => {
+                    const x = (idx / (sparkPoints.length - 1)) * 40;
+                    const y = 14 - ((p - minP) / (maxP - minP || 1)) * 10;
+                    return `${x},${y}`;
+                  }).join(' ');
+
+                  return (
+                    <div
+                      key={stock.sym}
+                      onClick={() => setSelectedChartSym(stock.sym)}
+                      className={`chart-stock-item ${isActive ? 'active' : ''}`}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontWeight: 800, fontSize: '12.5px', color: 'var(--txt)' }}>{stock.sym}</span>
+                        <span style={{ fontSize: '11.5px', fontWeight: 700, color: 'var(--txt)' }}>{stock.price?.toFixed(2)} د.إ</span>
+                      </div>
+                      
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px' }}>
+                        <span style={{ fontSize: '9.5px', color: 'var(--muted)' }}>{stock.name.split('—')[0]}</span>
+                        
+                        {/* Sparkline رسم بياني خطي مصغر */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <svg width="40" height="15" style={{ overflow: 'visible' }}>
+                            <polyline
+                              fill="none"
+                              stroke={stockDaily.isUp ? 'var(--good)' : 'var(--bad)'}
+                              strokeWidth="1.5"
+                              points={normalizedPoints}
+                            />
+                          </svg>
+                          <span style={{
+                            fontSize: '9.5px',
+                            fontWeight: 800,
+                            color: stockDaily.isUp ? 'var(--good)' : 'var(--bad)',
+                            direction: 'ltr'
+                          }}>
+                            {stockDaily.pct}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
             </div>
           </div>
 
