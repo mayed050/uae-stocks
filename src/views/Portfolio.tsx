@@ -9,7 +9,7 @@ import {
   ResponsiveContainer, CartesianGrid, LabelList, AreaChart, Area
 } from 'recharts'
 
-const PALETTE = ['#3aa0ff', '#7c5cff', '#21c98b', '#ffb020', '#ff5a72', '#36c5d8', '#e26bd0', '#9bd13a']
+import { PALETTE, TIP_STYLE as tipStyle } from '@/constants/ui'
 
 export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
   const {
@@ -954,10 +954,3 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
   )
 }
 
-const tipStyle = {
-  background: 'var(--panel-solid)',
-  border: '1px solid var(--line)',
-  borderRadius: 12,
-  color: 'var(--txt)',
-  fontSize: 13,
-}

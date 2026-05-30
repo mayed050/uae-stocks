@@ -3,22 +3,13 @@ import type { Stock } from '../data'
 import { useStocks, usePortfolio } from '../store'
 import { fmtAmount, parseAmount } from '../format'
 import Avatar from '../components/Avatar'
+import { seededRand, symbolSeed } from '@/market'
 
 // دالة محاكاة وتخمين البيانات اليومية الفنية والطلبات والعروض بالتطابق مع seed.json
 function getTechnicalData(s: Stock) {
   const symbol = s.sym.toUpperCase()
   const price = s.price ?? 1.0
-  
-  let seed = 0
-  for (let i = 0; i < symbol.length; i++) {
-    seed += symbol.charCodeAt(i)
-  }
-  
-  let localSeed = seed
-  const rand = (max: number, min = 0) => {
-    const x = Math.sin(localSeed++) * 10000
-    return min + (x - Math.floor(x)) * (max - min)
-  }
+  const rand = seededRand(symbolSeed(symbol))
 
   // حساب التغير اليومي
   const changePct = rand(2.8, -2.2) // -2.2% to +2.8%
@@ -73,16 +64,7 @@ function getTechnicalData(s: Stock) {
 // دالة لتوليد بيانات تاريخية يومية مستقرة ومتناسقة للسهم المحدد لتبويب "ملخص يومي"
 function generateHistoricalData(s: Stock) {
   const symbol = s.sym.toUpperCase()
-  let seed = 0
-  for (let i = 0; i < symbol.length; i++) {
-    seed += symbol.charCodeAt(i)
-  }
-  
-  let localSeed = seed
-  const rand = (max: number, min = 0) => {
-    const x = Math.sin(localSeed++) * 10000
-    return min + (x - Math.floor(x)) * (max - min)
-  }
+  const rand = seededRand(symbolSeed(symbol))
 
   const basePrice = s.price ?? 1.0
   const rawMcap = parseAmount(s.mcap) ?? 5e9

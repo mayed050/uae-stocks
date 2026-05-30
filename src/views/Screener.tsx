@@ -5,15 +5,10 @@ import { useStocks, usePortfolio } from '../store'
 import { parseYield, parseAmount } from '../format'
 import Avatar from '../components/Avatar'
 import { SECTOR_MOVEMENTS } from '../data/movements'
-import { getDailyData } from '../market'
+import { getDailyData } from '@/market'
+import { cell } from '@/components/ui/cell'
 
-const NA = 'يلزم التحقق'
 type SortKey = 'name' | 'price' | 'pe' | 'yield' | 'mcap'
-
-function cell(x: string | number | null | undefined) {
-  return x === null || x === undefined || x === '' ? <span className="na">{NA}</span> : x
-}
-
 
 const SECTOR_TITLES = SECTOR_MOVEMENTS.map(s => s.title)
 

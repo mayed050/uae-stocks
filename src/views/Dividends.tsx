@@ -4,11 +4,7 @@ import { useStocks } from '../store'
 import { parseISO } from '../lib'
 import { MONTHS_AR, parseYield, getAnnualPs } from '../format'
 import Avatar from '../components/Avatar'
-
-const NA = 'يلزم التحقق'
-function cell(x: string | null | undefined) {
-  return x === null || x === undefined || x === '' ? <span className="na">{NA}</span> : x
-}
+import { cell } from '@/components/ui/cell'
 
 interface Ev { s: Stock; kind: 'ex' | 'pay'; date: Date; raw: string }
 

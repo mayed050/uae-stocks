@@ -25,7 +25,7 @@ export interface DailyData {
 }
 
 /** مولّد أرقام شبه عشوائي بـ seed ثابت (لا يتغيّر بين عمليات إعادة الرسم). */
-function seededRand(seed: number) {
+export function seededRand(seed: number) {
   let localSeed = seed
   return (max: number, min = 0) => {
     const x = Math.sin(localSeed++) * 10000
@@ -33,7 +33,8 @@ function seededRand(seed: number) {
   }
 }
 
-function symbolSeed(symbol: string): number {
+/** يشتق seedًا رقمياً ثابتاً من رمز السهم. */
+export function symbolSeed(symbol: string): number {
   let seed = 0
   for (let i = 0; i < symbol.length; i++) seed += symbol.charCodeAt(i)
   return seed

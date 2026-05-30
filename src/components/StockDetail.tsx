@@ -6,11 +6,8 @@ import { parseGrowth, symColor } from '../format'
 import Avatar from './Avatar'
 import Snowflake from './Snowflake'
 import { usePortfolio } from '../store'
-
-const NA = 'يلزم التحقق'
-function v(x: string | number | null | undefined) {
-  return x === null || x === undefined || x === '' ? <span className="na">{NA}</span> : <>{x}</>
-}
+import { NA } from '@/constants/ui'
+import { cell as v } from '@/components/ui/cell'
 
 function Row({ k, val }: { k: string; val: React.ReactNode }) {
   return (

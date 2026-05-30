@@ -1,3 +1,4 @@
+import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
@@ -6,6 +7,9 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: process.env.GITHUB_ACTIONS ? '/uae-stocks/' : '/',
+  resolve: {
+    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
+  },
   build: {
     // فصل مكتبات الطرف الثالث الثقيلة إلى حِزم منفصلة (vendor chunks) لتقليل حجم الحزمة
     // الرئيسية وتحسين التخزين المؤقت في المتصفح — مع الإبقاء على الاستيراد الساكن.

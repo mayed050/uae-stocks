@@ -5,13 +5,9 @@ import { useStocks } from '../store'
 import { symColor, parseYield, parseAmount } from '../format'
 import Snowflake from '../components/Snowflake'
 import Avatar from '../components/Avatar'
+import { cell as v } from '@/components/ui/cell'
 
-const NA = 'يلزم التحقق'
 const MAX = 6 // تم الترقية للمقارنة بين حتى 6 أسهم
-
-function v(x: string | number | null | undefined) {
-  return x === null || x === undefined || x === '' ? <span className="na">{NA}</span> : x
-}
 
 interface Metric {
   k: string

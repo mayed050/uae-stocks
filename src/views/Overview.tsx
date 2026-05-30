@@ -8,10 +8,9 @@ import { useStocks, useMarketStats, usePortfolio } from '../store'
 import { fmtAmount, parseYield, parseAmount } from '../format'
 import Avatar from '../components/Avatar'
 import { ADX_MOVEMENTS } from '../data/movements'
-import { getDailyData, generateHistoricalData, generateSparklineData } from '../market'
+import { getDailyData, generateHistoricalData, generateSparklineData } from '@/market'
+import { PALETTE, TIP_STYLE as tipStyle } from '@/constants/ui'
 import './overview.css'
-
-const PALETTE = ['#3aa0ff', '#7c5cff', '#21c98b', '#ffb020', '#ff5a72', '#36c5d8', '#e26bd0', '#9bd13a']
 
 function fmtTradingValue(val: number) {
   if (val >= 1e6) {
@@ -1222,10 +1221,3 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
   )
 }
 
-const tipStyle = {
-  background: 'var(--panel-solid)',
-  border: '1px solid var(--line)',
-  borderRadius: 12,
-  color: 'var(--txt)',
-  fontSize: 13,
-}
