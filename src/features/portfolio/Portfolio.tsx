@@ -6,6 +6,7 @@ import { parseISO } from '@/lib'
 import Avatar from '@/components/Avatar'
 import PortfolioIntel from './PortfolioIntel'
 import StatCard from '@/components/ui/StatCard'
+import PageHeader from '@/components/ui/PageHeader'
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid, LabelList, AreaChart, Area
@@ -456,11 +457,8 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
         }
       `}</style>
 
-      <div className="page-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', borderBottom: '1px solid var(--line)', paddingBottom: '14px', marginBottom: '22px' }}>
-        <div>
-          <h1 style={{ margin: 0 }}>حاسبة محفظة التوزيعات الذكية</h1>
-          <p style={{ margin: '4px 0 0', color: 'var(--muted)' }}>خطط وقم بمحاكاة أرباحك السنوية والشهرية بناءً على مبالغ استثمارك في الأسهم الإماراتية</p>
-        </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', borderBottom: '1px solid var(--line)', paddingBottom: '14px', marginBottom: '22px' }}>
+        <PageHeader title="حاسبة محفظة التوزيعات الذكية">خطط وقم بمحاكاة أرباحك السنوية والشهرية بناءً على مبالغ استثمارك في الأسهم الإماراتية</PageHeader>
         <button
           onClick={() => window.print()}
           className="print-btn"

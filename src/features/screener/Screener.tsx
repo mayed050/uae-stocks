@@ -7,6 +7,7 @@ import Avatar from '@/components/Avatar'
 import { getDailyData } from '@/market'
 import { cell } from '@/components/ui/cell'
 import StatCard from '@/components/ui/StatCard'
+import PageHeader from '@/components/ui/PageHeader'
 import { SECTOR_TITLES, mapDFMSectorToDb } from '@/data/sectors'
 
 type SortKey = 'name' | 'price' | 'pe' | 'yield' | 'mcap'
@@ -108,10 +109,9 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
 
   return (
     <div className="view">
-      <div className="page-head">
-        <h1>مستكشف الأسهم</h1>
-        <p>عرض <b style={{ color: 'var(--brand)' }}>{rows.length}</b> من {DATA.length} سهمًا مطابقًا للفلتر — اضغط أي صف للتفاصيل الكاملة</p>
-      </div>
+      <PageHeader title="مستكشف الأسهم">
+        عرض <b style={{ color: 'var(--brand)' }}>{rows.length}</b> من {DATA.length} سهمًا مطابقًا للفلتر — اضغط أي صف للتفاصيل الكاملة
+      </PageHeader>
 
       <div className="overview-layout">
         {/* العمود الأيمن الرئيسي (الفلاتر والجدول 70%) */}

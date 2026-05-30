@@ -17,6 +17,7 @@ import SimBadge from '@/components/ui/SimBadge'
 import MarketKpiStrip from './MarketKpiStrip'
 import MarketLeaders from './MarketLeaders'
 import DividendMonthsCard from './DividendMonthsCard'
+import PageHeader from '@/components/ui/PageHeader'
 import './overview.css'
 
 function fmtTradingValue(val: number) {
@@ -30,7 +31,7 @@ function fmtTradingValue(val: number) {
 }
 
 export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) => void; onNavigate?: (v: View) => void }) {
-  const { stocks: DATA, lastUpdated } = useStocks()
+  const { stocks: DATA } = useStocks()
   const {
     stats,
     alertRows,
@@ -245,15 +246,9 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
   return (
     <div className="view">
 
-      <div className="page-head">
-        <h1>نظرة عامة على الأسهم والأسواق</h1>
-        <p>
-          لوحة معلوماتية مالية شاملة لـ {DATA.length} سهمًا مدرجاً في سوق دبي المالي وسوق أبوظبي للأوراق المالية
-          {lastUpdated && (
-            <span className="updated"> · آخر تحديث للأسعار: {new Date(lastUpdated).toLocaleString('ar-AE', { dateStyle: 'medium', timeStyle: 'short' })}</span>
-          )}
-        </p>
-      </div>
+      <PageHeader title="نظرة عامة على الأسهم والأسواق">
+        لوحة معلوماتية مالية شاملة لـ {DATA.length} سهمًا مدرجاً في سوق دبي المالي وسوق أبوظبي للأوراق المالية
+      </PageHeader>
 
       {/* شريط مؤشرات الأداء العلوي — ملخّص السوق في أربعة أرقام */}
       <MarketKpiStrip stats={stats} />

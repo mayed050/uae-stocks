@@ -6,6 +6,7 @@ import { MONTHS_AR, parseYield, getAnnualPs } from '@/format'
 import Avatar from '@/components/Avatar'
 import { cell } from '@/components/ui/cell'
 import StatCard from '@/components/ui/StatCard'
+import PageHeader from '@/components/ui/PageHeader'
 
 interface Ev { s: Stock; kind: 'ex' | 'pay'; date: Date; raw: string }
 
@@ -97,10 +98,9 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
 
   return (
     <div className="view">
-      <div className="page-head">
-        <h1>تقويم وتخطيط التوزيعات</h1>
-        <p>مواعيد الاستحقاق لعام {year} وأدوات التخطيط المالي الذكية للتوزيعات النقدية</p>
-      </div>
+      <PageHeader title="تقويم وتخطيط التوزيعات">
+        مواعيد الاستحقاق لعام {year} وأدوات التخطيط المالي الذكية للتوزيعات النقدية
+      </PageHeader>
 
       {/* شريط ملخّص التقويم */}
       <div className="stats" style={{ marginBottom: '16px' }}>

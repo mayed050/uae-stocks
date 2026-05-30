@@ -4,6 +4,7 @@ import { useStocks, usePortfolio } from '@/store'
 import { fmtAmount } from '@/format'
 import Avatar from '@/components/Avatar'
 import SimBadge from '@/components/ui/SimBadge'
+import PageHeader from '@/components/ui/PageHeader'
 import { getTechnicalData, generateHistoricalData } from './tradingSim'
 
 // تجميع التبويبات التسعة في 4 مجموعات لتقليل الحمل الإدراكي
@@ -422,10 +423,9 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
       `}</style>
 
       {/* ترويسة الصفحة العامة */}
-      <div className="page-head">
-        <h1>📊 النتائج والتقارير المالية المفصلة</h1>
-        <p>استعراض شامل وتحليل فني وتداولي دقيق لـ {DATA.length} شركة مدرجة في أسواق المال الإماراتية بذات ترتيب الصورة المرفقة</p>
-      </div>
+      <PageHeader title="📊 النتائج والتقارير المالية المفصلة">
+        استعراض شامل وتحليل فني وتداولي لـ {DATA.length} شركة مدرجة في أسواق المال الإماراتية
+      </PageHeader>
 
       <div className="financials-layout">
         

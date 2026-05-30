@@ -6,6 +6,7 @@ import { symColor, parseYield, parseAmount } from '@/format'
 import Snowflake from '@/components/Snowflake'
 import Avatar from '@/components/Avatar'
 import { cell as v } from '@/components/ui/cell'
+import PageHeader from '@/components/ui/PageHeader'
 
 const MAX = 6 // تم الترقية للمقارنة بين حتى 6 أسهم
 
@@ -75,10 +76,9 @@ export default function Compare() {
 
   return (
     <div className="view">
-      <div className="page-head">
-        <h1>المقارنة التفصيلية للأسهم</h1>
-        <p>اختر حتى {MAX} أسهم لمقارنتها جنبًا إلى جنب وبأدق التفاصيل المالية والتنظيمية ({picked.length}/{MAX})</p>
-      </div>
+      <PageHeader title="المقارنة التفصيلية للأسهم">
+        اختر حتى {MAX} أسهم لمقارنتها جنبًا إلى جنب وبأدق التفاصيل المالية والتنظيمية ({picked.length}/{MAX})
+      </PageHeader>
 
       {/* قائمة اختيار الأسهم */}
       <div className="pick-grid">
