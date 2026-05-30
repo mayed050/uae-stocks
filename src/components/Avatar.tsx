@@ -45,8 +45,8 @@ const TRADINGVIEW_LOGO_MAP: Record<string, string> = {
   BOROUGE: 'https://s3-symbol-logo.tradingview.com/borouge-plc--600.png',
   WAHAT: 'https://s3-symbol-logo.tradingview.com/waha-capital-company--600.png',
   DANA: 'https://s3-symbol-logo.tradingview.com/dana-gas-pjsc--600.png',
-  BURJEEL: 'https://s3-symbol-logo.tradingview.com/burjeel-plc--600.png'
-  // PHOENIX محذوف — الشعار السابق كان لشركة Phoenix Group البريطانية، سيظهر emoji 🤖 بدلاً منه
+  BURJEEL: 'https://s3-symbol-logo.tradingview.com/burjeel-plc--600.png',
+  PHOENIX: 'https://s3-symbol-logo.tradingview.com/phoenix-group-plc--600.png'
 }
 
 // خريطة أيقونات تعبيرية تعكس هوية أو قطاع كل شركة كبديل ممتاز في حال فشل تحميل الصورة
