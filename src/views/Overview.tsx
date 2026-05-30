@@ -12,9 +12,15 @@ import type { MovementStock } from '../data/movements'
 
 const PALETTE = ['#3aa0ff', '#7c5cff', '#21c98b', '#ffb020', '#ff5a72', '#36c5d8', '#e26bd0', '#9bd13a']
 
-
-
-
+function fmtTradingValue(val: number) {
+  if (val >= 1e6) {
+    return `${(val / 1e6).toFixed(2)} مليون د.إ`
+  }
+  if (val >= 1e3) {
+    return `${(val / 1e3).toFixed(1)} ألف د.إ`
+  }
+  return `${val.toFixed(0)} د.إ`
+}
 
 function getDailyData(s: Stock) {
   const symbol = s.sym.toUpperCase()
@@ -95,9 +101,6 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA, lastUpdated } = useStocks()
   const {
     alertRows,
-    marketGiants,
-    valuationOpportunities,
-    yieldLeaders,
     sectorData,
     monthData,
     maxYield,
@@ -109,6 +112,37 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
   const [heatmapMetric, setHeatmapMetric] = useState<'yield' | 'pe' | 'mcap'>('yield')
   // التحكم بتبويب حركة السوق (دبي / أبوظبي)
   const [marketTab, setMarketTab] = useState<'dubai' | 'adx'>('dubai')
+  // التحكم بتبويب لوحة حركة السوق (المرتفعة / المنخفضة / النشطة بالكمية / النشطة بالقيمة)
+  const [movementTab, setMovementTab] = useState<'gainers' | 'losers' | 'volume' | 'value'>('gainers')
+
+  // تصفية وفرز قائمة حركة السوق بناء على التبويب المختار
+  const movementStocks = useMemo(() => {
+    const stocksWithData = DATA.map(s => ({
+      s,
+      d: getDailyData(s),
+      pctNum: parseFloat(getDailyData(s).pct.replace('%', ''))
+    }))
+
+    if (movementTab === 'gainers') {
+      return stocksWithData
+        .filter(x => x.d.change > 0)
+        .sort((a, b) => b.pctNum - a.pctNum)
+        .slice(0, 10)
+    } else if (movementTab === 'losers') {
+      return stocksWithData
+        .filter(x => x.d.change < 0)
+        .sort((a, b) => a.pctNum - b.pctNum)
+        .slice(0, 10)
+    } else if (movementTab === 'volume') {
+      return stocksWithData
+        .sort((a, b) => b.d.volume - a.d.volume)
+        .slice(0, 10)
+    } else { // 'value'
+      return stocksWithData
+        .sort((a, b) => b.d.value - a.d.value)
+        .slice(0, 10)
+    }
+  }, [DATA, movementTab])
 
   // حساب إجمالي الصفقات وحجم التداول اليومي التراكمي للأسواق الإماراتية
   const marketActivity = useMemo(() => {
@@ -319,6 +353,13 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
           bottom: 0;
           right: 0;
           width: 4.5px;
+        }
+        .movement-row {
+          transition: all 0.15s ease;
+        }
+        .movement-row:hover {
+          background: rgba(255, 107, 0, 0.04) !important;
+          transform: scale(1.002);
         }
         
         .overview-layout {
@@ -605,82 +646,188 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
             </div>
           </div>
 
-          {/* قسم متصدري السوق والفرص (المصفوفة الثلاثية الأنيقة) */}
-          <h2 className="sec"><span className="dot" style={{ background: 'var(--brand)' }} /> قادة السوق وأفضل فرص الاستثمار</h2>
-          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px', margin: '14px 0 34px' }}>
-            
-            {/* 1. عمالقة السوق */}
-            <div className="panel">
-              <h3 className="panel-h">👑 عمالقة السوق (حجم الشركة)</h3>
-              <div className="o-lead-list">
-                {marketGiants.map(({ s }) => (
-                  <div key={s.sym} className="o-lead-item" onClick={() => onOpen(s)}>
-                    <Avatar sym={s.sym} size={28} />
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: 13.5, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        {s.name.split('—')[0]}
-                        {isInPortfolio(s.sym) && <span title="في محفظتك" style={{ fontSize: '11px' }}>💼</span>}
-                      </div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>
-                        {s.sym} <span className="exch">{s.ex}</span>
-                      </div>
-                    </div>
-                    <div className="o-lead-right">
-                      <span className="o-badge-brand">{s.mcap}</span>
-                    </div>
-                  </div>
-                ))}
+          {/* 📊 لوحة حركة السوق التفاعلية الشاملة (حركة السوق) */}
+          <div className="panel" style={{ marginBottom: '28px', padding: '24px', borderRadius: '16px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '12px', borderBottom: '1px solid var(--line)', paddingBottom: '14px', marginBottom: '16px' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900, color: '#ff6b00', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  🟠 حركة السوق
+                </h3>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'var(--muted)', fontWeight: 600 }}>
+                  قائمة مرتبة حسب {
+                    movementTab === 'gainers' ? 'الأسهم المرتفعة' :
+                    movementTab === 'losers' ? 'الأسهم المنخفضة' :
+                    movementTab === 'volume' ? 'النشطة بالكمية' :
+                    'النشطة بالقيمة'
+                  }
+                </p>
+              </div>
+
+              {/* تبويبات الفرز والتصفية المطبقة للهوية البصرية الفاخرة */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', background: 'var(--chip)', padding: '4px', borderRadius: '12px', border: '1px solid var(--line)' }}>
+                <button
+                  onClick={() => setMovementTab('gainers')}
+                  style={{
+                    border: 0,
+                    background: movementTab === 'gainers' ? 'linear-gradient(135deg, #ff7b00, #ff4500)' : 'transparent',
+                    color: movementTab === 'gainers' ? '#fff' : 'var(--muted)',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    padding: '6px 14px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    fontFamily: 'inherit'
+                  }}
+                >
+                  المرتفعة
+                </button>
+                <button
+                  onClick={() => setMovementTab('losers')}
+                  style={{
+                    border: 0,
+                    background: movementTab === 'losers' ? 'linear-gradient(135deg, #ff7b00, #ff4500)' : 'transparent',
+                    color: movementTab === 'losers' ? '#fff' : 'var(--muted)',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    padding: '6px 14px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    fontFamily: 'inherit'
+                  }}
+                >
+                  المنخفضة
+                </button>
+                <button
+                  onClick={() => setMovementTab('volume')}
+                  style={{
+                    border: 0,
+                    background: movementTab === 'volume' ? 'linear-gradient(135deg, #ff7b00, #ff4500)' : 'transparent',
+                    color: movementTab === 'volume' ? '#fff' : 'var(--muted)',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    padding: '6px 14px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    fontFamily: 'inherit'
+                  }}
+                >
+                  النشطة بالكمية
+                </button>
+                <button
+                  onClick={() => setMovementTab('value')}
+                  style={{
+                    border: 0,
+                    background: movementTab === 'value' ? 'linear-gradient(135deg, #ff7b00, #ff4500)' : 'transparent',
+                    color: movementTab === 'value' ? '#fff' : 'var(--muted)',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    padding: '6px 14px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    fontFamily: 'inherit'
+                  }}
+                >
+                  النشطة بالقيمة
+                </button>
               </div>
             </div>
 
-            {/* 2. فرص تقييم جاذبة */}
-            <div className="panel">
-              <h3 className="panel-h">💎 قيم جاذبة (مكرر ربحية منخفض)</h3>
-              <div className="o-lead-list">
-                {valuationOpportunities.map((s) => (
-                  <div key={s.sym} className="o-lead-item" onClick={() => onOpen(s)}>
-                    <Avatar sym={s.sym} size={28} />
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: 13.5, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        {s.name.split('—')[0]}
-                        {isInPortfolio(s.sym) && <span title="في محفظتك" style={{ fontSize: '11px' }}>💼</span>}
-                      </div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>
-                        {s.sym} <span className="exch">{s.ex}</span>
-                      </div>
-                    </div>
-                    <div className="o-lead-right">
-                      <span className="o-badge-warn">P/E {s.pe?.toFixed(1)}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            {/* الجدول التفاعلي الفاخر لحركة السوق */}
+            <div style={{ overflowX: 'auto', width: '100%' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', minWidth: '750px' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--line)', background: 'rgba(255, 107, 0, 0.02)' }}>
+                    <th style={{ padding: '12px 10px', color: 'var(--muted)', textAlign: 'right', fontWeight: 800 }}>الشركة</th>
+                    <th style={{ padding: '12px 10px', color: 'var(--muted)', textAlign: 'center', fontWeight: 800 }}>السعر</th>
+                    <th style={{ padding: '12px 10px', color: 'var(--muted)', textAlign: 'center', fontWeight: 800 }}>التغير</th>
+                    <th style={{ padding: '12px 10px', color: 'var(--muted)', textAlign: 'center', fontWeight: 800 }}>مكرر الربحية</th>
+                    <th style={{ padding: '12px 10px', color: 'var(--muted)', textAlign: 'center', fontWeight: 800 }}>العائد النقدي</th>
+                    <th style={{ padding: '12px 10px', color: 'var(--muted)', textAlign: 'center', fontWeight: 800 }}>عدد الصفقات</th>
+                    <th style={{ padding: '12px 10px', color: 'var(--muted)', textAlign: 'left', fontWeight: 800 }}>قيمة التداول</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {movementStocks.map(({ s, d }) => {
+                    const priceFormatted = s.price !== null ? `${s.price.toFixed(2)} د.إ` : '—';
+                    const peFormatted = s.pe !== null ? s.pe.toFixed(2) : '—';
+                    const yieldFormatted = s.div.yld ?? '—';
+                    const tradesFormatted = d.trades.toLocaleString('en-US');
+                    const valueFormatted = fmtTradingValue(d.value);
+                    
+                    return (
+                      <tr
+                        key={s.sym}
+                        onClick={() => onOpen(s)}
+                        className="movement-row"
+                        style={{
+                          borderBottom: '1px solid var(--line)',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                      >
+                        {/* عمود الشركة */}
+                        <td style={{ padding: '12px 10px', textAlign: 'right', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <Avatar sym={s.sym} size={32} />
+                          <div>
+                            <span style={{ fontWeight: 800, color: 'var(--txt)', fontSize: '13.5px', display: 'block' }}>{s.sym}</span>
+                            <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600 }}>{s.name.split('—')[0]}</span>
+                          </div>
+                          {isInPortfolio(s.sym) && <span title="في محفظتك" style={{ fontSize: '12px', marginInlineStart: '6px' }}>💼</span>}
+                        </td>
+                        
+                        {/* عمود السعر */}
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 800, color: 'var(--txt)' }}>
+                          {priceFormatted}
+                        </td>
+                        
+                        {/* عمود التغير */}
+                        <td style={{
+                          padding: '12px 10px',
+                          textAlign: 'center',
+                          fontWeight: 800,
+                          direction: 'ltr',
+                          color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)'
+                        }}>
+                          {d.isUp ? `+` : ''}{d.pct}
+                        </td>
+                        
+                        {/* عمود مكرر الربحية */}
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 700, color: 'var(--txt)' }}>
+                          {peFormatted}
+                        </td>
+                        
+                        {/* عمود العائد النقدي (مقترح يدعم موضوع التطبيق) */}
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 800, color: 'var(--good)' }}>
+                          {yieldFormatted}
+                        </td>
+                        
+                        {/* عمود عدد الصفقات (مطلوب) */}
+                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 700, color: 'var(--txt)' }}>
+                          {tradesFormatted}
+                        </td>
+                        
+                        {/* عمود قيمة التداول */}
+                        <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 800, color: 'var(--txt)' }}>
+                          {valueFormatted}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  
+                  {movementStocks.length === 0 && (
+                    <tr>
+                      <td colSpan={7} style={{ textAlign: 'center', padding: '24px', color: 'var(--muted)', fontWeight: 600 }}>
+                        لا توجد أسهم تطابق التصفية الحالية.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
-
-            {/* 3. قادة عوائد التوزيعات */}
-            <div className="panel">
-              <h3 className="panel-h">💰 قادة عوائد التوزيعات النقدية</h3>
-              <div className="o-lead-list">
-                {yieldLeaders.map(({ s }) => (
-                  <div key={s.sym} className="o-lead-item" onClick={() => onOpen(s)}>
-                    <Avatar sym={s.sym} size={28} />
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: 13.5, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        {s.name.split('—')[0]}
-                        {isInPortfolio(s.sym) && <span title="في محفظتك" style={{ fontSize: '11px' }}>💼</span>}
-                      </div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>
-                        {s.sym} <span className="exch">{s.ex}</span>
-                      </div>
-                    </div>
-                    <div className="o-lead-right">
-                      <span className="o-badge-good">{s.div.yld}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
           </div>
 
           {/* خريطة السوق الحرارية التفاعلية الفاخرة */}
