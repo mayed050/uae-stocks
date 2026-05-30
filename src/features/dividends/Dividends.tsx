@@ -5,6 +5,7 @@ import { parseISO } from '@/lib'
 import { MONTHS_AR, parseYield, getAnnualPs } from '@/format'
 import Avatar from '@/components/Avatar'
 import { cell } from '@/components/ui/cell'
+import StatCard from '@/components/ui/StatCard'
 
 interface Ev { s: Stock; kind: 'ex' | 'pay'; date: Date; raw: string }
 
@@ -28,6 +29,21 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
     months.forEach((m) => m.sort((a, b) => a.date.getTime() - b.date.getTime()))
     return months
   }, [DATA, year])
+
+  // ملخّص علوي: إجمالي التواريخ، القادم خلال 7 أيام، وتواريخ الشهر الحالي
+  const summary = useMemo(() => {
+    const now = new Date(); now.setHours(0, 0, 0, 0)
+    const in7 = new Date(now); in7.setDate(now.getDate() + 7)
+    let within7 = 0, total = 0, exTotal = 0, payTotal = 0
+    byMonth.forEach((m) => m.forEach((ev) => {
+      total++
+      if (ev.kind === 'ex') exTotal++; else payTotal++
+      if (ev.date >= now && ev.date <= in7) within7++
+    }))
+    const currentMonth = now.getFullYear() === year ? now.getMonth() : -1
+    const thisMonth = currentMonth >= 0 ? byMonth[currentMonth].length : 0
+    return { within7, total, exTotal, payTotal, currentMonth, thisMonth }
+  }, [byMonth, year])
 
   const calc = useMemo(() => {
     const annualTarget = (targetMonthly || 0) * 12
@@ -86,6 +102,13 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
         <p>مواعيد الاستحقاق لعام {year} وأدوات التخطيط المالي الذكية للتوزيعات النقدية</p>
       </div>
 
+      {/* شريط ملخّص التقويم */}
+      <div className="stats" style={{ marginBottom: '16px' }}>
+        <StatCard color="var(--brand)" value={summary.total} label={`إجمالي تواريخ ${year}`} sub={`استبعاد ${summary.exTotal} · دفع ${summary.payTotal}`} />
+        <StatCard color="var(--warn)" value={summary.within7} label="قادمة خلال 7 أيام" sub="استبعاد أو دفع" />
+        <StatCard color="var(--good)" value={summary.thisMonth} label="تواريخ الشهر الحالي" sub={summary.currentMonth >= 0 ? MONTHS_AR[summary.currentMonth] : 'خارج السنة'} />
+      </div>
+
       <div className="cal-legend">
         <span><i className="dotx ex" /> تاريخ استبعاد</span>
         <span><i className="dotx pay" /> تاريخ دفع</span>
@@ -93,8 +116,8 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
 
       <div className="calendar">
         {MONTHS_AR.map((m, i) => (
-          <div key={m} className={'cal-month' + (byMonth[i].length ? '' : ' empty-month')}>
-            <div className="cal-h">{m}</div>
+          <div key={m} className={'cal-month' + (byMonth[i].length ? '' : ' empty-month') + (i === summary.currentMonth ? ' current' : '')}>
+            <div className="cal-h">{m}{i === summary.currentMonth ? ' • الآن' : ''}</div>
             {byMonth[i].length === 0 ? (
               <div className="cal-none">—</div>
             ) : (

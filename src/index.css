@@ -235,7 +235,9 @@ th.sortable:hover{color:var(--txt)}
 .dotx.ex{background:var(--warn)} .dotx.pay{background:var(--good)}
 .calendar{display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px}
 .cal-month{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:12px; min-height:90px}
-.cal-month.empty-month{opacity:.5}
+.cal-month.empty-month{opacity:.45; min-height:auto; padding:8px 12px}
+.cal-month.current{border-color:var(--brand); box-shadow:0 0 0 1px var(--brand)}
+.cal-month.current .cal-h{color:var(--brand)}
 .cal-h{font-weight:800; font-size:14px; margin-bottom:9px; padding-bottom:7px; border-bottom:1px solid var(--line)}
 .cal-none{color:var(--muted2); text-align:center; padding:8px}
 .cal-ev{display:flex; align-items:center; gap:8px; width:100%; text-align:start; cursor:pointer;
