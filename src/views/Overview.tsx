@@ -468,329 +468,124 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
       </div>
 
       <div className="overview-layout">
-        {/* العمود الأيمن الرئيسي (المحتوى التفاعلي والبياني 70%) */}
-        <div className="overview-main">
-          {/* بطاقات الإحصائيات الشاملة */}
-          <div className="stats">
-            <StatCard n={DATA.length} l="الأسهم المتابَعة" sub={`${stats.dfm} في دبي · ${stats.adx} في أبوظبي`} />
-            <StatCard n={fmtAmount(stats.totalMcap)} l="إجمالي القيمة السوقية" sub={`${stats.mcapCount} أسهم مغطّاة`} />
-            <StatCard n={`${stats.avgYield.toFixed(1)}%`} l="متوسط العائد النقدي للسوق" sub="للأسهم المعلنة فقط" />
-            <StatCard n={stats.avgPe.toFixed(1)} l="متوسط مكرر الربحية (P/E)" sub="للشركات ذات الربحية الموجبة" />
-          </div>
-
-          {/* قسم التحليل والرسوم البيانية الهيكلية */}
-          <div className="chart-grid">
-            {/* توزيع القطاعات */}
-            <div className="panel">
-              <h3 className="panel-h">توزيع هيكل السوق حسب القطاعات</h3>
-              <ResponsiveContainer width="100%" height={260}>
-                <PieChart>
-                  <Pie data={sectorData} dataKey="value" nameKey="name" innerRadius={55} outerRadius={95} paddingAngle={2}>
-                    {sectorData.map((_, i) => (
-                      <Cell key={i} fill={PALETTE[i % PALETTE.length]} stroke="var(--panel-solid)" />
-                    ))}
-                  </Pie>
-                  <Tooltip contentStyle={tipStyle} formatter={(val, name) => [`${val} شركات مدرجة`, name]} />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="legend">
-                {sectorData.map((d, i) => (
-                  <span key={d.name} className="legend-item">
-                    <i style={{ background: PALETTE[i % PALETTE.length] }} />
-                    {d.name} ({d.value})
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* توزيع كثافة التواريخ والأحداث */}
-            <div className="panel">
-              <h3 className="panel-h">كثافة أحداث وتواريخ التوزيعات شهرياً</h3>
-              <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={monthData} margin={{ top: 18 }}>
-                  <CartesianGrid vertical={false} stroke="var(--line)" />
-                  <XAxis dataKey="m" tick={{ fill: 'var(--muted)', fontSize: 10 }} interval={0} angle={-35} textAnchor="end" height={60} />
-                  <YAxis allowDecimals={false} tick={{ fill: 'var(--muted)', fontSize: 12 }} />
-                  <Tooltip contentStyle={tipStyle} formatter={(val) => [`${val} حدث مالي متوقع`, 'التواريخ']} />
-                  <Bar dataKey="count" fill="#7c5cff" radius={[6, 6, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+        {/* 1. قسم الرسوم البيانية وهيكل السوق (مقدمة بصرية) */}
+        <div className="chart-grid" style={{ margin: '0 0 24px' }}>
+          {/* توزيع القطاعات */}
+          <div className="panel">
+            <h3 className="panel-h">توزيع هيكل السوق حسب القطاعات</h3>
+            <ResponsiveContainer width="100%" height={260}>
+              <PieChart>
+                <Pie data={sectorData} dataKey="value" nameKey="name" innerRadius={55} outerRadius={95} paddingAngle={2}>
+                  {sectorData.map((_, i) => (
+                    <Cell key={i} fill={PALETTE[i % PALETTE.length]} stroke="var(--panel-solid)" />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={tipStyle} formatter={(val, name) => [`${val} شركات مدرجة`, name]} />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="legend">
+              {sectorData.map((d, i) => (
+                <span key={d.name} className="legend-item">
+                  <i style={{ background: PALETTE[i % PALETTE.length] }} />
+                  {d.name} ({d.value})
+                </span>
+              ))}
             </div>
           </div>
 
-          {/* قسم متصدري السوق والفرص (المصفوفة الثلاثية الأنيقة) */}
-          <h2 className="sec"><span className="dot" style={{ background: 'var(--brand)' }} /> قادة السوق وأفضل فرص الاستثمار</h2>
-          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px', margin: '14px 0 34px' }}>
-            
-            {/* 1. عمالقة السوق */}
-            <div className="panel">
-              <h3 className="panel-h">👑 عمالقة السوق (حجم الشركة)</h3>
-              <div className="o-lead-list">
-                {marketGiants.map(({ s }) => (
-                  <div key={s.sym} className="o-lead-item" onClick={() => onOpen(s)}>
-                    <Avatar sym={s.sym} size={28} />
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: 13.5, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        {s.name.split('—')[0]}
-                        {isInPortfolio(s.sym) && <span title="في محفظتك" style={{ fontSize: '11px' }}>💼</span>}
-                      </div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>
-                        {s.sym} <span className="exch">{s.ex}</span>
-                      </div>
-                    </div>
-                    <div className="o-lead-right">
-                      <span className="o-badge-brand">{s.mcap}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 2. فرص تقييم جاذبة */}
-            <div className="panel">
-              <h3 className="panel-h">💎 قيم جاذبة (مكرر ربحية منخفض)</h3>
-              <div className="o-lead-list">
-                {valuationOpportunities.map((s) => (
-                  <div key={s.sym} className="o-lead-item" onClick={() => onOpen(s)}>
-                    <Avatar sym={s.sym} size={28} />
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: 13.5, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        {s.name.split('—')[0]}
-                        {isInPortfolio(s.sym) && <span title="في محفظتك" style={{ fontSize: '11px' }}>💼</span>}
-                      </div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>
-                        {s.sym} <span className="exch">{s.ex}</span>
-                      </div>
-                    </div>
-                    <div className="o-lead-right">
-                      <span className="o-badge-warn">P/E {s.pe?.toFixed(1)}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 3. قادة عوائد التوزيعات */}
-            <div className="panel">
-              <h3 className="panel-h">💰 قادة عوائد التوزيعات النقدية</h3>
-              <div className="o-lead-list">
-                {yieldLeaders.map(({ s }) => (
-                  <div key={s.sym} className="o-lead-item" onClick={() => onOpen(s)}>
-                    <Avatar sym={s.sym} size={28} />
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: 13.5, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        {s.name.split('—')[0]}
-                        {isInPortfolio(s.sym) && <span title="في محفظتك" style={{ fontSize: '11px' }}>💼</span>}
-                      </div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>
-                        {s.sym} <span className="exch">{s.ex}</span>
-                      </div>
-                    </div>
-                    <div className="o-lead-right">
-                      <span className="o-badge-good">{s.div.yld}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-          </div>
-
-          {/* خريطة السوق الحرارية التفاعلية الفاخرة */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', margin: '24px 0 14px' }}>
-            <h2 className="sec" style={{ margin: 0 }}>
-              <span className="dot" style={{ background: 'var(--brand2)' }} /> خريطة السوق الحرارية التفاعلية
-            </h2>
-            <div className="o-toggle-container">
-              <button 
-                className={'o-toggle-btn' + (heatmapMetric === 'yield' ? ' active' : '')} 
-                onClick={() => setHeatmapMetric('yield')}
-              >
-                عائد التوزيعات (%)
-              </button>
-              <button 
-                className={'o-toggle-btn' + (heatmapMetric === 'pe' ? ' active' : '')} 
-                onClick={() => setHeatmapMetric('pe')}
-              >
-                مكرر الربحية (P/E)
-              </button>
-              <button 
-                className={'o-toggle-btn' + (heatmapMetric === 'mcap' ? ' active' : '')} 
-                onClick={() => setHeatmapMetric('mcap')}
-              >
-                القيمة السوقية
-              </button>
-            </div>
-          </div>
-
-          <div className="heatmap" style={{ marginBottom: '30px' }}>
-            {DATA.map((s) => {
-              let cellBg = 'var(--chip)'
-              let labelText = '—'
-              let titleText = `${s.name} (${s.sym})`
-
-              if (heatmapMetric === 'yield') {
-                const y = parseYield(s.div.yld)
-                labelText = s.div.yld ?? '—'
-                titleText += ` — عائد نقدي: ${s.div.yld ?? 'غير معلن'}`
-                if (y !== null && maxYield > 0) {
-                  const ratio = y / maxYield
-                  cellBg = `rgba(33, 201, 139, ${0.15 + ratio * 0.75})` // تدرج أخضر للتوزيعات
-                }
-              } 
-              else if (heatmapMetric === 'pe') {
-                labelText = s.pe !== null ? `P/E ${s.pe.toFixed(1)}` : '—'
-                titleText += ` — مكرر ربحية: ${s.pe !== null ? s.pe.toFixed(1) : 'يلزم تحقق'}`
-                if (s.pe !== null && s.pe > 0) {
-                  if (s.pe <= 8) cellBg = 'rgba(33, 201, 139, 0.9)' // مكرر ممتاز ورخيص (أخضر داكن)
-                  else if (s.pe <= 15) cellBg = 'rgba(33, 201, 139, 0.45)' // مكرر جيد ومتوازن (أخضر فاتح)
-                  else if (s.pe <= 22) cellBg = 'rgba(255, 176, 32, 0.45)' // مكرر مرتفع نوعا ما (برتقالي فاتح)
-                  else cellBg = 'rgba(255, 90, 114, 0.65)' // مكرر متضخم ومخالف (أحمر ناعم)
-                }
-              } 
-              else if (heatmapMetric === 'mcap') {
-                const mc = parseAmount(s.mcap)
-                labelText = s.mcap ?? '—'
-                titleText += ` — القيمة السوقية: ${s.mcap ?? 'غير متوفرة'}`
-                if (mc !== null && maxMcap > 0) {
-                  const ratio = mc / maxMcap
-                  cellBg = `rgba(58, 160, 255, ${0.15 + ratio * 0.75})` // تدرج أزرق للقيمة السوقية
-                }
-              }
-
-              return (
-                <button
-                  key={s.sym}
-                  className="heat-cell"
-                  onClick={() => onOpen(s)}
-                  style={{ background: cellBg, border: '1px solid var(--line)', padding: '14px 8px' }}
-                  title={titleText}
-                >
-                  <span className="heat-sym">{s.sym}</span>
-                  <span className="heat-y" style={{ fontSize: '11px', fontWeight: 600 }}>{labelText}</span>
-                </button>
-              )
-            })}
+          {/* توزيع كثافة التواريخ والأحداث */}
+          <div className="panel">
+            <h3 className="panel-h">كثافة أحداث وتواريخ التوزيعات شهرياً</h3>
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={monthData} margin={{ top: 18 }}>
+                <CartesianGrid vertical={false} stroke="var(--line)" />
+                <XAxis dataKey="m" tick={{ fill: 'var(--muted)', fontSize: 10 }} interval={0} angle={-35} textAnchor="end" height={60} />
+                <YAxis allowDecimals={false} tick={{ fill: 'var(--muted)', fontSize: 12 }} />
+                <Tooltip contentStyle={tipStyle} formatter={(val) => [`${val} حدث مالي متوقع`, 'التواريخ']} />
+                <Bar dataKey="count" fill="#7c5cff" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
-        {/* العمود الأيسر الجانبي (المعلومات المحلّية الرديفة 30%) */}
-        <div className="overview-sidebar">
-          
-          {/* 1. لوحة قطاعات وأسعار الشركات (مطابقة تماماً للصورة) */}
-          <div className="o-widget">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: '8px', marginBottom: '12px' }}>
-              <h4 className="o-widget-h" style={{ margin: 0, border: 0, padding: 0 }}>📊 أسعار الشركات</h4>
-              <div style={{ display: 'flex', gap: '4px', background: 'var(--chip)', padding: '2.5px', borderRadius: '8px', border: '1px solid var(--line)' }}>
-                <button 
-                  onClick={() => setMarketTab('dubai')} 
-                  style={{
-                    border: 0,
-                    background: marketTab === 'dubai' ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'transparent',
-                    color: marketTab === 'dubai' ? '#fff' : 'var(--muted)',
-                    fontSize: '11px',
-                    padding: '3px 9px',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    fontWeight: 700,
-                    fontFamily: 'inherit',
-                    transition: 'all 0.15s ease'
-                  }}
-                >
-                  دبي
-                </button>
-                <button 
-                  onClick={() => setMarketTab('adx')} 
-                  style={{
-                    border: 0,
-                    background: marketTab === 'adx' ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'transparent',
-                    color: marketTab === 'adx' ? '#fff' : 'var(--muted)',
-                    fontSize: '11px',
-                    padding: '3px 9px',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    fontWeight: 700,
-                    fontFamily: 'inherit',
-                    transition: 'all 0.15s ease'
-                  }}
-                >
-                  أبوظبي
-                </button>
-              </div>
+        {/* 2. 📊 أسعار الشركات وحركة التداول الكلي اليومي */}
+        <div className="panel" style={{ marginBottom: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: '8px', marginBottom: '12px' }}>
+            <h3 className="panel-h" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              📊 أسعار وحركات تداول الشركات المدرجة
+            </h3>
+            <div style={{ display: 'flex', gap: '4px', background: 'var(--chip)', padding: '2.5px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+              <button 
+                onClick={() => setMarketTab('dubai')} 
+                style={{
+                  border: 0,
+                  background: marketTab === 'dubai' ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'transparent',
+                  color: marketTab === 'dubai' ? '#fff' : 'var(--muted)',
+                  fontSize: '11px',
+                  padding: '4px 12px',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  fontWeight: 700,
+                  fontFamily: 'inherit',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                سوق دبي (DFM)
+              </button>
+              <button 
+                onClick={() => setMarketTab('adx')} 
+                style={{
+                  border: 0,
+                  background: marketTab === 'adx' ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'transparent',
+                  color: marketTab === 'adx' ? '#fff' : 'var(--muted)',
+                  fontSize: '11px',
+                  padding: '4px 12px',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  fontWeight: 700,
+                  fontFamily: 'inherit',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                سوق أبوظبي (ADX)
+              </button>
             </div>
-            
-            {marketTab === 'dubai' ? (
-              <div style={{ maxHeight: '440px', overflowY: 'auto', paddingRight: '2px' }}>
-                <table style={{ minWidth: '100%', background: 'transparent', fontSize: '12px', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ borderBottom: '1px solid var(--line)' }}>
-                      <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'right', fontWeight: 700 }}>الاسم</th>
-                      <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'center', fontWeight: 700 }}>السعر</th>
-                      <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'left', fontWeight: 700 }}>التغير</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {DATA.filter(s => s.ex === 'DFM').map((realStock) => {
-                      const d = getDailyData(realStock)
-                      return (
-                        <tr 
-                          key={realStock.sym} 
-                          onClick={() => onOpen(realStock)}
-                          className="rowlink"
-                          style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', cursor: 'pointer' }}
-                        >
-                          <td style={{ padding: '7px 4px', textAlign: 'right' }}>
-                            <span style={{ fontWeight: 700, display: 'block', color: 'var(--txt)' }}>{realStock.name.split('—')[0]}</span>
-                            <span style={{ fontSize: '10px', color: 'var(--muted2)', fontWeight: 600 }}>{realStock.sym}</span>
-                          </td>
-                          <td style={{ padding: '7px 4px', textAlign: 'center', fontWeight: 700, color: 'var(--txt)' }}>
-                            {realStock.price !== null ? realStock.price.toFixed(2) : '—'}
-                          </td>
-                          <td style={{ 
-                            padding: '7px 4px', 
-                            textAlign: 'left', 
-                            fontWeight: 800,
-                            direction: 'ltr',
-                            color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)'
-                          }}>
-                            {d.pct}
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <table style={{ minWidth: '100%', background: 'transparent', fontSize: '12px', borderCollapse: 'collapse' }}>
+          </div>
+          
+          {marketTab === 'dubai' ? (
+            <div className="tablewrap" style={{ maxHeight: '480px', overflowY: 'auto' }}>
+              <table style={{ minWidth: '100%', background: 'transparent', fontSize: '13px', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--line)' }}>
-                    <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'right', fontWeight: 700 }}>الاسم</th>
-                    <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'center', fontWeight: 700 }}>السعر</th>
-                    <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'left', fontWeight: 700 }}>التغير</th>
+                    <th style={{ padding: '8px', color: 'var(--muted)', textAlign: 'right', fontWeight: 700 }}>اسم الشركة</th>
+                    <th style={{ padding: '8px', color: 'var(--muted)', textAlign: 'center', fontWeight: 700 }}>سعر السهم الحالي</th>
+                    <th style={{ padding: '8px', color: 'var(--muted)', textAlign: 'left', fontWeight: 700 }}>التغير اليومي</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {ADX_MOVEMENTS.map((m) => {
-                    const realStock = DATA.find(s => s.sym.toUpperCase() === m.sym.toUpperCase())
-                    if (!realStock) return null
+                  {DATA.filter(s => s.ex === 'DFM').map((realStock) => {
                     const d = getDailyData(realStock)
                     return (
                       <tr 
                         key={realStock.sym} 
                         onClick={() => onOpen(realStock)}
                         className="rowlink"
-                        style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', cursor: 'pointer' }}
+                        style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}
                       >
-                        <td style={{ padding: '7px 4px', textAlign: 'right' }}>
-                          <span style={{ fontWeight: 700, display: 'block', color: 'var(--txt)' }}>{realStock.name.split('—')[0]}</span>
-                          <span style={{ fontSize: '10px', color: 'var(--muted2)', fontWeight: 600 }}>{realStock.sym}</span>
+                        <td style={{ padding: '10px 8px', textAlign: 'right' }}>
+                          <span className="cellname">
+                            <Avatar sym={realStock.sym} size={24} />
+                            <span>
+                              <span style={{ fontWeight: 700, display: 'block', color: 'var(--txt)' }}>{realStock.name.split('—')[0]}</span>
+                              <span style={{ fontSize: '10px', color: 'var(--muted2)', fontWeight: 600 }}>{realStock.sym}</span>
+                            </span>
+                          </span>
                         </td>
-                        <td style={{ padding: '7px 4px', textAlign: 'center', fontWeight: 700, color: 'var(--txt)' }}>
-                          {realStock.price !== null ? realStock.price.toFixed(2) : '—'}
+                        <td style={{ padding: '10px 8px', textAlign: 'center', fontWeight: 700, color: 'var(--txt)' }}>
+                          {realStock.price !== null ? `${realStock.price.toFixed(2)} درهم` : '—'}
                         </td>
                         <td style={{ 
-                          padding: '7px 4px', 
+                          padding: '10px 8px', 
                           textAlign: 'left', 
                           fontWeight: 800,
                           direction: 'ltr',
@@ -803,16 +598,147 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
                   })}
                 </tbody>
               </table>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="tablewrap" style={{ maxHeight: '480px', overflowY: 'auto' }}>
+              <table style={{ minWidth: '100%', background: 'transparent', fontSize: '13px', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--line)' }}>
+                    <th style={{ padding: '8px', color: 'var(--muted)', textAlign: 'right', fontWeight: 700 }}>اسم الشركة</th>
+                    <th style={{ padding: '8px', color: 'var(--muted)', textAlign: 'center', fontWeight: 700 }}>سعر السهم الحالي</th>
+                    <th style={{ padding: '8px', color: 'var(--muted)', textAlign: 'left', fontWeight: 700 }}>التغير اليومي</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ADX_MOVEMENTS.map((m) => {
+                    const realStock = DATA.find(s => s.sym.toUpperCase() === m.sym.toUpperCase())
+                    if (!realStock) return null
+                    const d = getDailyData(realStock)
+                    return (
+                      <tr 
+                        key={realStock.sym} 
+                        onClick={() => onOpen(realStock)}
+                        className="rowlink"
+                        style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}
+                      >
+                        <td style={{ padding: '10px 8px', textAlign: 'right' }}>
+                          <span className="cellname">
+                            <Avatar sym={realStock.sym} size={24} />
+                            <span>
+                              <span style={{ fontWeight: 700, display: 'block', color: 'var(--txt)' }}>{realStock.name.split('—')[0]}</span>
+                              <span style={{ fontSize: '10px', color: 'var(--muted2)', fontWeight: 600 }}>{realStock.sym}</span>
+                            </span>
+                          </span>
+                        </td>
+                        <td style={{ padding: '10px 8px', textAlign: 'center', fontWeight: 700, color: 'var(--txt)' }}>
+                          {realStock.price !== null ? `${realStock.price.toFixed(2)} درهم` : '—'}
+                        </td>
+                        <td style={{ 
+                          padding: '10px 8px', 
+                          textAlign: 'left', 
+                          fontWeight: 800,
+                          direction: 'ltr',
+                          color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)'
+                        }}>
+                          {d.pct}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
 
-          {/* 2. التنبيهات المباشرة القريبة (Mini Calendar) */}
-          <div className="o-widget">
-            <h4 className="o-widget-h">⏰ تنبيهات التواريخ القادمة</h4>
-            {alertRows.length === 0 ? (
-              <div style={{ fontSize: '12px', color: 'var(--muted)', textAlign: 'center', padding: '10px 0' }}>لا توجد تواريخ استحقاق قريبة حالياً.</div>
-            ) : (
-              alertRows.slice(0, 3).map(({ s, u }) => (
+        {/* 3. 💰 بطاقات إحصائيات مؤشرات السوق العامة */}
+        <div className="stats" style={{ margin: '0 0 24px' }}>
+          <StatCard n={DATA.length} l="الأسهم المتابَعة" sub={`${stats.dfm} في دبي · ${stats.adx} في أبوظبي`} />
+          <StatCard n={fmtAmount(stats.totalMcap)} l="إجمالي القيمة السوقية" sub={`${stats.mcapCount} أسهم مغطّاة`} />
+          <StatCard n={`${stats.avgYield.toFixed(1)}%`} l="متوسط العائد النقدي للسوق" sub="للأسهم المعلنة فقط" />
+          <StatCard n={stats.avgPe.toFixed(1)} l="متوسط مكرر الربحية (P/E)" sub="للشركات ذات الربحية الموجبة" />
+        </div>
+
+        {/* 4. 🔔 إجراءات وأحداث الشركات وإفصاحات الأخبار المباشرة */}
+        <div className="panel" style={{ marginBottom: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: '8px', marginBottom: '12px' }}>
+            <h3 className="panel-h" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              🔔 إجراءات وأحداث الشركات المباشرة
+            </h3>
+            <span className="live-badge-pulse" title="متابعة فورية ومستمرة لإجراءات الشركات في سوق الإمارات">
+              <span className="pulse-dot" />
+              مباشر
+            </span>
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px', maxHeight: '420px', overflowY: 'auto', paddingRight: '2px' }}>
+            {liveActions.map((act) => {
+              const realStock = DATA.find(s => s.sym.toUpperCase() === act.sym.toUpperCase());
+              
+              // Color-coded borders based on action type
+              let typeColor = 'var(--brand)';
+              if (act.type === 'approval') typeColor = 'var(--good)';
+              if (act.type === 'date') typeColor = 'var(--warn)';
+              if (act.type === 'payout') typeColor = 'var(--brand)';
+              if (act.type === 'news') typeColor = 'var(--brand2)';
+
+              return (
+                <div 
+                  key={act.id}
+                  onClick={() => realStock && onOpen(realStock)}
+                  className="o-action-item"
+                  style={{ opacity: realStock ? 1 : 0.8, marginBottom: 0 }}
+                >
+                  {/* Color bar */}
+                  <div className="o-action-type-line" style={{ background: typeColor }} />
+                  
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    {realStock ? (
+                      <Avatar sym={realStock.sym} size={20} />
+                    ) : (
+                      <span style={{ fontSize: '12px' }}>🏢</span>
+                    )}
+                    <span style={{ fontWeight: 800, fontSize: '11.5px', color: 'var(--txt)' }}>
+                      {realStock ? realStock.name.split('—')[0] : act.sym}
+                    </span>
+                    <span style={{ 
+                      fontSize: '9.5px', 
+                      padding: '1px 6px', 
+                      borderRadius: '4px', 
+                      background: `${typeColor}15`, 
+                      color: typeColor,
+                      fontWeight: 800,
+                      marginInlineStart: 'auto',
+                      border: `1px solid ${typeColor}30`
+                    }}>
+                      {act.badge}
+                    </span>
+                  </div>
+                  
+                  <p style={{ margin: 0, fontSize: '11.5px', color: 'var(--muted)', lineHeight: '1.45', fontWeight: 600 }}>
+                    {act.title}
+                  </p>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9.5px', color: 'var(--muted2)', marginTop: '4px', borderTop: '1px dashed var(--line)', paddingTop: '4px' }}>
+                    <span>🕒 {act.time}</span>
+                    <span>{realStock ? `رمز السهم: ${realStock.sym}` : ''}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 5. ⏰ تقويم أحداث وتنبيهات التواريخ القادمة */}
+        <div className="panel" style={{ marginBottom: '24px' }}>
+          <h3 className="panel-h" style={{ borderBottom: '1px solid var(--line)', paddingBottom: '8px', marginBottom: '12px' }}>
+            ⏰ تنبيهات تواريخ الاستحقاق والتقويم القادم
+          </h3>
+          {alertRows.length === 0 ? (
+            <div style={{ fontSize: '13px', color: 'var(--muted)', textAlign: 'center', padding: '10px 0' }}>لا توجد تواريخ استحقاق قريبة حالياً.</div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px' }}>
+              {alertRows.slice(0, 4).map(({ s, u }) => (
                 <button 
                   key={s.sym} 
                   onClick={() => onOpen(s)}
@@ -822,98 +748,181 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
                     width: '100%',
                     background: 'var(--chip)',
                     border: '1px solid var(--line)',
-                    borderRadius: '10px',
-                    padding: '8px 10px',
-                    marginBottom: '8px',
+                    borderRadius: '12px',
+                    padding: '12px 14px',
                     cursor: 'pointer',
                     fontFamily: 'inherit',
                     textAlign: 'right',
-                    gap: '4px',
+                    gap: '6px',
                     transition: 'all 0.12s ease'
                   }}
                   className="rowlink"
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
-                    <Avatar sym={s.sym} size={22} />
-                    <span style={{ fontWeight: 700, fontSize: '12px', color: 'var(--txt)' }}>{s.sym}</span>
-                    <span style={{ fontSize: '9px', padding: '1px 5px', borderRadius: '4px', background: 'var(--line)', marginInlineStart: 'auto' }}>{s.ex}</span>
+                    <Avatar sym={s.sym} size={24} />
+                    <span style={{ fontWeight: 700, fontSize: '13px', color: 'var(--txt)' }}>{s.sym}</span>
+                    <span style={{ fontSize: '10px', padding: '1px 6px', borderRadius: '4px', background: 'var(--line)', marginInlineStart: 'auto', color: 'var(--muted)' }}>{s.ex}</span>
                   </div>
-                  <div style={{ fontSize: '11px', color: 'var(--muted)', lineHeight: '1.3' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--muted)', lineHeight: '1.4', fontWeight: 600 }}>
                     {u.label} — {u.n === null ? 'التاريخ متوقع' : u.n === 0 ? 'اليوم' : `خلال ${u.n} يوم`}
                   </div>
                 </button>
-              ))
-            )}
-          </div>
-
-          {/* 3. إشعارات وأحداث الشركات المباشرة (Live Corporate Actions) */}
-          <div className="o-widget" style={{ marginTop: '10px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: '8px', marginBottom: '12px' }}>
-              <h4 className="o-widget-h" style={{ margin: 0, border: 0, padding: 0 }}>🔔 إجراءات وأحداث الشركات</h4>
-              <span className="live-badge-pulse" title="متابعة فورية ومستمرة لإجراءات الشركات في سوق الإمارات">
-                <span className="pulse-dot" />
-                مباشر
-              </span>
+              ))}
             </div>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', maxHeight: '420px', overflowY: 'auto', paddingRight: '2px' }}>
-              {liveActions.map((act) => {
-                const realStock = DATA.find(s => s.sym.toUpperCase() === act.sym.toUpperCase());
-                
-                // Color-coded borders based on action type
-                let typeColor = 'var(--brand)';
-                if (act.type === 'approval') typeColor = 'var(--good)';
-                if (act.type === 'date') typeColor = 'var(--warn)';
-                if (act.type === 'payout') typeColor = 'var(--brand)';
-                if (act.type === 'news') typeColor = 'var(--brand2)';
+          )}
+        </div>
 
-                return (
-                  <div 
-                    key={act.id}
-                    onClick={() => realStock && onOpen(realStock)}
-                    className="o-action-item"
-                    style={{ opacity: realStock ? 1 : 0.8 }}
-                  >
-                    {/* Color bar */}
-                    <div className="o-action-type-line" style={{ background: typeColor }} />
-                    
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                      {realStock ? (
-                        <Avatar sym={realStock.sym} size={20} />
-                      ) : (
-                        <span style={{ fontSize: '12px' }}>🏢</span>
-                      )}
-                      <span style={{ fontWeight: 800, fontSize: '11.5px', color: 'var(--txt)' }}>
-                        {realStock ? realStock.name.split('—')[0] : act.sym}
-                      </span>
-                      <span style={{ 
-                        fontSize: '9.5px', 
-                        padding: '1px 6px', 
-                        borderRadius: '4px', 
-                        background: `${typeColor}15`, 
-                        color: typeColor,
-                        fontWeight: 800,
-                        marginInlineStart: 'auto',
-                        border: `1px solid ${typeColor}30`
-                      }}>
-                        {act.badge}
-                      </span>
+        {/* 6. 👑 قادة السوق وأفضل فرص الاستثمار */}
+        <h2 className="sec"><span className="dot" style={{ background: 'var(--brand)' }} /> قادة السوق وأفضل فرص الاستثمار</h2>
+        <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px', margin: '14px 0 24px' }}>
+          {/* عمالقة السوق */}
+          <div className="panel">
+            <h3 className="panel-h">👑 عمالقة السوق (حجم الشركة)</h3>
+            <div className="o-lead-list">
+              {marketGiants.map(({ s }) => (
+                <div key={s.sym} className="o-lead-item" onClick={() => onOpen(s)}>
+                  <Avatar sym={s.sym} size={28} />
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 13.5, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      {s.name.split('—')[0]}
+                      {isInPortfolio(s.sym) && <span title="في محفظتك" style={{ fontSize: '11px' }}>💼</span>}
                     </div>
-                    
-                    <p style={{ margin: 0, fontSize: '11.5px', color: 'var(--muted)', lineHeight: '1.45', fontWeight: 600 }}>
-                      {act.title}
-                    </p>
-                    
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9.5px', color: 'var(--muted2)', marginTop: '4px', borderTop: '1px dashed var(--line)', paddingTop: '4px' }}>
-                      <span>🕒 {act.time}</span>
-                      <span>{realStock ? `رمز السهم: ${realStock.sym}` : ''}</span>
+                    <div style={{ fontSize: 11, color: 'var(--muted)' }}>
+                      {s.sym} <span className="exch">{s.ex}</span>
                     </div>
                   </div>
-                );
-              })}
+                  <div className="o-lead-right">
+                    <span className="o-badge-brand">{s.mcap}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
+          {/* فرص تقييم جاذبة */}
+          <div className="panel">
+            <h3 className="panel-h">💎 قيم جاذبة (مكرر ربحية منخفض)</h3>
+            <div className="o-lead-list">
+              {valuationOpportunities.map((s) => (
+                <div key={s.sym} className="o-lead-item" onClick={() => onOpen(s)}>
+                  <Avatar sym={s.sym} size={28} />
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 13.5, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      {s.name.split('—')[0]}
+                      {isInPortfolio(s.sym) && <span title="في محفظتك" style={{ fontSize: '11px' }}>💼</span>}
+                    </div>
+                    <div style={{ fontSize: 11, color: 'var(--muted)' }}>
+                      {s.sym} <span className="exch">{s.ex}</span>
+                    </div>
+                  </div>
+                  <div className="o-lead-right">
+                    <span className="o-badge-warn">P/E {s.pe?.toFixed(1)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* قادة عوائد التوزيعات */}
+          <div className="panel">
+            <h3 className="panel-h">💰 قادة عوائد التوزيعات النقدية</h3>
+            <div className="o-lead-list">
+              {yieldLeaders.map(({ s }) => (
+                <div key={s.sym} className="o-lead-item" onClick={() => onOpen(s)}>
+                  <Avatar sym={s.sym} size={28} />
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 13.5, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      {s.name.split('—')[0]}
+                      {isInPortfolio(s.sym) && <span title="في محفظتك" style={{ fontSize: '11px' }}>💼</span>}
+                    </div>
+                    <div style={{ fontSize: 11, color: 'var(--muted)' }}>
+                      {s.sym} <span className="exch">{s.ex}</span>
+                    </div>
+                  </div>
+                  <div className="o-lead-right">
+                    <span className="o-badge-good">{s.div.yld}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* 7. 🗺️ خريطة السوق الحرارية التفاعلية الفاخرة */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', margin: '24px 0 14px' }}>
+          <h2 className="sec" style={{ margin: 0 }}>
+            <span className="dot" style={{ background: 'var(--brand2)' }} /> خريطة السوق الحرارية التفاعلية
+          </h2>
+          <div className="o-toggle-container">
+            <button 
+              className={'o-toggle-btn' + (heatmapMetric === 'yield' ? ' active' : '')} 
+              onClick={() => setHeatmapMetric('yield')}
+            >
+              عائد التوزيعات (%)
+            </button>
+            <button 
+              className={'o-toggle-btn' + (heatmapMetric === 'pe' ? ' active' : '')} 
+              onClick={() => setHeatmapMetric('pe')}
+            >
+              مكرر الربحية (P/E)
+            </button>
+            <button 
+              className={'o-toggle-btn' + (heatmapMetric === 'mcap' ? ' active' : '')} 
+              onClick={() => setHeatmapMetric('mcap')}
+            >
+              القيمة السوقية
+            </button>
+          </div>
+        </div>
+
+        <div className="heatmap" style={{ marginBottom: '10px' }}>
+          {DATA.map((s) => {
+            let cellBg = 'var(--chip)'
+            let labelText = '—'
+            let titleText = `${s.name} (${s.sym})`
+
+            if (heatmapMetric === 'yield') {
+              const y = parseYield(s.div.yld)
+              labelText = s.div.yld ?? '—'
+              titleText += ` — عائد نقدي: ${s.div.yld ?? 'غير معلن'}`
+              if (y !== null && maxYield > 0) {
+                const ratio = y / maxYield
+                cellBg = `rgba(33, 201, 139, ${0.15 + ratio * 0.75})` // تدرج أخضر للتوزيعات
+              }
+            } 
+            else if (heatmapMetric === 'pe') {
+              labelText = s.pe !== null ? `P/E ${s.pe.toFixed(1)}` : '—'
+              titleText += ` — مكرر ربحية: ${s.pe !== null ? s.pe.toFixed(1) : 'يلزم تحقق'}`
+              if (s.pe !== null && s.pe > 0) {
+                if (s.pe <= 8) cellBg = 'rgba(33, 201, 139, 0.9)' // مكرر ممتاز ورخيص (أخضر داكن)
+                else if (s.pe <= 15) cellBg = 'rgba(33, 201, 139, 0.45)' // مكرر جيد ومتوازن (أخضر فاتح)
+                else if (s.pe <= 22) cellBg = 'rgba(255, 176, 32, 0.45)' // مكرر مرتفع نوعا ما (برتقالي فاتح)
+                else cellBg = 'rgba(255, 90, 114, 0.65)' // مكرر متضخم ومخالف (أحمر ناعم)
+              }
+            } 
+            else if (heatmapMetric === 'mcap') {
+              const mc = parseAmount(s.mcap)
+              labelText = s.mcap ?? '—'
+              titleText += ` — القيمة السوقية: ${s.mcap ?? 'غير متوفرة'}`
+              if (mc !== null && maxMcap > 0) {
+                const ratio = mc / maxMcap
+                cellBg = `rgba(58, 160, 255, ${0.15 + ratio * 0.75})` // تدرج أزرق للقيمة السوقية
+              }
+            }
+
+            return (
+              <button
+                key={s.sym}
+                className="heat-cell"
+                onClick={() => onOpen(s)}
+                style={{ background: cellBg, border: '1px solid var(--line)', padding: '14px 8px' }}
+                title={titleText}
+              >
+                <span className="heat-sym">{s.sym}</span>
+                <span className="heat-y" style={{ fontSize: '11px', fontWeight: 600 }}>{labelText}</span>
+              </button>
+            )
+          })}
         </div>
       </div>
     </div>
