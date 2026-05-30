@@ -16,10 +16,13 @@ export default function App() {
   const [view, setView] = useState<View>('overview')
   const [detail, setDetail] = useState<Stock | null>(null)
   
-  // الوضع الافتراضي هو الفاتح (false) ما لم يكن محفوظاً غير ذلك
+  // الوضع الافتراضي يتبع تفضيل النظام عند أول زيارة، ثم يُحترم اختيار المستخدم المحفوظ
   const [dark, setDark] = useState<boolean>(() => {
     const saved = localStorage.getItem('theme_preference')
-    return saved ? saved === 'dark' : false
+    if (saved) return saved === 'dark'
+    return typeof window !== 'undefined' && window.matchMedia
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+      : false
   })
 
   // حالة إخفاء التنويه
