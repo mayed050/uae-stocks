@@ -1,4 +1,5 @@
 import { fmtAmount } from '@/format'
+import SimBadge from '@/components/ui/SimBadge'
 
 export interface MarketActivity {
   dfmTrades: number
@@ -15,6 +16,7 @@ export default function MarketIndexCards({ marketActivity }: { marketActivity: M
     <div className="panel" style={{ marginBottom: '20px', padding: '20px' }}>
       <h3 className="panel-h" style={{ margin: '0 0 14px 0', borderBottom: '1px solid var(--line)', paddingBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '15px', fontWeight: 800 }}>
         📊 مؤشرات الأسواق الإماراتية والنشاط اليومي
+        <SimBadge title="قيم المؤشرين والأحجام والصفقات هنا توضيحية للعرض، وليست بيانات تداول رسمية لحظية.">قيم توضيحية</SimBadge>
       </h3>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>

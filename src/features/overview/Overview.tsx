@@ -13,6 +13,8 @@ import { PALETTE, TIP_STYLE as tipStyle } from '@/constants/ui'
 import MarketIndexCards from './MarketIndexCards'
 import LiveActionsFeed from './LiveActionsFeed'
 import SimBadge from '@/components/ui/SimBadge'
+import MarketKpiStrip from './MarketKpiStrip'
+import MarketLeaders from './MarketLeaders'
 import './overview.css'
 
 function fmtTradingValue(val: number) {
@@ -28,10 +30,14 @@ function fmtTradingValue(val: number) {
 export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA, lastUpdated } = useStocks()
   const {
+    stats,
     alertRows,
     sectorData,
     maxYield,
-    maxMcap
+    maxMcap,
+    yieldLeaders,
+    marketGiants,
+    valuationOpportunities,
   } = useMarketStats()
   const { isInPortfolio } = usePortfolio()
   
@@ -245,6 +251,9 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
           )}
         </p>
       </div>
+
+      {/* شريط مؤشرات الأداء العلوي — ملخّص السوق في أربعة أرقام */}
+      <MarketKpiStrip stats={stats} />
 
       <div className="overview-layout">
         {/* العمود الأيمن الرئيسي (المحتوى التفاعلي والبياني 70%) */}
@@ -752,6 +761,14 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
 
         {/* العمود الأيسر الجانبي (المعلومات المحلّية الرديفة 30%) */}
         <div className="overview-sidebar">
+
+          {/* لوحات المتصدّرين: العوائد · العمالقة · فرص التقييم */}
+          <MarketLeaders
+            yieldLeaders={yieldLeaders}
+            marketGiants={marketGiants}
+            valuationOpportunities={valuationOpportunities}
+            onOpen={onOpen}
+          />
           
           {/* 1. لوحة قطاعات وأسعار الشركات (مطابقة تماماً للصورة) */}
           <div className="o-widget">
