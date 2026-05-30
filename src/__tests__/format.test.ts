@@ -46,7 +46,8 @@ describe('parseGrowth', () => {
 })
 
 describe('fmtAmount', () => {
-  it('يصيغ المليارات والملايين', () => {
+  it('يصيغ التريليونات والمليارات والملايين', () => {
+    expect(fmtAmount(3.185e12)).toBe('3.19 تريليون')
     expect(fmtAmount(2.5e9)).toBe('2.5 مليار')
     expect(fmtAmount(5e6)).toBe('5 مليون')
   })

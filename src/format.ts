@@ -39,6 +39,7 @@ export function parseYield(s: string | null | undefined): number | null {
 /** صيغة مختصرة للأرقام الكبيرة بالدرهم. */
 export function fmtAmount(n: number | null): string {
   if (n === null) return '—'
+  if (n >= 1e12) return (n / 1e12).toFixed(2) + ' تريليون'
   if (n >= 1e9) return (n / 1e9).toFixed(n / 1e9 >= 100 ? 0 : 1) + ' مليار'
   if (n >= 1e6) return (n / 1e6).toFixed(0) + ' مليون'
   return n.toLocaleString('en-US')

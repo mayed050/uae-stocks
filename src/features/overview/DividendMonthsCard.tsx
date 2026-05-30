@@ -10,7 +10,7 @@ export default function DividendMonthsCard({ data }: { data: MonthDatum[] }) {
 
   return (
     <div className="panel" style={{ padding: '20px', borderRadius: '16px' }}>
-      <h3 className="panel-h" style={{ borderBottom: '1px solid var(--line)', paddingBottom: '10px', marginBottom: '16px', fontSize: '14.5px', fontWeight: 800 }}>
+      <h3 className="panel-h" style={{ borderBottom: '1px solid var(--line)', paddingBottom: '10px', marginBottom: '16px' }}>
         🗓️ ازدحام شهور التوزيعات
       </h3>
       <div style={{ display: 'flex', alignItems: 'stretch', gap: '6px', height: '170px' }}>

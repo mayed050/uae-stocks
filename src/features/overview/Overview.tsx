@@ -264,7 +264,7 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
           <div className="chart-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', marginBottom: '20px' }}>
             {/* توزيع القطاعات */}
             <div className="panel" style={{ padding: '20px', borderRadius: '16px' }}>
-              <h3 className="panel-h" style={{ borderBottom: '1px solid var(--line)', paddingBottom: '10px', marginBottom: '16px', fontSize: '14.5px', fontWeight: 800 }}>
+              <h3 className="panel-h" style={{ borderBottom: '1px solid var(--line)', paddingBottom: '10px', marginBottom: '16px' }}>
                 📊 توزيع هيكل السوق حسب القطاعات
               </h3>
               <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '24px', justifyContent: 'center' }}>
