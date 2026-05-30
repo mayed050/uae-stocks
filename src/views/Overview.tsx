@@ -114,6 +114,17 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
   const [marketTab, setMarketTab] = useState<'dubai' | 'adx'>('dubai')
   // التحكم بتبويب لوحة حركة السوق (المرتفعة / المنخفضة / النشطة بالكمية / النشطة بالقيمة)
   const [movementTab, setMovementTab] = useState<'gainers' | 'losers' | 'volume' | 'value'>('gainers')
+  // التحكم بفلتر متتبع التواريخ القادمة (الكل / محفظتي فقط)
+  const [trackerFilter, setTrackerFilter] = useState<'all' | 'portfolio'>('all')
+  // إشعار التأكيد العائم لزر التنبيه
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+
+  const triggerToast = (msg: string) => {
+    setToastMessage(msg)
+    setTimeout(() => {
+      setToastMessage(null)
+    }, 3000)
+  }
 
   // تصفية وفرز قائمة حركة السوق بناء على التبويب المختار
   const movementStocks = useMemo(() => {
@@ -143,6 +154,14 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
         .slice(0, 10)
     }
   }, [DATA, movementTab])
+
+  // تصفية تواريخ الاستحقاق حسب الفلتر المختار (الكل / محفظتي فقط)
+  const filteredAlertRows = useMemo(() => {
+    if (trackerFilter === 'portfolio') {
+      return alertRows.filter(row => isInPortfolio(row.s.sym))
+    }
+    return alertRows
+  }, [alertRows, trackerFilter, isInPortfolio])
 
   // حساب إجمالي الصفقات وحجم التداول اليومي التراكمي للأسواق الإماراتية
   const marketActivity = useMemo(() => {
@@ -1040,44 +1059,175 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
             )}
           </div>
 
-          {/* 2. التنبيهات المباشرة القريبة (Mini Calendar) */}
-          <div className="o-widget">
-            <h4 className="o-widget-h">⏰ تنبيهات التواريخ القادمة</h4>
-            {alertRows.length === 0 ? (
-              <div style={{ fontSize: '12px', color: 'var(--muted)', textAlign: 'center', padding: '10px 0' }}>لا توجد تواريخ استحقاق قريبة حالياً.</div>
-            ) : (
-              alertRows.slice(0, 3).map(({ s, u }) => (
-                <button 
-                  key={s.sym} 
-                  onClick={() => onOpen(s)}
+          {/* 2. متتبع توزيعات الأرباح التفاعلي المتقدم (Upcoming Dividend Tracker) */}
+          <div className="o-widget" style={{ padding: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: '10px', marginBottom: '12px' }}>
+              <h4 className="o-widget-h" style={{ margin: 0, border: 0, padding: 0 }}>📅 متتبع توزيعات الأرباح</h4>
+              
+              {/* شريط الفلتر المطور (الكل مقابل محفظتي) */}
+              <div style={{ display: 'flex', gap: '3px', background: 'var(--chip)', padding: '2px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setTrackerFilter('all'); }}
                   style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    width: '100%',
-                    background: 'var(--chip)',
-                    border: '1px solid var(--line)',
-                    borderRadius: '10px',
-                    padding: '8px 10px',
-                    marginBottom: '8px',
+                    border: 0,
+                    background: trackerFilter === 'all' ? 'linear-gradient(135deg, #ff7b00, #ff4500)' : 'transparent',
+                    color: trackerFilter === 'all' ? '#fff' : 'var(--muted)',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    padding: '3px 8px',
+                    borderRadius: '5px',
                     cursor: 'pointer',
                     fontFamily: 'inherit',
-                    textAlign: 'right',
-                    gap: '4px',
-                    transition: 'all 0.12s ease'
+                    transition: 'all 0.15s ease'
                   }}
-                  className="rowlink"
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
-                    <Avatar sym={s.sym} size={22} />
-                    <span style={{ fontWeight: 700, fontSize: '12px', color: 'var(--txt)' }}>{s.sym}</span>
-                    <span style={{ fontSize: '9px', padding: '1px 5px', borderRadius: '4px', background: 'var(--line)', marginInlineStart: 'auto' }}>{s.ex}</span>
-                  </div>
-                  <div style={{ fontSize: '11px', color: 'var(--muted)', lineHeight: '1.3' }}>
-                    {u.label} — {u.n === null ? 'التاريخ متوقع' : u.n === 0 ? 'اليوم' : `خلال ${u.n} يوم`}
-                  </div>
+                  الكل
                 </button>
-              ))
-            )}
+                <button
+                  onClick={(e) => { e.stopPropagation(); setTrackerFilter('portfolio'); }}
+                  style={{
+                    border: 0,
+                    background: trackerFilter === 'portfolio' ? 'linear-gradient(135deg, #ff7b00, #ff4500)' : 'transparent',
+                    color: trackerFilter === 'portfolio' ? '#fff' : 'var(--muted)',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    padding: '3px 8px',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  محفظتي 💼
+                </button>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxHeight: '450px', overflowY: 'auto', paddingRight: '2px' }}>
+              {filteredAlertRows.length === 0 ? (
+                <div style={{ fontSize: '12.5px', color: 'var(--muted)', textAlign: 'center', padding: '24px 0' }}>
+                  {trackerFilter === 'portfolio' ? 'لا توجد توزيعات قريبة للشركات المدرجة في محفظتك.' : 'لا توجد تواريخ استحقاق قريبة حالياً.'}
+                </div>
+              ) : (
+                filteredAlertRows.slice(0, 4).map(({ s, u }) => {
+                  const daysLeft = u.n;
+                  let countdownBadge = null;
+                  
+                  if (daysLeft === null) {
+                    countdownBadge = <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '6px', background: 'var(--chip)', border: '1px solid var(--line)', color: 'var(--muted)', fontWeight: 700 }}>متوقع</span>;
+                  } else if (daysLeft === 0) {
+                    countdownBadge = <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '6px', background: 'rgba(33, 201, 139, 0.15)', border: '1px solid var(--good)', color: 'var(--good)', fontWeight: 800, animation: 'timeline-glow 1.5s infinite' }}>اليوم! 🎉</span>;
+                  } else if (daysLeft < 7) {
+                    countdownBadge = <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '6px', background: 'rgba(255, 176, 32, 0.15)', border: '1px solid var(--warn)', color: 'var(--warn)', fontWeight: 800 }}>باقي {daysLeft} أيام ⏳</span>;
+                  } else {
+                    countdownBadge = <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '6px', background: 'var(--chip)', border: '1px solid var(--line)', color: 'var(--txt)', fontWeight: 700 }}>بعد {daysLeft} يوم</span>;
+                  }
+
+                  const divValueStr = s.div.ps ?? 'غير معلن';
+
+                  return (
+                    <div
+                      key={s.sym}
+                      onClick={() => onOpen(s)}
+                      style={{
+                        background: 'var(--chip)',
+                        border: '1px solid var(--line)',
+                        borderRadius: '14px',
+                        padding: '12px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '10px',
+                        transition: 'all 0.18s ease-in-out',
+                        position: 'relative'
+                      }}
+                      className="rowlink"
+                    >
+                      {/* ترويسة بطاقة التوزيع */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <Avatar sym={s.sym} size={24} />
+                          <div>
+                            <span style={{ fontWeight: 800, fontSize: '12.5px', color: 'var(--txt)', display: 'block' }}>{s.sym}</span>
+                            <span style={{ fontSize: '10px', color: 'var(--muted)', fontWeight: 600 }}>{s.ex}</span>
+                          </div>
+                        </div>
+                        {countdownBadge}
+                      </div>
+
+                      {/* قيمة التوزيع والعائد */}
+                      <div style={{ background: 'var(--panel-solid)', padding: '6px 10px', borderRadius: '8px', fontSize: '11px', display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>
+                        <span style={{ color: 'var(--muted)' }}>توزيع السهم: <span style={{ color: 'var(--txt)' }}>{divValueStr}</span></span>
+                        <span style={{ color: 'var(--good)' }}>العائد: {s.div.yld}</span>
+                      </div>
+
+                      {/* متتبع المراحل الرأسي المصغر */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderTop: '1px dashed var(--line)', paddingTop: '8px' }}>
+                        {/* خطوة 1: توصية الأرباح */}
+                        <div className="timeline-step">
+                          <div className="timeline-dot completed" />
+                          <div className="timeline-content">
+                            <span>توصية مجلس الإدارة</span>
+                            <div style={{ fontSize: '9.5px', color: 'var(--muted2)' }}>موافقة رسمية معلنة</div>
+                          </div>
+                        </div>
+
+                        {/* خطوة 2: تاريخ الاستحقاق */}
+                        <div className="timeline-step">
+                          <div className={`timeline-dot ${daysLeft !== null && daysLeft >= 0 ? 'active' : ''}`} />
+                          <div className={`timeline-content ${daysLeft !== null && daysLeft >= 0 ? 'active' : ''}`}>
+                            <span style={{ display: 'flex', justifyContent: 'space-between' }}>
+                              <span>تاريخ الاستحقاق (Ex-Date)</span>
+                              <b style={{ color: '#ff6b00' }}>{s.div.exd ?? 'قريباً'}</b>
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* خطوة 3: تاريخ الدفع والتوزيع */}
+                        <div className="timeline-step">
+                          <div className="timeline-dot" />
+                          <div className="timeline-content">
+                            <span style={{ display: 'flex', justifyContent: 'space-between' }}>
+                              <span>تاريخ توزيع الأرباح (Pay)</span>
+                              <span>{s.div.pay ?? 'منتظر'}</span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* زر تذكيري بالتقويم التفاعلي البديع */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          triggerToast(`تم تفعيل التذكير لشركة ${s.sym} وإضافته لتقويمك بنجاح! 🔔`);
+                        }}
+                        style={{
+                          width: '100%',
+                          border: '1px solid rgba(255, 107, 0, 0.25)',
+                          background: 'rgba(255, 107, 0, 0.05)',
+                          color: '#ff6b00',
+                          padding: '6px 0',
+                          borderRadius: '8px',
+                          fontSize: '11px',
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                          fontFamily: 'inherit',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          transition: 'all 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255, 107, 0, 0.1)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255, 107, 0, 0.05)'; }}
+                      >
+                        <span>🔔</span> ذكّرني بالتوزيع
+                      </button>
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
 
           {/* 3. إشعارات وأحداث الشركات المباشرة (Live Corporate Actions) */}
@@ -1150,6 +1300,31 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
 
         </div>
       </div>
+
+      {toastMessage && (
+        <div style={{
+          position: 'fixed',
+          bottom: '24px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'rgba(0, 0, 0, 0.85)',
+          color: '#fff',
+          padding: '10px 20px',
+          borderRadius: '20px',
+          zIndex: 10000,
+          fontSize: '12.5px',
+          fontWeight: 700,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          border: '1px solid rgba(255, 107, 0, 0.3)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          animation: 'fade-in-toast 0.25s ease-out'
+        }}>
+          <span>🔔</span> {toastMessage}
+        </div>
+      )}
     </div>
   )
 }
