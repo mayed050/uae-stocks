@@ -21,18 +21,34 @@ export default function Snowflake({
   return (
     <ResponsiveContainer width="100%" height={height}>
       <RadarChart data={data} outerRadius="72%">
-        <PolarGrid stroke="var(--line)" />
-        <PolarAngleAxis dataKey="axis" tick={{ fill: 'var(--muted)', fontSize: 12 }} />
-        {items.map(({ stock, color }) => (
-          <Radar
-            key={stock.sym}
-            name={stock.sym}
-            dataKey={stock.sym}
-            stroke={color}
-            fill={color}
-            fillOpacity={items.length > 1 ? 0.18 : 0.35}
-          />
-        ))}
+        <defs>
+          {items.map(({ stock, color }) => {
+            const id = `grad-${stock.sym}`;
+            return (
+              <radialGradient id={id} cx="50%" cy="50%" r="50%" fx="50%" fy="50%" key={stock.sym}>
+                <stop offset="0%" stopColor={color} stopOpacity={0.08} />
+                <stop offset="100%" stopColor={color} stopOpacity={0.45} />
+              </radialGradient>
+            );
+          })}
+        </defs>
+        <PolarGrid stroke="var(--line)" strokeDasharray="3 3" />
+        <PolarAngleAxis dataKey="axis" tick={{ fill: 'var(--muted)', fontSize: 11, fontWeight: 800 }} />
+        {items.map(({ stock, color }) => {
+          const gradId = `grad-${stock.sym}`;
+          return (
+            <Radar
+              key={stock.sym}
+              name={stock.sym}
+              dataKey={stock.sym}
+              stroke={color}
+              strokeWidth={2.5}
+              fill={`url(#${gradId})`}
+              dot={{ r: 4, strokeWidth: 2, fill: 'var(--panel)', stroke: color }}
+              activeDot={{ r: 6 }}
+            />
+          );
+        })}
       </RadarChart>
     </ResponsiveContainer>
   )

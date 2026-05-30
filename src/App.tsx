@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import type { Stock } from './data'
 import Sidebar from './components/Sidebar'
 import type { View } from './components/Sidebar'
 import StockDetail from './components/StockDetail'
 
-// الاستيراد المباشر (Static Imports) لضمان موثوقية كاملة بنسبة 100% وتفادي أخطاء تحميل الحزم الديناميكية على منصة Vercel
-import Overview from './views/Overview'
-import Screener from './views/Screener'
-import Dividends from './views/Dividends'
-import Compare from './views/Compare'
-import Portfolio from './views/Portfolio'
-import Financials from './views/Financials'
+// التحميل الكسول (Lazy Loading) لتقسيم الكود وتحسين سرعة التحميل الأولية للمتصفح 🚀
+const Overview = lazy(() => import('./views/Overview'))
+const Screener = lazy(() => import('./views/Screener'))
+const Dividends = lazy(() => import('./views/Dividends'))
+const Compare = lazy(() => import('./views/Compare'))
+const Portfolio = lazy(() => import('./views/Portfolio'))
+const Financials = lazy(() => import('./views/Financials'))
 
 export default function App() {
   const [view, setView] = useState<View>('overview')
@@ -60,12 +60,32 @@ export default function App() {
             >✕</button>
           </div>
         )}
-        {view === 'overview' && <Overview onOpen={setDetail} />}
-        {view === 'screener' && <Screener onOpen={setDetail} />}
-        {view === 'dividends' && <Dividends onOpen={setDetail} />}
-        {view === 'financials' && <Financials onOpen={setDetail} />}
-        {view === 'compare' && <Compare />}
-        {view === 'portfolio' && <Portfolio onOpen={setDetail} />}
+        <Suspense fallback={
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '350px', flexDirection: 'column', gap: '14px' }}>
+            <div className="loading-spinner-view" />
+            <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 700 }}>جاري تحميل اللوحة المالية...</span>
+            <style>{`
+              .loading-spinner-view {
+                width: 38px;
+                height: 38px;
+                border: 3.5px solid var(--line);
+                border-top-color: #ff6b00;
+                border-radius: 50%;
+                animation: spin-loading 0.8s linear infinite;
+              }
+              @keyframes spin-loading {
+                to { transform: rotate(360deg); }
+              }
+            `}</style>
+          </div>
+        }>
+          {view === 'overview' && <Overview onOpen={setDetail} />}
+          {view === 'screener' && <Screener onOpen={setDetail} />}
+          {view === 'dividends' && <Dividends onOpen={setDetail} />}
+          {view === 'financials' && <Financials onOpen={setDetail} />}
+          {view === 'compare' && <Compare />}
+          {view === 'portfolio' && <Portfolio onOpen={setDetail} />}
+        </Suspense>
       </main>
       {detail && <StockDetail item={detail} onClose={() => setDetail(null)} />}
     </div>

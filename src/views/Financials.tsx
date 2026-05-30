@@ -828,6 +828,14 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
                   </div>
                 </div>
 
+                {/* الجزء النصي التلقائي للملخص الفوري اليومي للسهم */}
+                <div style={{ padding: '14px 16px', background: 'var(--chip)', borderRadius: '10px', border: '1px solid var(--line)', fontSize: '13px', lineHeight: '1.6', color: 'var(--txt)', textAlign: 'right' }}>
+                  <b style={{ color: '#ff6b00', display: 'block', marginBottom: '6px', fontSize: '14px' }}>📝 نظرة تداولية سريعة لـ {currentStock.sym}</b>
+                  يتداول سهم {currentStock.name.split('—')[0]} اليوم بمدى تذبذب يبلغ {(tech.high - tech.low).toFixed(3)} د.إ بين أدنى سعر مسجل عند {tech.low.toFixed(3)} د.إ وأعلى سعر عند {tech.high.toFixed(3)} د.إ. 
+                  شهدت الجلسة زخم تداول كلي بقيمة تداول بلغت {fmtAmount(tech.value)} د.إ موزعة على {tech.trades.toLocaleString()} صفقة منفذة بنجاح. 
+                  يظهر السهم حالياً مستويات سيولة قوية مع اتجاه طلبات متوازن يدعم استقرار الحركة الفنية للسهم ضمن النطاقات الأفقية المعتادة.
+                </div>
+
                 {/* الجدول التاريخي المعرب والمنظم بالترتيب الدقيق للصورة المرفقة */}
                 <div className="summary-table-container">
                   <table className="summary-table">
