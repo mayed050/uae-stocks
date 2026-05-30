@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react'
-import type { Stock } from '../data'
-import { usePortfolio } from '../store'
-import { fmtAmount, MONTHS_AR } from '../format'
-import { parseISO } from '../lib'
-import Avatar from '../components/Avatar'
-import PortfolioIntel from './portfolio/PortfolioIntel'
+import type { Stock } from '@/data'
+import { usePortfolio } from '@/store'
+import { fmtAmount, MONTHS_AR } from '@/format'
+import { parseISO } from '@/lib'
+import Avatar from '@/components/Avatar'
+import PortfolioIntel from './PortfolioIntel'
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid, LabelList, AreaChart, Area

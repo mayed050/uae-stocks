@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react'
-import type { Stock } from '../data'
-import { useStocks } from '../store'
-import { parseISO } from '../lib'
-import { MONTHS_AR, parseYield, getAnnualPs } from '../format'
-import Avatar from '../components/Avatar'
+import type { Stock } from '@/data'
+import { useStocks } from '@/store'
+import { parseISO } from '@/lib'
+import { MONTHS_AR, parseYield, getAnnualPs } from '@/format'
+import Avatar from '@/components/Avatar'
 import { cell } from '@/components/ui/cell'
 
 interface Ev { s: Stock; kind: 'ex' | 'pay'; date: Date; raw: string }

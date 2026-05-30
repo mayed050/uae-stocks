@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { CAT_LABEL } from '../data'
-import type { Stock } from '../data'
-import { useStocks } from '../store'
-import { symColor, parseYield, parseAmount } from '../format'
-import Snowflake from '../components/Snowflake'
-import Avatar from '../components/Avatar'
+import { CAT_LABEL } from '@/data'
+import type { Stock } from '@/data'
+import { useStocks } from '@/store'
+import { symColor, parseYield, parseAmount } from '@/format'
+import Snowflake from '@/components/Snowflake'
+import Avatar from '@/components/Avatar'
 import { cell as v } from '@/components/ui/cell'
 
 const MAX = 6 // تم الترقية للمقارنة بين حتى 6 أسهم

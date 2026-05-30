@@ -5,12 +5,12 @@ import type { View } from './components/Sidebar'
 import StockDetail from './components/StockDetail'
 
 // الاستيراد المباشر (Static Imports) لضمان موثوقية كاملة بنسبة 100% وتفادي أخطاء تحميل الحزم الديناميكية على منصات Vercel و GitHub Pages 🚀
-import Overview from './views/Overview'
-import Screener from './views/Screener'
-import Dividends from './views/Dividends'
-import Compare from './views/Compare'
-import Portfolio from './views/Portfolio'
-import Financials from './views/Financials'
+import Overview from '@/features/overview/Overview'
+import Screener from '@/features/screener/Screener'
+import Dividends from '@/features/dividends/Dividends'
+import Compare from '@/features/compare/Compare'
+import Portfolio from '@/features/portfolio/Portfolio'
+import Financials from '@/features/financials/Financials'
 
 export default function App() {
   const [view, setView] = useState<View>('overview')

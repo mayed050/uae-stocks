@@ -3,15 +3,15 @@ import {
   PieChart, Pie, Cell, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid, AreaChart, Area,
 } from 'recharts'
-import type { Stock } from '../data'
-import { useStocks, useMarketStats, usePortfolio } from '../store'
-import { parseYield, parseAmount } from '../format'
-import Avatar from '../components/Avatar'
-import { ADX_MOVEMENTS } from '../data/movements'
+import type { Stock } from '@/data'
+import { useStocks, useMarketStats, usePortfolio } from '@/store'
+import { parseYield, parseAmount } from '@/format'
+import Avatar from '@/components/Avatar'
+import { ADX_MOVEMENTS } from '@/data/movements'
 import { getDailyData, generateHistoricalData, generateSparklineData } from '@/market'
 import { PALETTE, TIP_STYLE as tipStyle } from '@/constants/ui'
-import MarketIndexCards from './overview/MarketIndexCards'
-import LiveActionsFeed from './overview/LiveActionsFeed'
+import MarketIndexCards from './MarketIndexCards'
+import LiveActionsFeed from './LiveActionsFeed'
 import './overview.css'
 
 function fmtTradingValue(val: number) {

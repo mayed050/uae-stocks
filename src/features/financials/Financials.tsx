@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react'
-import type { Stock } from '../data'
-import { useStocks, usePortfolio } from '../store'
-import { fmtAmount } from '../format'
-import Avatar from '../components/Avatar'
-import { getTechnicalData, generateHistoricalData } from './financials/tradingSim'
+import type { Stock } from '@/data'
+import { useStocks, usePortfolio } from '@/store'
+import { fmtAmount } from '@/format'
+import Avatar from '@/components/Avatar'
+import { getTechnicalData, generateHistoricalData } from './tradingSim'
 
 export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA } = useStocks()

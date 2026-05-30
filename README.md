@@ -46,17 +46,23 @@ npm run dev        # خادم تطوير على http://localhost:5173
 
 ## بنية المشروع
 
+منظّمة حسب الميزات (feature-based) مع `@/` كاختصار لمجلد `src`:
+
 ```
 src/
-├── main.tsx            نقطة الدخول، تغلّف App بمزوّد البيانات
-├── App.tsx             التخطيط: شريط جانبي + تنقّل سفلي للجوال + سمة فاتح/داكن
-├── store.tsx           سياق البيانات + خطافات usePortfolio و useMarketStats
-├── data.ts             الأنواع (Stock/Dividend) واستيراد seed.json
-├── market.ts           أدوات بيانات السوق المحاكاة (مشتركة بين الصفحات)
-├── lib.ts              حساب التواريخ القادمة والتنبيهات
-├── format.ts           تحليل الأرقام العربية وحساب العوائد
-├── views/              الصفحات الست (+ overview.css لأنماط النظرة العامة)
-└── components/         Sidebar · StockDetail · Avatar · Snowflake
+├── main.tsx · App.tsx · App.css   نقطة الدخول والتخطيط العام
+├── features/           كل صفحة في مجلدها المستقل مع مكوّناتها
+│   ├── overview/       Overview + MarketIndexCards + LiveActionsFeed + overview.css
+│   ├── screener/ · dividends/ · compare/
+│   ├── financials/     Financials + tradingSim (محاكيات بيانات التداول)
+│   └── portfolio/      Portfolio + PortfolioIntel
+├── components/         مكوّنات مشتركة: Sidebar · StockDetail · Avatar · Snowflake · ui/
+├── store/              StocksProvider + usePortfolio + useMarketStats (+ barrel)
+├── data/              النماذج والبيانات الثابتة: index · seed.json · movements · logos · sectors
+├── constants/          ثوابت الواجهة (NA · PALETTE · TIP_STYLE)
+├── market.ts           أدوات بيانات السوق المحاكاة (مشتركة)
+├── lib.ts · format.ts  منطق نقي: التواريخ/التنبيهات وتحليل الأرقام العربية
+└── index.css           الأنماط العامة ومتغيّرات السمة
 ```
 
 ## النشر
