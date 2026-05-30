@@ -70,6 +70,71 @@ function getTechnicalData(s: Stock) {
   }
 }
 
+// دالة لتوليد بيانات تاريخية يومية مستقرة ومتناسقة للسهم المحدد لتبويب "ملخص يومي"
+function generateHistoricalData(s: Stock) {
+  const symbol = s.sym.toUpperCase()
+  let seed = 0
+  for (let i = 0; i < symbol.length; i++) {
+    seed += symbol.charCodeAt(i)
+  }
+  
+  let localSeed = seed
+  const rand = (max: number, min = 0) => {
+    const x = Math.sin(localSeed++) * 10000
+    return min + (x - Math.floor(x)) * (max - min)
+  }
+
+  const basePrice = s.price ?? 1.0
+  const rawMcap = parseAmount(s.mcap) ?? 5e9
+  const mcapVal = rawMcap > 1e6 ? rawMcap / 1e9 : rawMcap
+
+  const dates = [
+    '28-05-2026',
+    '27-05-2026',
+    '26-05-2026',
+    '25-05-2026',
+    '22-05-2026',
+    '21-05-2026',
+    '20-05-2026'
+  ]
+
+  let currentClose = basePrice
+  const rows: any[] = []
+
+  for (let i = 0; i < dates.length; i++) {
+    // محاكاة التغير اليومي
+    const changePct = rand(3.2, -2.8) // -2.8% to +3.2%
+    const change = Math.round((currentClose * (changePct / 100)) * 100) / 100
+    const prevClose = Math.round((currentClose - change) * 100) / 100
+    const open = Math.round((prevClose * (1 + rand(0.003, -0.003))) * 100) / 100
+    const high = Math.round((Math.max(currentClose, prevClose) * (1 + rand(0.008, 0.001))) * 100) / 100
+    const low = Math.round((Math.min(currentClose, prevClose) * (1 - rand(0.008, 0.001))) * 100) / 100
+
+    const volume = Math.round((mcapVal * 150000) * rand(2.2, 0.2))
+    const value = volume * currentClose
+    const trades = Math.round(volume * rand(0.00005, 0.00001)) + 5
+
+    rows.push({
+      date: dates[i],
+      open,
+      high,
+      low,
+      trades,
+      volume,
+      value,
+      close: Math.round(currentClose * 100) / 100,
+      prevClose,
+      change: Math.round(change * 100) / 100,
+      changePct: Math.round(changePct * 100) / 100
+    })
+
+    // السعر لليوم السابق تاريخياً
+    currentClose = prevClose
+  }
+
+  return rows
+}
+
 export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA } = useStocks()
   const { isInPortfolio } = usePortfolio()
@@ -109,6 +174,44 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
     if (!currentStock) return null
     return getTechnicalData(currentStock)
   }, [currentStock])
+
+  // البيانات التاريخية لتبويب ملخص يومي
+  const historicalData = useMemo(() => {
+    if (!currentStock) return []
+    return generateHistoricalData(currentStock)
+  }, [currentStock])
+
+  // دالة تحميل ملف إكسل كـ CSV تفاعلي متوافق مع الحسابات العربية
+  const handleExcelDownload = () => {
+    if (historicalData.length === 0) return
+    const headers = ['التاريخ', 'سعر الافتتاح', 'أعلى', 'أدنى', 'الصفقات', 'الحجم', 'القيمة', 'السعر الحالي', 'السابق', 'التغير', 'التغير %']
+    const csvContent = "\uFEFF" + [
+      headers.join(','),
+      ...historicalData.map(r => [
+        r.date,
+        r.open.toFixed(2),
+        r.high.toFixed(2),
+        r.low.toFixed(2),
+        r.trades,
+        r.volume,
+        r.value.toFixed(2),
+        r.close.toFixed(2),
+        r.prevClose.toFixed(2),
+        (r.change >= 0 ? '+' : '') + r.change.toFixed(2),
+        `${r.changePct >= 0 ? '+' : ''}${r.changePct}%`
+      ].join(','))
+    ].join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', `ملخص_يومي_${currentStock.sym}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   if (!currentStock || !tech) {
     return <div style={{ padding: '24px', textAlign: 'center', color: 'var(--muted)' }}>جاري تحميل البيانات المالية...</div>
@@ -331,6 +434,95 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
           display: flex;
           flex-direction: column;
           gap: 6px;
+        }
+        .summary-header-container {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+          margin-bottom: 16px;
+        }
+        .summary-title-section {
+          text-align: right;
+        }
+        .summary-title {
+          font-size: 20px;
+          font-weight: 800;
+          color: var(--txt);
+          margin: 0;
+        }
+        .summary-subtitle {
+          font-size: 11px;
+          color: var(--muted);
+          margin: 4px 0 0 0;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+        }
+        .excel-download-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: #107c41;
+          color: #ffffff;
+          border: 0;
+          padding: 8px 16px;
+          border-radius: 6px;
+          font-family: inherit;
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: background 0.2s ease;
+          direction: ltr;
+        }
+        .excel-download-btn:hover {
+          background: #0b592e;
+        }
+        .summary-table-container {
+          width: 100%;
+          overflow-x: auto;
+          border: 1px solid var(--line);
+          border-radius: 10px;
+          background: var(--panel);
+        }
+        .summary-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 12.5px;
+          text-align: center;
+        }
+        .summary-table th {
+          background: var(--chip);
+          color: var(--muted);
+          font-weight: 800;
+          padding: 12px 8px;
+          border-bottom: 2px solid var(--line);
+          font-size: 12px;
+          white-space: nowrap;
+        }
+        .summary-table td {
+          padding: 12px 8px;
+          border-bottom: 1px solid var(--line);
+          color: var(--txt);
+          font-weight: 700;
+          white-space: nowrap;
+        }
+        .summary-table tr:last-child td {
+          border-bottom: 0;
+        }
+        .summary-table tr:hover td {
+          background: rgba(255, 107, 0, 0.02);
+        }
+        .change-badge-table {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-weight: 800;
+        }
+        .change-badge-table.up {
+          color: var(--good);
+        }
+        .change-badge-table.down {
+          color: var(--bad);
         }
         @media (max-width: 900px) {
           .financials-layout {
@@ -619,13 +811,72 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
 
             {/* 2. تبويب ملخص يومي */}
             {activeTab === 'summary' && (
-              <div style={{ padding: '16px', background: 'var(--chip)', borderRadius: '12px', border: '1px solid var(--line)' }}>
-                <h4 style={{ margin: '0 0 10px 0', color: 'var(--txt)' }}>📝 نظرة تداولية سريعة لـ {currentStock.sym}</h4>
-                <p style={{ margin: 0, fontSize: '13px', color: 'var(--muted)', lineHeight: '1.6' }}>
-                  يتداول سهم {currentStock.name.split('—')[0]} اليوم بمدى تذبذب يبلغ {(tech.high - tech.low).toFixed(3)} د.إ بين أدنى سعر مسجل عند {tech.low.toFixed(3)} د.إ وأعلى سعر عند {tech.high.toFixed(3)} د.إ. 
-                  شهدت الجلسة زخم تداول كلي بقيمة تداول بلغت {fmtAmount(tech.value)} د.إ موزعة على {tech.trades.toLocaleString()} صفقة منفذة بنجاح. 
-                  يظهر السهم حالياً مستويات سيولة قوية مع اتجاه طلبات متوازن يدعم استقرار الحركة الفنية للسهم ضمن النطاقات الأفقية المعتادة.
-                </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%' }}>
+                
+                {/* الجزء العلوي: العنوان والتاريخ وزر التحميل المماثل للصورة المرفقة */}
+                <div className="summary-header-container">
+                  <button onClick={handleExcelDownload} className="excel-download-btn">
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ fontSize: '14px' }}>📥</span>
+                      تحميل اكسل
+                    </span>
+                  </button>
+                  
+                  <div className="summary-title-section">
+                    <h3 className="summary-title">ملخص يومي</h3>
+                    <p className="summary-subtitle">MAY 30, 2026 - FEB 28, 2026</p>
+                  </div>
+                </div>
+
+                {/* الجدول التاريخي المعرب والمنظم بالترتيب الدقيق للصورة المرفقة */}
+                <div className="summary-table-container">
+                  <table className="summary-table">
+                    <thead>
+                      <tr>
+                        <th>تاريخ</th>
+                        <th>سعر الافتتاح</th>
+                        <th>أعلى</th>
+                        <th>أدنى</th>
+                        <th>الصفقات</th>
+                        <th>الحجم</th>
+                        <th>القيمة</th>
+                        <th>السعر الحالي</th>
+                        <th>سابق</th>
+                        <th>التغير</th>
+                        <th>التغير في السعر %</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {historicalData.map((row, idx) => {
+                        const isUp = row.changePct > 0;
+                        const isDown = row.changePct < 0;
+                        
+                        return (
+                          <tr key={idx}>
+                            <td style={{ color: 'var(--muted)', fontWeight: 800 }}>{row.date}</td>
+                            <td>{row.open.toFixed(2)}</td>
+                            <td>{row.high.toFixed(2)}</td>
+                            <td>{row.low.toFixed(2)}</td>
+                            <td>{row.trades.toLocaleString()}</td>
+                            <td>{row.volume.toLocaleString()}</td>
+                            <td>{row.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            <td>{row.close.toFixed(2)}</td>
+                            <td>{row.prevClose.toFixed(2)}</td>
+                            <td style={{ color: isUp ? 'var(--good)' : isDown ? 'var(--bad)' : 'inherit' }}>
+                              {isUp ? '+' : ''}{row.change.toFixed(2)}
+                            </td>
+                            <td>
+                              <span className={`change-badge-table ${isUp ? 'up' : isDown ? 'down' : ''}`} style={{ direction: 'ltr' }}>
+                                {isUp ? '▲' : isDown ? '▼' : ''} {row.changePct.toFixed(2)}%
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
               </div>
             )}
 
