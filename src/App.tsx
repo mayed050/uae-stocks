@@ -67,7 +67,31 @@ export default function App() {
         {view === 'compare' && <Compare />}
         {view === 'portfolio' && <Portfolio onOpen={setDetail} />}
       </main>
+      
+      {/* شريط التنقل السفلي المطور لتطبيقات الهواتف الذكية (Bottom Navigation Bar) */}
+      <nav className="bottom-nav">
+        {BOTTOM_NAV.map((n) => (
+          <button
+            key={n.v}
+            className={'bottom-navitem' + (view === n.v ? ' active' : '')}
+            onClick={() => setView(n.v)}
+          >
+            <span className="bottom-navitem-icon">{n.icon}</span>
+            <span className="bottom-navitem-label">{n.label}</span>
+          </button>
+        ))}
+      </nav>
+
       {detail && <StockDetail item={detail} onClose={() => setDetail(null)} />}
     </div>
   )
 }
+
+const BOTTOM_NAV: { v: View; label: string; icon: string }[] = [
+  { v: 'overview', label: 'الرئيسية', icon: '📊' },
+  { v: 'screener', label: 'المستكشف', icon: '🔎' },
+  { v: 'dividends', label: 'التوزيعات', icon: '💵' },
+  { v: 'financials', label: 'النتائج', icon: '📈' },
+  { v: 'compare', label: 'المقارنة', icon: '⚖️' },
+  { v: 'portfolio', label: 'المحفظة', icon: '💼' },
+]
