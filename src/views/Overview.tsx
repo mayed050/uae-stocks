@@ -12,15 +12,7 @@ import type { MovementStock } from '../data/movements'
 
 const PALETTE = ['#3aa0ff', '#7c5cff', '#21c98b', '#ffb020', '#ff5a72', '#36c5d8', '#e26bd0', '#9bd13a']
 
-function StatCard({ n, l, sub, alert }: { n: React.ReactNode; l: string; sub?: string; alert?: boolean }) {
-  return (
-    <div className={'stat' + (alert ? ' alert' : '')}>
-      <div className="n">{n}</div>
-      <div className="l">{l}</div>
-      {sub && <div className="stat-sub">{sub}</div>}
-    </div>
-  )
-}
+
 
 
 
@@ -102,7 +94,6 @@ function getDailyData(s: Stock) {
 export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA, lastUpdated } = useStocks()
   const {
-    stats,
     alertRows,
     marketGiants,
     valuationOpportunities,
@@ -498,13 +489,6 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
       <div className="overview-layout">
         {/* العمود الأيمن الرئيسي (المحتوى التفاعلي والبياني 70%) */}
         <div className="overview-main">
-          {/* بطاقات الإحصائيات الشاملة */}
-          <div className="stats">
-            <StatCard n={DATA.length} l="الأسهم المتابَعة" sub={`${stats.dfm} في دبي · ${stats.adx} في أبوظبي`} />
-            <StatCard n={fmtAmount(stats.totalMcap)} l="إجمالي القيمة السوقية" sub={`${stats.mcapCount} أسهم مغطّاة`} />
-            <StatCard n={`${stats.avgYield.toFixed(1)}%`} l="متوسط العائد النقدي للسوق" sub="للأسهم المعلنة فقط" />
-            <StatCard n={stats.avgPe.toFixed(1)} l="متوسط مكرر الربحية (P/E)" sub="للشركات ذات الربحية الموجبة" />
-          </div>
 
           {/* 📊 بطاقة نشاط مؤشرات الأسواق والنشاط اليومي (مباشر) */}
           <div className="panel" style={{ marginBottom: '20px', padding: '20px' }}>
