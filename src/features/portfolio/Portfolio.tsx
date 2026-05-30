@@ -35,6 +35,9 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
 
+  // تبويب داخلي لتقليل كثافة الصفحة: نظرة عامة مقابل التحليلات والمحاكاة
+  const [tab, setTab] = useState<'overview' | 'analytics'>('overview')
+
   // 2. حالات محاكي خطة إعادة استثمار الأرباح (DRIP Simulator States)
   const [dripYears, setDripYears] = useState<number>(10)
   const [dripMonthly, setDripMonthly] = useState<number>(1000)
@@ -505,6 +508,14 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
         />
       </div>
 
+      {/* شريط التبويب الداخلي */}
+      {items.length > 0 && (
+        <div className="o-toggle-container" style={{ margin: '4px 0 18px' }}>
+          <button className={'o-toggle-btn' + (tab === 'overview' ? ' active' : '')} onClick={() => setTab('overview')}>📋 نظرة عامة</button>
+          <button className={'o-toggle-btn' + (tab === 'analytics' ? ' active' : '')} onClick={() => setTab('analytics')}>📈 التحليلات والمحاكاة</button>
+        </div>
+      )}
+
       {/* حالة المحفظة الفارغة */}
       {items.length === 0 && (
         <div style={{
@@ -530,11 +541,12 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
       )}
 
       {/* 🔮 لوحة ذكاء المحفظة والحرية المالية (مستشار الفارابي + خريطة الأهداف) */}
-      {items.length > 0 && (
+      {items.length > 0 && tab === 'overview' && (
         <PortfolioIntel advisorOutput={advisorOutput} milestones={lifestyleMilestones} />
       )}
 
       {/* قسم تتبع الهدف المالي للمستثمر */}
+      {tab === 'overview' && (
       <div className="panel" style={{ marginBottom: 20 }}>
         <h3 className="panel-h">🎯 مستهدف التوزيعات الشهري</h3>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, alignItems: 'center', justifyContent: 'space-between' }}>
@@ -571,9 +583,10 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
           </div>
         )}
       </div>
+      )}
 
       {/* قسم الرسوم البيانية التفاعلية للمحفظة */}
-      {items.length > 0 && (
+      {items.length > 0 && tab === 'analytics' && (
         <div className="chart-grid">
           {/* مخطط القطاعات */}
           <div className="panel">
@@ -619,7 +632,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
       )}
 
       {/* ===================== محاكي DRIP التفاعلي المتقدم ===================== */}
-      {items.length > 0 && (
+      {items.length > 0 && tab === 'analytics' && (
         <div className="panel" style={{ margin: '24px 0' }}>
           <div style={{ borderBottom: '1px solid var(--line)', paddingBottom: '12px', marginBottom: '18px' }}>
             <h3 className="panel-h" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -780,6 +793,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
       )}
 
       {/* جدول إدارة المحفظة التفاعلي */}
+      {tab === 'overview' && (<>
       <h2 className="sec"><span className="dot" style={{ background: 'var(--brand2)' }} /> أصول المحفظة والحاسبة الآلية</h2>
 
       <div className="controls">
@@ -907,6 +921,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
           </tbody>
         </table>
       </div>
+      </>)}
     </div>
   )
 }
