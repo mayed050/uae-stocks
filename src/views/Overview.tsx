@@ -468,6 +468,7 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
       </div>
 
       <div className="overview-layout">
+        <div className="overview-main" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {/* 1. قسم الرسوم البيانية وهيكل السوق (مقدمة بصرية) */}
         <div className="chart-grid" style={{ margin: '0 0 24px' }}>
           {/* توزيع القطاعات */}
@@ -924,6 +925,7 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
             )
           })}
         </div>
+      </div>
       </div>
     </div>
   )
