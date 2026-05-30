@@ -60,7 +60,7 @@ export default function App() {
             >✕</button>
           </div>
         )}
-        {view === 'overview' && <Overview onOpen={setDetail} />}
+        {view === 'overview' && <Overview onOpen={setDetail} onNavigate={setView} />}
         {view === 'screener' && <Screener onOpen={setDetail} />}
         {view === 'dividends' && <Dividends onOpen={setDetail} />}
         {view === 'financials' && <Financials onOpen={setDetail} />}

@@ -4,6 +4,7 @@ import {
   ResponsiveContainer, CartesianGrid, AreaChart, Area,
 } from 'recharts'
 import type { Stock } from '@/data'
+import type { View } from '@/components/Sidebar'
 import { useStocks, useMarketStats, usePortfolio } from '@/store'
 import { parseYield, parseAmount } from '@/format'
 import Avatar from '@/components/Avatar'
@@ -15,6 +16,7 @@ import LiveActionsFeed from './LiveActionsFeed'
 import SimBadge from '@/components/ui/SimBadge'
 import MarketKpiStrip from './MarketKpiStrip'
 import MarketLeaders from './MarketLeaders'
+import DividendMonthsCard from './DividendMonthsCard'
 import './overview.css'
 
 function fmtTradingValue(val: number) {
@@ -27,7 +29,7 @@ function fmtTradingValue(val: number) {
   return `${val.toFixed(0)} د.إ`
 }
 
-export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
+export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) => void; onNavigate?: (v: View) => void }) {
   const { stocks: DATA, lastUpdated } = useStocks()
   const {
     stats,
@@ -38,6 +40,7 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
     yieldLeaders,
     marketGiants,
     valuationOpportunities,
+    monthData,
   } = useMarketStats()
   const { isInPortfolio } = usePortfolio()
   
@@ -263,7 +266,7 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
           <MarketIndexCards marketActivity={marketActivity} />
 
           {/* قسم التحليل والرسوم البيانية الهيكلية وتوزيع القطاعات */}
-          <div className="chart-grid" style={{ gridTemplateColumns: '1fr', marginBottom: '20px' }}>
+          <div className="chart-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', marginBottom: '20px' }}>
             {/* توزيع القطاعات */}
             <div className="panel" style={{ padding: '20px', borderRadius: '16px' }}>
               <h3 className="panel-h" style={{ borderBottom: '1px solid var(--line)', paddingBottom: '10px', marginBottom: '16px', fontSize: '14.5px', fontWeight: 800 }}>
@@ -292,6 +295,9 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
                 </div>
               </div>
             </div>
+
+            {/* بطاقة ازدحام شهور التوزيعات */}
+            <DividendMonthsCard data={monthData} />
           </div>
 
           {/* 📈 لوحة الرسم البياني التفاعلي المتطور لأسعار وحركة الأسهم الفردية (حركة الأسهم والرسم البياني) */}
@@ -1068,6 +1074,14 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
                 })
               )}
             </div>
+            {onNavigate && (
+              <button
+                onClick={() => onNavigate('dividends')}
+                style={{ width: '100%', marginTop: '10px', border: '1px solid var(--line)', background: 'var(--chip)', color: 'var(--brand)', padding: '8px 0', borderRadius: '10px', fontSize: '12px', fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit' }}
+              >
+                عرض كل تواريخ التوزيعات ↗
+              </button>
+            )}
           </div>
 
           {/* 3. إشعارات وأحداث الشركات (عرض تجريبي) */}
