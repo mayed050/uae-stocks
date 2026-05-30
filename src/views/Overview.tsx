@@ -5,11 +5,13 @@ import {
 } from 'recharts'
 import type { Stock } from '../data'
 import { useStocks, useMarketStats, usePortfolio } from '../store'
-import { fmtAmount, parseYield, parseAmount } from '../format'
+import { parseYield, parseAmount } from '../format'
 import Avatar from '../components/Avatar'
 import { ADX_MOVEMENTS } from '../data/movements'
 import { getDailyData, generateHistoricalData, generateSparklineData } from '@/market'
 import { PALETTE, TIP_STYLE as tipStyle } from '@/constants/ui'
+import MarketIndexCards from './overview/MarketIndexCards'
+import LiveActionsFeed from './overview/LiveActionsFeed'
 import './overview.css'
 
 function fmtTradingValue(val: number) {
@@ -247,80 +249,8 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
         {/* العمود الأيمن الرئيسي (المحتوى التفاعلي والبياني 70%) */}
         <div className="overview-main">
 
-          {/* 📊 بطاقة نشاط مؤشرات الأسواق والنشاط اليومي (مباشر) */}
-          <div className="panel" style={{ marginBottom: '20px', padding: '20px' }}>
-            <h3 className="panel-h" style={{ margin: '0 0 14px 0', borderBottom: '1px solid var(--line)', paddingBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '15px', fontWeight: 800 }}>
-              📊 مؤشرات الأسواق الإماراتية والنشاط اليومي
-            </h3>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-              
-              {/* مؤشر سوق دبي المالي */}
-              <div style={{ background: 'var(--chip)', border: '1px solid var(--line)', padding: '16px', borderRadius: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: 800, fontSize: '13.5px', color: 'var(--brand)' }}>📈 مؤشر سوق دبي (DFMGI)</span>
-                  <span style={{ fontSize: '10.5px', padding: '2px 8px', borderRadius: '6px', background: 'rgba(58, 160, 255, 0.1)', color: 'var(--brand)', border: '1px solid rgba(58, 160, 255, 0.2)', fontWeight: 700 }}>دبي</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
-                  <span style={{ fontSize: '26px', fontWeight: '900', color: 'var(--txt)' }}>4,215.80</span>
-                  <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--good)' }}>+16.40 (+0.39%)</span>
-                </div>
-                <div style={{ display: 'flex', gap: '8px', marginTop: '6px', borderTop: '1px dashed var(--line)', paddingTop: '8px' }}>
-                  <div style={{ flex: 1, background: 'var(--bg)', padding: '6px', borderRadius: '8px', fontSize: '10.5px', color: 'var(--muted)', textAlign: 'center', fontWeight: 600 }}>
-                    الاتجاه: <span style={{ color: 'var(--good)' }}>صاعد ↗️</span>
-                  </div>
-                  <div style={{ flex: 1, background: 'var(--bg)', padding: '6px', borderRadius: '8px', fontSize: '10.5px', color: 'var(--muted)', textAlign: 'center', fontWeight: 600 }}>
-                    حجم التداول: <span style={{ color: 'var(--txt)' }}>{fmtAmount(marketActivity.dfmVolume)}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* مؤشر سوق أبوظبي للأوراق المالية */}
-              <div style={{ background: 'var(--chip)', border: '1px solid var(--line)', padding: '16px', borderRadius: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: 800, fontSize: '13.5px', color: 'var(--good)' }}>📈 مؤشر سوق أبوظبي (ADI)</span>
-                  <span style={{ fontSize: '10.5px', padding: '2px 8px', borderRadius: '6px', background: 'rgba(33, 201, 139, 0.1)', color: 'var(--good)', border: '1px solid rgba(33, 201, 139, 0.2)', fontWeight: 700 }}>أبوظبي</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
-                  <span style={{ fontSize: '26px', fontWeight: '900', color: 'var(--txt)' }}>9,350.40</span>
-                  <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--bad)' }}>-41.20 (-0.44%)</span>
-                </div>
-                <div style={{ display: 'flex', gap: '8px', marginTop: '6px', borderTop: '1px dashed var(--line)', paddingTop: '8px' }}>
-                  <div style={{ flex: 1, background: 'var(--bg)', padding: '6px', borderRadius: '8px', fontSize: '10.5px', color: 'var(--muted)', textAlign: 'center', fontWeight: 600 }}>
-                    الاتجاه: <span style={{ color: 'var(--bad)' }}>هابط ↘️</span>
-                  </div>
-                  <div style={{ flex: 1, background: 'var(--bg)', padding: '6px', borderRadius: '8px', fontSize: '10.5px', color: 'var(--muted)', textAlign: 'center', fontWeight: 600 }}>
-                    حجم التداول: <span style={{ color: 'var(--txt)' }}>{fmtAmount(marketActivity.adxVolume)}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* صفقات ونشاط السوق */}
-              <div style={{ background: 'var(--chip)', border: '1px solid var(--line)', padding: '16px', borderRadius: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: 800, fontSize: '13.5px', color: 'var(--warn)' }}>💼 نشاط الصفقات المنفذة</span>
-                  <span style={{ fontSize: '10.5px', padding: '2px 8px', borderRadius: '6px', background: 'rgba(255, 176, 32, 0.1)', color: 'var(--warn)', border: '1px solid rgba(255, 176, 32, 0.2)', fontWeight: 700 }}>اليوم</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
-                  <span style={{ fontSize: '26px', fontWeight: '900', color: 'var(--txt)' }}>{marketActivity.totalTrades.toLocaleString('en-US')}</span>
-                  <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--muted)' }}>صفقة منفذة</span>
-                </div>
-                
-                {/* صفقات دبي وأبوظبي */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '6px', borderTop: '1px dashed var(--line)', paddingTop: '8px' }}>
-                  <div style={{ background: 'var(--bg)', padding: '6px', borderRadius: '8px', fontSize: '10.5px', color: 'var(--muted)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '9px', color: 'var(--muted2)', fontWeight: 700, marginBottom: '2px' }}>صفقات دبي</div>
-                    <b style={{ color: 'var(--brand)', fontSize: '12px' }}>{marketActivity.dfmTrades.toLocaleString('en-US')}</b>
-                  </div>
-                  <div style={{ background: 'var(--bg)', padding: '6px', borderRadius: '8px', fontSize: '10.5px', color: 'var(--muted)', textAlign: 'center' }}>
-                    <div style={{ fontSize: '9px', color: 'var(--muted2)', fontWeight: 700, marginBottom: '2px' }}>صفقات أبوظبي</div>
-                    <b style={{ color: 'var(--good)', fontSize: '12px' }}>{marketActivity.adxTrades.toLocaleString('en-US')}</b>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
+          {/* 📊 بطاقة نشاط مؤشرات الأسواق والنشاط اليومي */}
+          <MarketIndexCards marketActivity={marketActivity} />
 
           {/* قسم التحليل والرسوم البيانية الهيكلية وتوزيع القطاعات */}
           <div className="chart-grid" style={{ gridTemplateColumns: '1fr', marginBottom: '20px' }}>
@@ -1122,73 +1052,8 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
             </div>
           </div>
 
-          {/* 3. إشعارات وأحداث الشركات المباشرة (Live Corporate Actions) */}
-          <div className="o-widget" style={{ marginTop: '10px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: '8px', marginBottom: '12px' }}>
-              <h4 className="o-widget-h" style={{ margin: 0, border: 0, padding: 0 }}>🔔 إجراءات وأحداث الشركات</h4>
-              <span className="live-badge-pulse" title="عرض توضيحي لإجراءات الشركات يتجدّد تلقائياً — أمثلة محاكاة وليست إفصاحات رسمية لحظية. تأكّد من المصادر الرسمية (DFM / ADX).">
-                <span className="pulse-dot" />
-                عرض تجريبي
-              </span>
-            </div>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', maxHeight: '420px', overflowY: 'auto', paddingRight: '2px' }}>
-              {liveActions.map((act) => {
-                const realStock = DATA.find(s => s.sym.toUpperCase() === act.sym.toUpperCase());
-                
-                // Color-coded borders based on action type
-                let typeColor = 'var(--brand)';
-                if (act.type === 'approval') typeColor = 'var(--good)';
-                if (act.type === 'date') typeColor = 'var(--warn)';
-                if (act.type === 'payout') typeColor = 'var(--brand)';
-                if (act.type === 'news') typeColor = 'var(--brand2)';
-
-                return (
-                  <div 
-                    key={act.id}
-                    onClick={() => realStock && onOpen(realStock)}
-                    className="o-action-item"
-                    style={{ opacity: realStock ? 1 : 0.8 }}
-                  >
-                    {/* Color bar */}
-                    <div className="o-action-type-line" style={{ background: typeColor }} />
-                    
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                      {realStock ? (
-                        <Avatar sym={realStock.sym} size={20} />
-                      ) : (
-                        <span style={{ fontSize: '12px' }}>🏢</span>
-                      )}
-                      <span style={{ fontWeight: 800, fontSize: '11.5px', color: 'var(--txt)' }}>
-                        {realStock ? realStock.name.split('—')[0] : act.sym}
-                      </span>
-                      <span style={{ 
-                        fontSize: '9.5px', 
-                        padding: '1px 6px', 
-                        borderRadius: '4px', 
-                        background: `${typeColor}15`, 
-                        color: typeColor,
-                        fontWeight: 800,
-                        marginInlineStart: 'auto',
-                        border: `1px solid ${typeColor}30`
-                      }}>
-                        {act.badge}
-                      </span>
-                    </div>
-                    
-                    <p style={{ margin: 0, fontSize: '11.5px', color: 'var(--muted)', lineHeight: '1.45', fontWeight: 600 }}>
-                      {act.title}
-                    </p>
-                    
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9.5px', color: 'var(--muted2)', marginTop: '4px', borderTop: '1px dashed var(--line)', paddingTop: '4px' }}>
-                      <span>🕒 {act.time}</span>
-                      <span>{realStock ? `رمز السهم: ${realStock.sym}` : ''}</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          {/* 3. إشعارات وأحداث الشركات (عرض تجريبي) */}
+          <LiveActionsFeed actions={liveActions} stocks={DATA} onOpen={onOpen} />
 
         </div>
       </div>
