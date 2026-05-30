@@ -1,19 +1,6 @@
 /* أنماط صفحة النظرة العامة — منقولة من كتلة <style> المضمّنة إلى ملف مستقل
    لتقليل حجم Overview.tsx وجعل الأنماط (مثل pulse-glow) متاحة عالمياً بثبات. */
 
-/* شارة توضّح أن القيم المعروضة محاكاة وليست بيانات سوق حقيقية لحظية */
-.sim-badge {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--muted);
-  background: var(--chip);
-  border: 1px dashed var(--line);
-  padding: 2px 8px;
-  border-radius: 999px;
-  white-space: nowrap;
-  cursor: help;
-}
-
         /* تنسيقات شريط التنبيهات المباشرة الفاخر */
         .live-badge-pulse {
           display: inline-flex;

@@ -12,6 +12,7 @@ import { getDailyData, generateHistoricalData, generateSparklineData } from '@/m
 import { PALETTE, TIP_STYLE as tipStyle } from '@/constants/ui'
 import MarketIndexCards from './MarketIndexCards'
 import LiveActionsFeed from './LiveActionsFeed'
+import SimBadge from '@/components/ui/SimBadge'
 import './overview.css'
 
 function fmtTradingValue(val: number) {
@@ -492,7 +493,7 @@ export default function Overview({ onOpen }: { onOpen: (s: Stock) => void }) {
               <div>
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900, color: '#ff6b00', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   🟠 حركة السوق
-                  <span className="sim-badge" title="التغيّرات والأحجام والصفقات هنا قيم توضيحية مُولّدة خوارزمياً للعرض، وليست تداولاً حقيقياً لحظياً.">بيانات توضيحية</span>
+                  <SimBadge title="التغيّرات والأحجام والصفقات هنا قيم توضيحية مُولّدة خوارزمياً للعرض، وليست تداولاً حقيقياً لحظياً.">بيانات توضيحية</SimBadge>
                 </h3>
                 <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'var(--muted)', fontWeight: 600 }}>
                   قائمة مرتبة حسب {

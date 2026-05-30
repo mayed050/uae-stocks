@@ -5,6 +5,7 @@ import { fmtAmount, MONTHS_AR } from '@/format'
 import { parseISO } from '@/lib'
 import Avatar from '@/components/Avatar'
 import PortfolioIntel from './PortfolioIntel'
+import StatCard from '@/components/ui/StatCard'
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid, LabelList, AreaChart, Area
@@ -484,21 +485,24 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
 
       {/* بطاقات الإحصائيات الكلية للمحفظة */}
       <div className="stats">
-        <div className="stat">
-          <div className="n" style={{ color: 'var(--brand)' }}>{totalInvested.toLocaleString('en-US')} درهم</div>
-          <div className="l">إجمالي المبالغ المستثمرة</div>
-          <div className="stat-sub">{items.length} شركات مضافة</div>
-        </div>
-        <div className="stat">
-          <div className="n" style={{ color: 'var(--good)' }}>{Math.round(totalAnnualDividends).toLocaleString('en-US')} درهم</div>
-          <div className="l">الأرباح السنوية المتوقعة</div>
-          <div className="stat-sub">بمتوسط {Math.round(monthlyAverage).toLocaleString('en-US')} درهم شهرياً</div>
-        </div>
-        <div className="stat">
-          <div className="n" style={{ color: 'var(--warn)' }}>{weightedYield.toFixed(2)}%</div>
-          <div className="l">عائد توزيعات المحفظة الإجمالي</div>
-          <div className="stat-sub">متوسط مرجح للعائد النقدي</div>
-        </div>
+        <StatCard
+          color="var(--brand)"
+          value={`${totalInvested.toLocaleString('en-US')} درهم`}
+          label="إجمالي المبالغ المستثمرة"
+          sub={`${items.length} شركات مضافة`}
+        />
+        <StatCard
+          color="var(--good)"
+          value={`${Math.round(totalAnnualDividends).toLocaleString('en-US')} درهم`}
+          label="الأرباح السنوية المتوقعة"
+          sub={`بمتوسط ${Math.round(monthlyAverage).toLocaleString('en-US')} درهم شهرياً`}
+        />
+        <StatCard
+          color="var(--warn)"
+          value={`${weightedYield.toFixed(2)}%`}
+          label="عائد توزيعات المحفظة الإجمالي"
+          sub="متوسط مرجح للعائد النقدي"
+        />
       </div>
 
       {/* حالة المحفظة الفارغة */}
@@ -694,21 +698,27 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
 
           {/* لوحة المؤشرات السريعة للمحاكاة */}
           <div className="stats" style={{ margin: '0 0 20px' }}>
-            <div className="stat" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
-              <div className="n" style={{ color: '#fff', fontSize: '22px' }}>{finalCashWealth.toLocaleString('en-US')} درهم</div>
-              <div className="l">ثروة سحب الأرباح نقداً (Cash)</div>
-              <div className="stat-sub">توزيعات مسحوبة وغير مستثمرة</div>
-            </div>
-            <div className="stat" style={{ background: 'rgba(124, 92, 255, 0.05)', border: '1px solid rgba(124, 92, 255, 0.2)' }}>
-              <div className="n" style={{ color: 'var(--brand2)', fontSize: '22px' }}>{finalDripWealth.toLocaleString('en-US')} درهم</div>
-              <div className="l">ثروة إعادة الاستثمار (DRIP)</div>
-              <div className="stat-sub">توزيعات يعاد ضخها فورياً بالسوق</div>
-            </div>
-            <div className="stat" style={{ background: 'rgba(33, 201, 139, 0.06)', border: '1px solid rgba(33, 201, 139, 0.2)' }}>
-              <div className="n" style={{ color: 'var(--good)', fontSize: '22px' }}>+{snowballEffectValue.toLocaleString('en-US')} درهم</div>
-              <div className="l">🔥 عائد أثر كرة الثلج الإضافي</div>
-              <div className="stat-sub">مكاسب خالصة من قوة الفائدة المركبة</div>
-            </div>
+            <StatCard
+              style={{ background: 'rgba(255, 255, 255, 0.02)' }}
+              valueStyle={{ color: '#fff', fontSize: '22px' }}
+              value={`${finalCashWealth.toLocaleString('en-US')} درهم`}
+              label="ثروة سحب الأرباح نقداً (Cash)"
+              sub="توزيعات مسحوبة وغير مستثمرة"
+            />
+            <StatCard
+              style={{ background: 'rgba(124, 92, 255, 0.05)', border: '1px solid rgba(124, 92, 255, 0.2)' }}
+              valueStyle={{ color: 'var(--brand2)', fontSize: '22px' }}
+              value={`${finalDripWealth.toLocaleString('en-US')} درهم`}
+              label="ثروة إعادة الاستثمار (DRIP)"
+              sub="توزيعات يعاد ضخها فورياً بالسوق"
+            />
+            <StatCard
+              style={{ background: 'rgba(33, 201, 139, 0.06)', border: '1px solid rgba(33, 201, 139, 0.2)' }}
+              valueStyle={{ color: 'var(--good)', fontSize: '22px' }}
+              value={`+${snowballEffectValue.toLocaleString('en-US')} درهم`}
+              label="🔥 عائد أثر كرة الثلج الإضافي"
+              sub="مكاسب خالصة من قوة الفائدة المركبة"
+            />
           </div>
 
           {/* الرسم البياني لنمو الثروة */}
