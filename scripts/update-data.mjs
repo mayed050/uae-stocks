@@ -1,4 +1,4 @@
-// يجلب أسعار أسهم سوق دبي (DFM) من Yahoo Finance وأسعار أسهم سوق أبوظبي (ADX) من TradingView تلقائياً ويحدّث public/data.json.
+// يجلب أسعار أسهم سوق دبي (DFM) من Yahoo Finance وأسعار أسهم سوق أبوظبي (ADX) من TradingView Scanner API تلقائياً ويحدّث public/data.json.
 // التشغيل: node scripts/update-data.mjs   (يتطلب Node 18+ لوجود fetch المدمج)
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
@@ -32,25 +32,43 @@ async function fetchYahooQuote(symbol) {
   }
 }
 
-// جلب الأسعار من TradingView لأسهم أبوظبي (ADX)
-async function fetchTvQuote(symbol) {
-  const url = `https://www.tradingview.com/symbols/${encodeURIComponent(symbol)}/`
-  const res = await fetch(url, { headers: { 'User-Agent': UA } })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  const html = await res.text()
-
-  const offersIdx = html.indexOf('"offers"')
-  if (offersIdx === -1) throw new Error('no offers block found')
-
-  const slice = html.slice(offersIdx, offersIdx + 300)
-  const match = slice.match(/"price"\s*:\s*"([0-9.]+)"/)
-  if (!match) throw new Error('no price found in offers block')
-
-  return {
-    price: parseFloat(match[1]),
-    time: new Date(),
-    currency: 'AED',
+// جلب الأسعار لجميع أسهم أبوظبي (ADX) دفعة واحدة من TradingView Scanner API الموثوقة بنظام JSON
+async function fetchTvQuotesBatch(tradingviewSymbols) {
+  const url = 'https://scanner.tradingview.com/global/scan'
+  // تحويل الصيغة من ADX-FAB إلى الصيغة المطلوبة في الـ API وهي ADX:FAB
+  const tickers = tradingviewSymbols.map(s => s.replace('-', ':'))
+  
+  const payload = {
+    symbols: { tickers },
+    columns: ['close']
   }
+  
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'User-Agent': UA,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+  
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  const json = await res.json()
+  
+  const priceMap = {}
+  if (Array.isArray(json?.data)) {
+    for (const item of json.data) {
+      if (item.s) {
+        // إرجاع الصيغة الأصلية ADX-FAB كمفتاح للمطابقة
+        const origKey = item.s.replace(':', '-')
+        const price = item.d?.[0]
+        if (typeof price === 'number') {
+          priceMap[origKey] = price
+        }
+      }
+    }
+  }
+  return priceMap
 }
 
 function isoDate(d) {
@@ -61,12 +79,29 @@ async function main() {
   const basePath = existsSync(OUT) ? OUT : SEED
   const data = JSON.parse(readFileSync(basePath, 'utf8'))
 
+  // 1. تجميع كل رموز أسهم أبوظبي المطلوبة لجلبها دفعة واحدة
+  const adxStocks = data.stocks.filter(s => s.priceAuto && s.ex === 'ADX' && s.tradingview)
+  const adxTvSymbols = adxStocks.map(s => s.tradingview)
+  
+  let adxPriceMap = {}
+  if (adxTvSymbols.length > 0) {
+    try {
+      console.log(`جاري جلب أسعار سوق أبوظبي (ADX) دفعة واحدة عبر TradingView API (${adxTvSymbols.length} سهم)...`)
+      adxPriceMap = await fetchTvQuotesBatch(adxTvSymbols)
+      console.log(`✓ تم جلب أسعار سوق أبوظبي بنجاح.`)
+    } catch (e) {
+      console.warn(`✗ فشل جلب أسعار ADX دفعة واحدة: ${e.message} — سيتم الإبقاء على الأسعار السابقة.`)
+    }
+  }
+
   let ok = 0
   let fail = 0
+  
+  // 2. تحديث أسعار الأسهم المدرجة
   for (const s of data.stocks) {
     if (!s.priceAuto) continue
 
-    // 1. تحديث أسهم دبي المالي (DFM)
+    // أ. تحديث أسهم دبي المالي (DFM)
     if (s.ex === 'DFM' && s.yahoo) {
       try {
         const q = await fetchYahooQuote(s.yahoo)
@@ -78,29 +113,29 @@ async function main() {
         fail++
         console.warn(`✗ DFM: ${s.sym.padEnd(12)} ${e.message} — أبقيت القيمة السابقة`)
       }
+      await sleep(300) // نوم خفيف بين طلبات Yahoo لتفادي الحظر
     }
-    // 2. تحديث أسهم سوق أبوظبي للأوراق المالية (ADX)
+    // ب. تحديث أسهم سوق أبوظبي للأوراق المالية (ADX) من الخريطة المجلوبة دفعة واحدة
     else if (s.ex === 'ADX' && s.tradingview) {
-      try {
-        const q = await fetchTvQuote(s.tradingview)
-        s.price = Math.round(q.price * 1000) / 1000
-        s.asof = isoDate(q.time)
+      const price = adxPriceMap[s.tradingview]
+      if (price !== undefined) {
+        s.price = Math.round(price * 1000) / 1000
+        s.asof = isoDate(new Date())
         ok++
-        console.log(`✓ ADX: ${s.sym.padEnd(12)} ${s.price} ${q.currency}`)
-      } catch (e) {
+        console.log(`✓ ADX: ${s.sym.padEnd(12)} ${s.price} AED`)
+      } else {
         fail++
-        console.warn(`✗ ADX: ${s.sym.padEnd(12)} ${e.message} — أبقيت القيمة السابقة`)
+        console.warn(`✗ ADX: ${s.sym.padEnd(12)} لم يعثر على السعر في استجابة API — أبقيت القيمة السابقة`)
       }
     }
-    await sleep(300)
   }
 
   data.lastUpdated = new Date().toISOString()
-  data.source = ok > 0 ? 'yahoo+tradingview' : 'manual'
+  data.source = ok > 0 ? 'yahoo+tradingview-api' : 'manual'
 
   mkdirSync(dirname(OUT), { recursive: true })
   writeFileSync(OUT, JSON.stringify(data, null, 2) + '\n', 'utf8')
-  console.log(`\nاكتمل: ${ok} نجاح، ${fail} فشل. كُتب إلى ${OUT}`)
+  console.log(`\nاكتمل التحديث بنجاح: ${ok} نجاح، ${fail} فشل. كُتب إلى ${OUT}`)
 
   // فشل كامل في جلب أي سعر يُعدّ خطأً ليظهر في سجل CI.
   if (ok === 0) process.exit(1)
@@ -110,4 +145,3 @@ main().catch(e => {
   console.error('خطأ غير متوقع:', e)
   process.exit(1)
 })
-
