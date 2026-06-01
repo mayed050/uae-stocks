@@ -49,6 +49,19 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
           </div>
           <div className="modal-price">
             <div className="v">{item.price !== null ? item.price.toFixed(2) : NA}</div>
+            {typeof item.change === 'number' && (
+              <div
+                style={{
+                  direction: 'ltr',
+                  fontWeight: 800,
+                  fontSize: 13,
+                  color: item.change > 0 ? 'var(--good)' : item.change < 0 ? 'var(--bad)' : 'var(--muted)',
+                }}
+              >
+                {item.change > 0 ? '▲ +' : item.change < 0 ? '▼ ' : ''}
+                {Math.abs(item.change).toFixed(2)}% اليوم
+              </div>
+            )}
             <div className="c">
               درهم · {item.asof ?? NA}
               <span className={'src-badge ' + (item.priceAuto ? 'auto' : 'manual')}>
@@ -128,7 +141,7 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
           <section className="modal-card wide" style={{ padding: '12px', minHeight: '380px' }}>
             <h3 style={{ margin: '0 0 12px 0', fontSize: '15px' }}>📈 المخطط البياني الفني التفاعلي (TradingView)</h3>
             <iframe
-              src={`https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${item.ex === 'ADX' ? 'ADX' : 'DFM'}:${item.sym === 'EAND' ? 'EAND' : item.sym}&interval=D&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=f1f3f6&theme=${document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'}&style=1&timezone=Exchange&locale=ar`}
+              src={`https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${(item.tradingview ?? `${item.ex}-${item.sym}`).replace('-', ':')}&interval=D&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=f1f3f6&theme=${document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'}&style=1&timezone=Exchange&locale=ar`}
               style={{ width: '100%', height: '340px', border: 'none', borderRadius: '12px', background: 'var(--panel-solid)', display: 'block' }}
               title={`مخطط أسعار ${item.name}`}
             />
