@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-06-01T15:19:17.616Z",
+  "lastUpdated": "2026-06-01T15:36:10.321Z",
   "source": "yahoo+tradingview-api",
   "stocks": [
     {
@@ -944,13 +944,13 @@
     },
     {
       "sym": "MULTIPLY",
-      "name": "مجموعة مالتيبلاي",
+      "name": "مجموعة مالتيبلاي (Two Point Zero)",
       "ex": "ADX",
       "sector": "استثمار",
       "cat": "growth",
       "yahoo": null,
       "priceAuto": true,
-      "tradingview": "ADX-MULTIPLY",
+      "tradingview": "ADX-2POINTZERO",
       "price": 2.13,
       "asof": "2026-05-30",
       "mcap": "24.0 مليار",

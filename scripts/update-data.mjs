@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(__dirname, '..')
 const OUT = resolve(ROOT, 'public/data.json')
-const SEED = resolve(ROOT, 'src/seed.json')
+const SEED = resolve(ROOT, 'src/data/seed.json')
 
 const UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36'
@@ -134,8 +134,12 @@ async function main() {
   data.source = ok > 0 ? 'yahoo+tradingview-api' : 'manual'
 
   mkdirSync(dirname(OUT), { recursive: true })
-  writeFileSync(OUT, JSON.stringify(data, null, 2) + '\n', 'utf8')
-  console.log(`\nاكتمل التحديث بنجاح: ${ok} نجاح، ${fail} فشل. كُتب إلى ${OUT}`)
+  const jsonStr = JSON.stringify(data, null, 2) + '\n'
+  writeFileSync(OUT, jsonStr, 'utf8')
+  if (existsSync(SEED)) {
+    writeFileSync(SEED, jsonStr, 'utf8')
+  }
+  console.log(`\nاكتمل التحديث بنجاح: ${ok} نجاح، ${fail} فشل. كُتب إلى ${OUT} و ${SEED}`)
 
   // فشل كامل في جلب أي سعر يُعدّ خطأً ليظهر في سجل CI.
   if (ok === 0) process.exit(1)
