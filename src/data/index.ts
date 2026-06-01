@@ -25,8 +25,10 @@ export interface Stock {
   sector: string
   cat: Category
   yahoo?: string | null
+  tradingview?: string | null
   priceAuto?: boolean
   price: number | null
+  change?: number | null
   asof: string | null
   mcap: string | null
   pe: number | null

@@ -61,7 +61,14 @@ export function getDailyData(s: Stock): DailyData {
     found = ADX_MOVEMENTS.find(st => st.sym.toUpperCase() === symbol) ?? null
   }
 
-  if (found) {
+  if (typeof s.change === 'number') {
+    // نسبة تغيّر حقيقية مجلوبة من المصدر اليومي (Yahoo / TradingView)
+    const cp = s.change
+    change = Math.round(price * (cp / 100) * 100) / 100
+    pct = `${cp >= 0 ? '+' : ''}${cp.toFixed(2)}%`
+    isUp = cp > 0
+    isFlat = cp === 0
+  } else if (found) {
     change = parseFloat(found.change)
     pct = found.pct
     isUp = parseFloat(found.change) > 0

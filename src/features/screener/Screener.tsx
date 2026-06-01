@@ -10,7 +10,7 @@ import StatCard from '@/components/ui/StatCard'
 import PageHeader from '@/components/ui/PageHeader'
 import { SECTOR_TITLES, mapDFMSectorToDb } from '@/data/sectors'
 
-type SortKey = 'name' | 'price' | 'pe' | 'yield' | 'mcap'
+type SortKey = 'name' | 'price' | 'change' | 'pe' | 'yield' | 'mcap'
 
 export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA } = useStocks()
@@ -51,6 +51,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
       switch (sort) {
         case 'name': return s.name
         case 'price': return s.price ?? -1
+        case 'change': return s.change ?? -Infinity
         case 'pe': return s.pe ?? Number.MAX_SAFE_INTEGER
         case 'yield': return parseYield(s.div.yld) ?? -1
         case 'mcap': return parseAmount(s.mcap) ?? -1
@@ -187,6 +188,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                     <th className="sortable" onClick={() => toggleSort('name')}>السهم{arrow('name')}</th>
                     <th>السوق</th>
                     <th className="sortable" onClick={() => toggleSort('price')}>السعر{arrow('price')}</th>
+                    <th className="sortable" onClick={() => toggleSort('change')}>التغيّر اليومي{arrow('change')}</th>
                     <th className="sortable" onClick={() => toggleSort('pe')}>P/E{arrow('pe')}</th>
                     <th>EPS</th>
                     <th className="sortable" onClick={() => toggleSort('mcap')}>القيمة السوقية{arrow('mcap')}</th>
@@ -210,6 +212,9 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                       </td>
                       <td><span className={'exch ex-' + s.ex}>{s.ex}</span></td>
                       <td>{cell(s.price !== null ? s.price.toFixed(2) : null)}</td>
+                      <td style={{ direction: 'ltr', fontWeight: 700, color: typeof s.change === 'number' ? (s.change > 0 ? 'var(--good)' : s.change < 0 ? 'var(--bad)' : 'var(--muted)') : 'var(--muted2)' }}>
+                        {typeof s.change === 'number' ? `${s.change > 0 ? '▲ +' : s.change < 0 ? '▼ ' : ''}${Math.abs(s.change).toFixed(2)}%` : '—'}
+                      </td>
                       <td>{cell(s.pe)}</td>
                       <td>{cell(s.eps)}</td>
                       <td>{cell(s.mcap)}</td>
