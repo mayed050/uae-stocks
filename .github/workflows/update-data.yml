@@ -1,7 +1,7 @@
 name: Update market data
 
-# يحدّث أسعار أسهم سوق دبي يوميًا بعد إغلاق السوق ثم يدفع التغيير،
-# ما يُطلق إعادة نشر تلقائية على Vercel.
+# يحدّث أسعار السوقين يوميًا بعد الإغلاق ثم يدفع التغيير،
+# فيُعاد بناء الموقع ونشره على GitHub Pages عبر مُشغّل workflow_run في deploy.yml.
 
 on:
   schedule:
@@ -35,6 +35,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "لا تغييرات في البيانات."
           else
-            git commit -m "chore(data): تحديث أسعار يومي [skip ci]"
+            git commit -m "chore(data): تحديث أسعار يومي"
             git push
           fi

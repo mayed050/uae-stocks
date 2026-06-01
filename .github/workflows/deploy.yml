@@ -3,6 +3,11 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # يُعاد النشر تلقائيًا بعد اكتمال تحديث البيانات اليومي، لأن الدفع
+  # بـ GITHUB_TOKEN لا يُطلق مُشغّل push في سير عمل آخر.
+  workflow_run:
+    workflows: ["Update market data"]
+    types: [completed]
   workflow_dispatch: {}
 
 permissions:
