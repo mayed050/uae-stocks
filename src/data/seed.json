@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-06-01T15:36:10.321Z",
+  "lastUpdated": "2026-06-01T15:40:59.664Z",
   "source": "yahoo+tradingview-api",
   "stocks": [
     {
@@ -951,8 +951,8 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-2POINTZERO",
-      "price": 2.13,
-      "asof": "2026-05-30",
+      "price": 2.18,
+      "asof": "2026-06-01",
       "mcap": "24.0 مليار",
       "pe": 18,
       "eps": "0.12",
