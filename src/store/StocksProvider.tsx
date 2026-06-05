@@ -9,16 +9,20 @@ interface StoreValue {
   lastUpdated: string | null
   source: string
   loading: boolean
-  portfolio: { sym: string; amount: number; shares: number }[]
+  portfolio: Holding[]
   goal: number
   setGoal: (g: number) => void
   addStock: (sym: string, defaultAmount?: number) => void
   deleteStock: (sym: string) => void
   updateAmount: (sym: string, amt: number) => void
   updateShares: (sym: string, shs: number) => void
+  updateCost: (sym: string, cost: number) => void
   isInPortfolio: (sym: string) => boolean
   togglePortfolioStock: (sym: string) => void
 }
+
+/** حيازة في المحفظة: cost = إجمالي تكلفة الشراء (أساس التكلفة) لحساب العائد الحقيقي والربح/الخسارة. */
+export interface Holding { sym: string; amount: number; shares: number; cost: number }
 
 const Ctx = createContext<StoreValue>({
   stocks: SEED.stocks,
@@ -32,6 +36,7 @@ const Ctx = createContext<StoreValue>({
   deleteStock: () => {},
   updateAmount: () => {},
   updateShares: () => {},
+  updateCost: () => {},
   isInPortfolio: () => false,
   togglePortfolioStock: () => {},
 })
@@ -41,21 +46,27 @@ export function StocksProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   // 1. شحن بيانات المحفظة المخزنة مسبقاً أو تعيين قيم افتراضية نموذجية
-  const [portfolio, setPortfolio] = useState<{ sym: string; amount: number; shares: number }[]>(() => {
+  const [portfolio, setPortfolio] = useState<Holding[]>(() => {
     const saved = localStorage.getItem('dividend_portfolio')
     if (saved) {
       try {
         const parsed: unknown = JSON.parse(saved)
-        if (Array.isArray(parsed)) return parsed as { sym: string; amount: number; shares: number }[]
+        if (Array.isArray(parsed)) {
+          // ترحيل: الحيازات القديمة بلا cost تأخذ التكلفة = المبلغ الحالي (ربح/خسارة = 0 مبدئيًا)
+          return (parsed as Holding[]).map((p) => ({
+            ...p,
+            cost: typeof p.cost === 'number' ? p.cost : p.amount,
+          }))
+        }
       } catch {
         // العودة للافتراضي في حال حدوث مشكلة
       }
     }
     // محفظة نموذجية افتراضية لعرض البيانات بشكل مبهر
     return [
-      { sym: 'DEWA', amount: 15000, shares: 15000 / 2.61 },
-      { sym: 'EMIRATESNBD', amount: 30000, shares: 30000 / 27.62 },
-      { sym: 'EMAAR', amount: 25000, shares: 25000 / 11.78 }
+      { sym: 'DEWA', amount: 15000, shares: 15000 / 2.61, cost: 14200 },
+      { sym: 'EMIRATESNBD', amount: 30000, shares: 30000 / 27.62, cost: 26500 },
+      { sym: 'EMAAR', amount: 25000, shares: 25000 / 11.78, cost: 23800 }
     ]
   })
 
@@ -104,7 +115,8 @@ export function StocksProvider({ children }: { children: ReactNode }) {
         {
           sym,
           amount: defaultAmount,
-          shares: price > 0 ? defaultAmount / price : 0
+          shares: price > 0 ? defaultAmount / price : 0,
+          cost: defaultAmount
         }
       ]
     })
@@ -119,11 +131,7 @@ export function StocksProvider({ children }: { children: ReactNode }) {
       if (p.sym !== sym) return p
       const stock = data.stocks.find(s => s.sym === sym)
       const price = stock?.price ?? 1.0
-      return {
-        sym,
-        amount: amt,
-        shares: price > 0 ? amt / price : 0
-      }
+      return { ...p, sym, amount: amt, shares: price > 0 ? amt / price : 0 }
     }))
   }
 
@@ -132,12 +140,13 @@ export function StocksProvider({ children }: { children: ReactNode }) {
       if (p.sym !== sym) return p
       const stock = data.stocks.find(s => s.sym === sym)
       const price = stock?.price ?? 1.0
-      return {
-        sym,
-        amount: shs * price,
-        shares: shs
-      }
+      return { ...p, sym, amount: shs * price, shares: shs }
     }))
+  }
+
+  // تحديث أساس التكلفة (إجمالي تكلفة الشراء) — لا يمسّ الكمية ولا القيمة السوقية
+  const updateCost = (sym: string, cost: number) => {
+    setPortfolio(prev => prev.map(p => (p.sym === sym ? { ...p, cost } : p)))
   }
 
   const isInPortfolio = (sym: string) => {
@@ -165,6 +174,7 @@ export function StocksProvider({ children }: { children: ReactNode }) {
       deleteStock,
       updateAmount,
       updateShares,
+      updateCost,
       isInPortfolio,
       togglePortfolioStock
     }}>

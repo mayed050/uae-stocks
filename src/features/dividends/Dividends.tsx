@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { Stock } from '@/data'
 import { useStocks } from '@/store'
+import { exportCsv } from '@/export'
 import { parseISO } from '@/lib'
 import { MONTHS_AR, parseYield, getAnnualPs } from '@/format'
 import Avatar from '@/components/Avatar'
@@ -225,7 +226,20 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
         </div>
       </div>
 
-      <h2 className="sec"><span className="dot" /> جدول التوزيعات الكامل</h2>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+        <h2 className="sec" style={{ margin: 0 }}><span className="dot" /> جدول التوزيعات الكامل</h2>
+        <button
+          className="chip"
+          onClick={() => exportCsv(
+            `توزيعات-الأسهم-${new Date().toISOString().slice(0, 10)}`,
+            ['السهم', 'الرمز', 'السوق', 'التوزيع/سهم', 'العائد', 'آخر يوم شراء', 'الاستبعاد', 'إغلاق السجل', 'الدفع', 'الجمعية', 'التكرار'],
+            DATA.map((s) => [s.name, s.sym, s.ex, s.div.ps, s.div.yld, s.div.lastEnt, s.div.exd, s.div.rec, s.div.pay, s.div.agm, s.div.freq]),
+          )}
+          title="تصدير جدول التوزيعات إلى Excel/CSV"
+        >
+          ⬇️ تصدير CSV
+        </button>
+      </div>
       <div className="tablewrap">
         <table>
           <thead>

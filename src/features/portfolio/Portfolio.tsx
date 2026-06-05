@@ -3,6 +3,7 @@ import type { Stock } from '@/data'
 import { usePortfolio } from '@/store'
 import { fmtAmount, MONTHS_AR } from '@/format'
 import { parseISO } from '@/lib'
+import { exportCsv } from '@/export'
 import Avatar from '@/components/Avatar'
 import PortfolioIntel from './PortfolioIntel'
 import StatCard from '@/components/ui/StatCard'
@@ -18,8 +19,13 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
   const {
     items,
     totalInvested,
+    totalCost,
+    totalMarketValue,
+    totalGain,
+    totalGainPct,
     totalAnnualDividends,
     weightedYield,
+    yieldOnCost,
     monthlyAverage,
     goal,
     setGoal,
@@ -27,6 +33,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
     deleteStock,
     updateAmount,
     updateShares,
+    updateCost,
     isInPortfolio,
     stocks,
     loading
@@ -840,6 +847,33 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
         </div>
       </div>
 
+      {items.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 18, fontSize: 13 }}>
+            <span style={{ color: 'var(--muted)' }}>القيمة السوقية: <b style={{ color: 'var(--txt)' }}>{Math.round(totalMarketValue).toLocaleString('en-US')}</b></span>
+            <span style={{ color: 'var(--muted)' }}>التكلفة: <b style={{ color: 'var(--txt)' }}>{Math.round(totalCost).toLocaleString('en-US')}</b></span>
+            <span style={{ color: 'var(--muted)' }}>ربح/خسارة: <b style={{ color: totalGain >= 0 ? 'var(--good)' : 'var(--bad)', direction: 'ltr', display: 'inline-block' }}>{totalGain >= 0 ? '+' : ''}{Math.round(totalGain).toLocaleString('en-US')} ({totalGainPct.toFixed(1)}%)</b></span>
+            <span style={{ color: 'var(--muted)' }}>العائد على التكلفة: <b style={{ color: 'var(--good)' }}>{yieldOnCost.toFixed(2)}%</b></span>
+          </div>
+          <button
+            className="chip"
+            onClick={() => exportCsv(
+              `محفظتي-${new Date().toISOString().slice(0, 10)}`,
+              ['السهم', 'الرمز', 'السوق', 'السعر الحالي', 'عدد الأسهم', 'التكلفة', 'القيمة السوقية', 'ربح/خسارة', 'العائد على التكلفة %', 'التوزيع السنوي المتوقع'],
+              items.map((it) => [
+                it.stock.name.split('—')[0].trim(), it.sym, it.stock.ex,
+                it.price.toFixed(2), Math.round(it.shares), Math.round(it.cost),
+                Math.round(it.marketValue), Math.round(it.gain),
+                it.yieldOnCost.toFixed(2), Math.round(it.expectedAnnualDiv),
+              ]),
+            )}
+            title="تصدير المحفظة إلى ملف Excel/CSV"
+          >
+            ⬇️ تصدير CSV
+          </button>
+        </div>
+      )}
+
       <div className="tablewrap">
         <table>
           <thead>
@@ -850,6 +884,8 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
               <th>التوزيع السنوي/سهم</th>
               <th>مبلغ الاستثمار (درهم)</th>
               <th>عدد الأسهم المملوكة</th>
+              <th>تكلفة الشراء (درهم)</th>
+              <th>ربح/خسارة</th>
               <th>الأرباح السنوية المتوقعة</th>
               <th>إجراء</th>
             </tr>
@@ -857,11 +893,11 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={8} style={{ textAlign: 'center', padding: '30px' }}>جاري تحميل البيانات...</td>
+                <td colSpan={10} style={{ textAlign: 'center', padding: '30px' }}>جاري تحميل البيانات...</td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={8}>
+                <td colSpan={10}>
                   <div className="empty">المحفظة فارغة حالياً. ابحث عن سهم في القائمة أعلاه وقم بإضافته للبدء في الحساب!</div>
                 </td>
               </tr>
@@ -899,6 +935,19 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
                       value={Math.round(item.shares) || ''}
                       onChange={(e) => updateShares(item.sym, Math.max(0, parseFloat(e.target.value) || 0))}
                     />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      className="p-input"
+                      value={Math.round(item.cost) || ''}
+                      onChange={(e) => updateCost(item.sym, Math.max(0, parseFloat(e.target.value) || 0))}
+                      title="إجمالي ما دفعته لشراء هذه الحيازة"
+                    />
+                  </td>
+                  <td style={{ fontWeight: 700, direction: 'ltr', color: item.gain >= 0 ? 'var(--good)' : 'var(--bad)' }}>
+                    {item.gain >= 0 ? '+' : ''}{Math.round(item.gain).toLocaleString('en-US')}
+                    <span style={{ fontSize: 10.5, color: 'var(--muted)', display: 'block' }}>({item.gainPct.toFixed(1)}%)</span>
                   </td>
                   <td style={{ fontWeight: 700, color: 'var(--good)' }}>
                     {Math.round(item.expectedAnnualDiv).toLocaleString('en-US')} درهم
