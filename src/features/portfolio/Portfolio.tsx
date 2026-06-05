@@ -734,7 +734,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
 
           {/* الرسم البياني لنمو الثروة */}
           <div style={{ width: '100%', height: 320, marginTop: 14 }}>
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={320}>
               <AreaChart data={dripData} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
                 <defs>
                   <linearGradient id="colorDrip" x1="0" y1="0" x2="0" y2="1">
