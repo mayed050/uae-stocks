@@ -9,6 +9,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { num, TV_COLS, parseTvRow, applyQuote } from './lib.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(__dirname, '..')
@@ -19,19 +20,6 @@ const UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36'
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
-const round = (n, p = 2) => Math.round(n * 10 ** p) / 10 ** p
-const isoDate = (d) => d.toISOString().slice(0, 10)
-const num = (x) => (typeof x === 'number' && isFinite(x) ? x : null)
-
-// TradingView يُرجع القيمة السوقية بالدولار لهذه الأسواق؛ نحوّلها إلى الدرهم.
-const USD_AED = 3.6725
-function fmtMcap(n) {
-  if (n >= 1e9) return (n / 1e9 >= 100 ? Math.round(n / 1e9) : round(n / 1e9, 1)) + ' مليار'
-  if (n >= 1e6) return Math.round(n / 1e6) + ' مليون'
-  return String(Math.round(n))
-}
-
-const TV_COLS = ['close', 'change', 'open', 'high', 'low', 'volume', 'market_cap_basic', 'price_earnings_ttm']
 
 // ───────────── TradingView Scanner (أساسي — OHLCV لكل الأسهم دفعة واحدة) ─────────────
 async function fetchTvBatch(dashTickers) {
@@ -47,21 +35,9 @@ async function fetchTvBatch(dashTickers) {
   const map = {}
   if (Array.isArray(json?.data)) {
     for (const item of json.data) {
-      if (!item.s || !Array.isArray(item.d)) continue
-      const [close, change, open, high, low, volume, mcap, pe] = item.d
-      if (num(close) === null) continue
-      const mcapUsd = num(mcap)
-      map[item.s.replace(':', '-')] = {
-        price: close,
-        changePct: num(change),
-        open: num(open),
-        high: num(high),
-        low: num(low),
-        volume: num(volume),
-        mcapAed: mcapUsd != null ? mcapUsd * USD_AED : null,
-        pe: num(pe),
-        src: 'tradingview',
-      }
+      if (!item.s) continue
+      const q = parseTvRow(item.d)
+      if (q) map[item.s.replace(':', '-')] = q
     }
   }
   return map
@@ -94,18 +70,6 @@ async function fetchYahoo(symbol) {
   }
 }
 
-function applyQuote(s, r, time) {
-  s.price = round(r.price, 3)
-  if (r.changePct != null) s.change = round(r.changePct, 2)
-  if (r.open != null) s.open = round(r.open, 3)
-  if (r.high != null) s.high = round(r.high, 3)
-  if (r.low != null) s.low = round(r.low, 3)
-  if (r.volume != null) s.volume = Math.round(r.volume)
-  // أساسيات متغيّرة يوميًا (تتبع السعر): تُحدَّث عند توفّرها من TradingView فقط
-  if (r.pe != null && r.pe > 0) s.pe = round(r.pe, 1)
-  if (r.mcapAed != null && r.mcapAed > 0) s.mcap = fmtMcap(r.mcapAed)
-  s.asof = isoDate(time ?? r.time ?? new Date())
-}
 
 async function main() {
   const basePath = existsSync(OUT) ? OUT : SEED
