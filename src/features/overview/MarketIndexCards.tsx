@@ -10,13 +10,13 @@ export interface MarketActivity {
   totalVolume: number
 }
 
-/** بطاقات مؤشرات السوق والنشاط اليومي (قيم المؤشرين ثابتة توضيحية؛ الأحجام/الصفقات محاكاة). */
+/** بطاقات مؤشرات السوق والنشاط اليومي (نقاط المؤشرين توضيحية وعدد الصفقات تقديري؛ أحجام التداول حقيقية). */
 export default function MarketIndexCards({ marketActivity }: { marketActivity: MarketActivity }) {
   return (
     <div className="panel" style={{ marginBottom: '20px', padding: '20px' }}>
       <h3 className="panel-h" style={{ margin: '0 0 14px 0', borderBottom: '1px solid var(--line)', paddingBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '15px', fontWeight: 800 }}>
         📊 مؤشرات الأسواق الإماراتية والنشاط اليومي
-        <SimBadge title="قيم المؤشرين والأحجام والصفقات هنا توضيحية للعرض، وليست بيانات تداول رسمية لحظية.">قيم توضيحية</SimBadge>
+        <SimBadge title="نقاط المؤشرين (DFMGI/ADI) توضيحية وعدد الصفقات تقديري؛ أما أحجام التداول فحقيقية من TradingView/Yahoo.">المؤشرات تقريبية</SimBadge>
       </h3>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>

@@ -1,8 +1,10 @@
 /**
- * أدوات بيانات السوق المحاكاة — وحدة مشتركة لتجنّب تكرار المنطق بين Overview و Screener.
+ * أدوات بيانات السوق — وحدة مشتركة بين Overview و Screener.
  *
- * ⚠️ تنبيه: القيم هنا (التغير اليومي، الأحجام، الأسعار التاريخية) مُولّدة بخوارزمية ثابتة
- * مشتقة من رمز السهم (seed) لأغراض العرض فقط، وليست بيانات سوق حقيقية لحظية.
+ * التغيّر اليومي والافتتاح/الأعلى/الأدنى والحجم وقيمة التداول تُجلب حقيقيةً من
+ * TradingView/Yahoo عبر السكربت اليومي (الحقول real على كائن السهم). إن غابت هذه
+ * الحقول (سهم بلا تحديث) يُستخدم توليد احتياطي مشتق من رمز السهم للعرض فقط.
+ * «عدد الصفقات» تقديري دائمًا (لا يوفّره المصدر).
  */
 import type { Stock } from './data'
 import { parseAmount } from './format'
@@ -22,6 +24,7 @@ export interface DailyData {
   isUp: boolean
   isFlat: boolean
   isDown: boolean
+  isReal: boolean
 }
 
 /** مولّد أرقام شبه عشوائي بـ seed ثابت (لا يتغيّر بين عمليات إعادة الرسم). */
@@ -81,20 +84,28 @@ export function getDailyData(s: Stock): DailyData {
     isFlat = change === 0
   }
 
-  const prevClose = price - change
-  const high = Math.max(price, prevClose) * (1 + rand(0.012, 0.001))
-  const low = Math.min(price, prevClose) * (1 - rand(0.012, 0.001))
-  const open = prevClose * (1 + rand(0.004, -0.004))
+  // OHLC حقيقي عند توفّره، وإلا توليد احتياطي
+  const prevClose = Math.round((price - change) * 100) / 100
+  const high = typeof s.high === 'number' ? s.high : Math.max(price, prevClose) * (1 + rand(0.012, 0.001))
+  const low = typeof s.low === 'number' ? s.low : Math.min(price, prevClose) * (1 - rand(0.012, 0.001))
+  const open = typeof s.open === 'number' ? s.open : prevClose * (1 + rand(0.004, -0.004))
 
-  const rawMcap = parseAmount(s.mcap) ?? 5e9
-  const mcapVal = rawMcap > 1e6 ? rawMcap / 1e9 : rawMcap
-  const volume = Math.round((mcapVal * 150000) * rand(2.2, 0.1))
-  const value = volume * price
-  const trades = Math.round(volume * rand(0.00005, 0.00001)) + 3
+  // الحجم الحقيقي عند توفّره، وإلا تقدير من القيمة السوقية
+  let volume: number
+  const isReal = typeof s.volume === 'number'
+  if (isReal) {
+    volume = s.volume as number
+  } else {
+    const rawMcap = parseAmount(s.mcap) ?? 5e9
+    const mcapVal = rawMcap > 1e6 ? rawMcap / 1e9 : rawMcap
+    volume = Math.round((mcapVal * 150000) * rand(2.2, 0.1))
+  }
+  const value = volume * price                       // قيمة التداول الحقيقية = الحجم × السعر
+  const trades = Math.round(volume * rand(0.00005, 0.00001)) + 3  // تقديري (لا يوفّره المصدر)
 
   return {
     change, pct, volume, value, trades, prevClose, open, high, low,
-    isUp, isFlat, isDown: !isUp && !isFlat,
+    isUp, isFlat, isDown: !isUp && !isFlat, isReal,
   }
 }
 

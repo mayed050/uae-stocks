@@ -308,6 +308,7 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
                     <h3 style={{ margin: 0, fontSize: '16.5px', fontWeight: 900, color: 'var(--txt)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Avatar sym={selectedChartStock.stock.sym} size={28} />
                       {selectedChartStock.stock.sym} — {selectedChartStock.stock.name.split('—')[0]}
+                      <SimBadge title="السعر الحالي والتغيّر اليومي حقيقيان؛ سلسلة الأسعار التاريخية في هذا الرسم توضيحية مُولّدة للعرض فقط.">التاريخ توضيحي</SimBadge>
                     </h3>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
                       <span style={{ fontSize: '22px', fontWeight: '900', color: 'var(--txt)' }}>
@@ -503,7 +504,7 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
               <div>
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900, color: '#ff6b00', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   🟠 حركة السوق
-                  <SimBadge title="التغيّرات والأحجام والصفقات هنا قيم توضيحية مُولّدة خوارزمياً للعرض، وليست تداولاً حقيقياً لحظياً.">بيانات توضيحية</SimBadge>
+                  <SimBadge title="الأسعار والتغيّر والحجم وقيمة التداول حقيقية من TradingView/Yahoo؛ «عدد الصفقات» فقط تقديري.">الصفقات تقديرية</SimBadge>
                 </h3>
                 <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'var(--muted)', fontWeight: 600 }}>
                   قائمة مرتبة حسب {

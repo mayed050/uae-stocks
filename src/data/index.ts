@@ -29,6 +29,10 @@ export interface Stock {
   priceAuto?: boolean
   price: number | null
   change?: number | null
+  open?: number | null
+  high?: number | null
+  low?: number | null
+  volume?: number | null
   asof: string | null
   mcap: string | null
   pe: number | null
