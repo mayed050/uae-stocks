@@ -1,0 +1,16 @@
+{
+  "name": "منصة الأسهم الإماراتية",
+  "short_name": "أسهم الإمارات",
+  "description": "متابعة أسعار وتوزيعات أسهم سوقي دبي (DFM) وأبوظبي (ADX) — للمعلومات فقط.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   update:
@@ -37,4 +38,20 @@ jobs:
           else
             git commit -m "chore(data): تحديث أسعار يومي"
             git push
+          fi
+
+      # تنبيه عند فشل الجلب: يفتح Issue واحدًا (أو يعلّق على القائم) بدل التجاهل الصامت.
+      - name: Alert on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          title="⚠️ فشل تحديث بيانات السوق اليومي"
+          body="فشل سير عمل \"Update market data\" بتاريخ $(date -u +%F). راجع السجل: $RUN_URL"
+          existing=$(gh issue list --state open --search "$title in:title" --json number --jq '.[0].number' 2>/dev/null || echo "")
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "$body" || true
+          else
+            gh issue create --title "$title" --body "$body" || true
           fi

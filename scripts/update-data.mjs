@@ -23,7 +23,15 @@ const round = (n, p = 2) => Math.round(n * 10 ** p) / 10 ** p
 const isoDate = (d) => d.toISOString().slice(0, 10)
 const num = (x) => (typeof x === 'number' && isFinite(x) ? x : null)
 
-const TV_COLS = ['close', 'change', 'open', 'high', 'low', 'volume']
+// TradingView يُرجع القيمة السوقية بالدولار لهذه الأسواق؛ نحوّلها إلى الدرهم.
+const USD_AED = 3.6725
+function fmtMcap(n) {
+  if (n >= 1e9) return (n / 1e9 >= 100 ? Math.round(n / 1e9) : round(n / 1e9, 1)) + ' مليار'
+  if (n >= 1e6) return Math.round(n / 1e6) + ' مليون'
+  return String(Math.round(n))
+}
+
+const TV_COLS = ['close', 'change', 'open', 'high', 'low', 'volume', 'market_cap_basic', 'price_earnings_ttm']
 
 // ───────────── TradingView Scanner (أساسي — OHLCV لكل الأسهم دفعة واحدة) ─────────────
 async function fetchTvBatch(dashTickers) {
@@ -40,8 +48,9 @@ async function fetchTvBatch(dashTickers) {
   if (Array.isArray(json?.data)) {
     for (const item of json.data) {
       if (!item.s || !Array.isArray(item.d)) continue
-      const [close, change, open, high, low, volume] = item.d
+      const [close, change, open, high, low, volume, mcap, pe] = item.d
       if (num(close) === null) continue
+      const mcapUsd = num(mcap)
       map[item.s.replace(':', '-')] = {
         price: close,
         changePct: num(change),
@@ -49,6 +58,8 @@ async function fetchTvBatch(dashTickers) {
         high: num(high),
         low: num(low),
         volume: num(volume),
+        mcapAed: mcapUsd != null ? mcapUsd * USD_AED : null,
+        pe: num(pe),
         src: 'tradingview',
       }
     }
@@ -90,6 +101,9 @@ function applyQuote(s, r, time) {
   if (r.high != null) s.high = round(r.high, 3)
   if (r.low != null) s.low = round(r.low, 3)
   if (r.volume != null) s.volume = Math.round(r.volume)
+  // أساسيات متغيّرة يوميًا (تتبع السعر): تُحدَّث عند توفّرها من TradingView فقط
+  if (r.pe != null && r.pe > 0) s.pe = round(r.pe, 1)
+  if (r.mcapAed != null && r.mcapAed > 0) s.mcap = fmtMcap(r.mcapAed)
   s.asof = isoDate(time ?? r.time ?? new Date())
 }
 
