@@ -5,11 +5,11 @@ import {
 } from 'recharts'
 import type { Stock } from '@/data'
 import type { View } from '@/components/Sidebar'
-import { useStocks, useMarketStats, usePortfolio } from '@/store'
+import { useStocks, useMarketStats, usePortfolio, useHistory } from '@/store'
 import { parseYield, parseAmount } from '@/format'
 import Avatar from '@/components/Avatar'
 import { ADX_MOVEMENTS } from '@/data/movements'
-import { getDailyData, generateHistoricalData, generateSparklineData } from '@/market'
+import { getDailyData, generateHistoricalData, generateSparklineData, realHistory } from '@/market'
 import { PALETTE, TIP_STYLE as tipStyle } from '@/constants/ui'
 import MarketIndexCards from './MarketIndexCards'
 import LiveActionsFeed from './LiveActionsFeed'
@@ -44,6 +44,7 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
     monthData,
   } = useMarketStats()
   const { isInPortfolio } = usePortfolio()
+  const histMap = useHistory()
   
   // التحكم بنوع خريطة السوق الحرارية
   const [heatmapMetric, setHeatmapMetric] = useState<'yield' | 'pe' | 'mcap'>('yield')
@@ -107,12 +108,17 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
   // الحصول على بيانات السهم المختار للرسم البياني وتوليد تاريخه
   const selectedChartStock = useMemo(() => {
     const s = DATA.find(st => st.sym.toUpperCase() === selectedChartSym.toUpperCase()) ?? DATA[0]
-    const history = generateHistoricalData(s.sym, chartTimeframe, s.price ?? 1.0)
+    const realPts = histMap[s.sym]
+    const isReal = Array.isArray(realPts) && realPts.length > 1
+    const history = isReal
+      ? realHistory(realPts, chartTimeframe, s.price ?? 1.0)
+      : generateHistoricalData(s.sym, chartTimeframe, s.price ?? 1.0)
     return {
       stock: s,
+      isReal,
       ...history
     }
-  }, [DATA, selectedChartSym, chartTimeframe])
+  }, [DATA, selectedChartSym, chartTimeframe, histMap])
 
   // حساب إجمالي الصفقات وحجم التداول اليومي التراكمي للأسواق الإماراتية
   const marketActivity = useMemo(() => {
@@ -308,7 +314,11 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
                     <h3 style={{ margin: 0, fontSize: '16.5px', fontWeight: 900, color: 'var(--txt)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Avatar sym={selectedChartStock.stock.sym} size={28} />
                       {selectedChartStock.stock.sym} — {selectedChartStock.stock.name.split('—')[0]}
-                      <SimBadge title="السعر الحالي والتغيّر اليومي حقيقيان؛ سلسلة الأسعار التاريخية في هذا الرسم توضيحية مُولّدة للعرض فقط.">التاريخ توضيحي</SimBadge>
+                      {selectedChartStock.isReal ? (
+                        <span title="أسعار إغلاق تاريخية حقيقية (سنة) من Yahoo Finance." style={{ fontSize: 10.5, fontWeight: 800, color: 'var(--good)', background: 'rgba(33,201,139,0.12)', border: '1px solid rgba(33,201,139,0.4)', borderRadius: 999, padding: '2px 9px' }}>● تاريخ حقيقي</span>
+                      ) : (
+                        <SimBadge title="السعر الحالي والتغيّر اليومي حقيقيان؛ سلسلة الأسعار التاريخية لهذا السهم (أبوظبي) توضيحية مُولّدة للعرض فقط.">التاريخ توضيحي</SimBadge>
+                      )}
                     </h3>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
                       <span style={{ fontSize: '22px', fontWeight: '900', color: 'var(--txt)' }}>

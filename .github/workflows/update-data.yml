@@ -28,11 +28,14 @@ jobs:
       - name: Fetch latest prices
         run: node scripts/update-data.mjs
 
+      - name: Fetch price history (DFM)
+        run: node scripts/fetch-history.mjs || echo "history fetch failed (non-fatal)"
+
       - name: Commit & push if changed
         run: |
           git config user.name "data-bot"
           git config user.email "actions@github.com"
-          git add public/data.json src/data/seed.json
+          git add public/data.json src/data/seed.json public/history.json
           if git diff --staged --quiet; then
             echo "لا تغييرات في البيانات."
           else

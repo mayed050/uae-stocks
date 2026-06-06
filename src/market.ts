@@ -122,6 +122,28 @@ export interface PriceHistory {
 
 const TIMEFRAME_POINTS: Record<string, number> = { '1W': 7, '1M': 30, '3M': 90, '6M': 120, '1Y': 250 }
 
+/** يبني سلسلة الرسم من أسعار إغلاق تاريخية حقيقية ([تاريخ، سعر])، مقسّمة حسب الفترة. */
+export function realHistory(points: [string, number][], timeframe: string, currentPrice: number): PriceHistory {
+  const want = TIMEFRAME_POINTS[timeframe] ?? points.length
+  const slice = points.slice(Math.max(0, points.length - want))
+  const data = slice.map(([d, c]) => {
+    const dt = new Date(d)
+    const label = (timeframe === '1W' || timeframe === '1M')
+      ? dt.toLocaleDateString('ar-AE', { day: 'numeric', month: 'short' })
+      : dt.toLocaleDateString('ar-AE', { month: 'short', year: '2-digit' })
+    return { date: label, price: c }
+  })
+  if (data.length) data[data.length - 1].price = currentPrice
+  const prices = data.map((d) => d.price)
+  const high = prices.length ? Math.max(...prices) : currentPrice
+  const low = prices.length ? Math.min(...prices) : currentPrice
+  const open = data[0]?.price ?? currentPrice
+  const close = currentPrice
+  const change = close - open
+  const changePct = open > 0 ? (change / open) * 100 : 0
+  return { data, high, low, open, close, change, changePct, isOverallUp: change >= 0 }
+}
+
 /** سلسلة أسعار تاريخية محاكاة لفترة زمنية مختارة. */
 export function generateHistoricalData(sym: string, timeframe: string, currentPrice: number): PriceHistory {
   const seed = symbolSeed(sym)
