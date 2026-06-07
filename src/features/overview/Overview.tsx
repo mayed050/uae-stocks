@@ -107,7 +107,8 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
 
   // الحصول على بيانات السهم المختار للرسم البياني وتوليد تاريخه
   const selectedChartStock = useMemo(() => {
-    const s = DATA.find(st => st.sym.toUpperCase() === selectedChartSym.toUpperCase()) ?? DATA[0]
+    // DATA هي بيانات البذرة المضمّنة وغير فارغة دائماً؛ التأكيد يطابق افتراض التطبيق القائم.
+    const s = DATA.find(st => st.sym.toUpperCase() === selectedChartSym.toUpperCase()) ?? DATA[0]!
     const realPts = histMap[s.sym]
     const isReal = Array.isArray(realPts) && realPts.length > 1
     const history = isReal
@@ -228,6 +229,7 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
     const interval = setInterval(() => {
       // Pick a random event from the feed
       const item = feed[Math.floor(Math.random() * feed.length)]
+      if (!item) return
       setLiveActions(prev => {
         // Prevent duplicate consecutive or too frequent alerts
         if (prev.some(x => x.title === item.title)) return prev;
@@ -267,14 +269,14 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
           <MarketIndexCards marketActivity={marketActivity} />
 
           {/* قسم التحليل والرسوم البيانية الهيكلية وتوزيع القطاعات */}
-          <div className="chart-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', marginBottom: '20px' }}>
+          <div className="chart-grid o-sector-grid">
             {/* توزيع القطاعات */}
-            <div className="panel" style={{ padding: '20px', borderRadius: '16px' }}>
-              <h3 className="panel-h" style={{ borderBottom: '1px solid var(--line)', paddingBottom: '10px', marginBottom: '16px' }}>
+            <div className="panel o-sector-panel">
+              <h3 className="panel-h o-h-underline">
                 📊 توزيع هيكل السوق حسب القطاعات
               </h3>
-              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '24px', justifyContent: 'center' }}>
-                <div style={{ flex: '1 1 220px', maxWidth: '280px' }}>
+              <div className="o-sector-wrap">
+                <div className="o-sector-chart">
                   <ResponsiveContainer width="100%" height={180}>
                     <PieChart>
                       <Pie data={sectorData} dataKey="value" nameKey="name" innerRadius={45} outerRadius={75} paddingAngle={2}>
@@ -286,10 +288,10 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="legend" style={{ flex: '1 1 300px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px', border: 0, padding: 0 }}>
+                <div className="legend o-sector-legend">
                   {sectorData.map((d, i) => (
-                    <span key={d.name} className="legend-item" style={{ fontSize: '11.5px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
-                      <i style={{ background: PALETTE[i % PALETTE.length], width: '10px', height: '10px', borderRadius: '3px', display: 'inline-block' }} />
+                    <span key={d.name} className="legend-item">
+                      <i style={{ background: PALETTE[i % PALETTE.length] }} />
                       {d.name} ({d.value})
                     </span>
                   ))}
@@ -302,41 +304,36 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
           </div>
 
           {/* 📈 لوحة الرسم البياني التفاعلي المتطور لأسعار وحركة الأسهم الفردية (حركة الأسهم والرسم البياني) */}
-          <div className="panel" style={{ marginBottom: '24px', padding: '24px', borderRadius: '16px' }}>
+          <div className="panel o-chart-panel">
             <div className="chart-dashboard-container">
-              
+
               {/* القسم الأيسر: الرسم البياني والمؤشرات الفنية (يمثل 70% من العرض) */}
               <div className="chart-dashboard-left">
-                
+
                 {/* رأس لوحة الرسم البياني (اسم السهم وتفاصيل التغير المؤقتة والفترات الزمنية) */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '12px', borderBottom: '1px solid var(--line)', paddingBottom: '12px' }}>
+                <div className="o-chart-head">
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '16.5px', fontWeight: 900, color: 'var(--txt)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 className="o-chart-title">
                       <Avatar sym={selectedChartStock.stock.sym} size={28} />
                       {selectedChartStock.stock.sym} — {selectedChartStock.stock.name.split('—')[0]}
                       {selectedChartStock.isReal ? (
-                        <span title="أسعار إغلاق تاريخية حقيقية (سنة) من Yahoo Finance." style={{ fontSize: 10.5, fontWeight: 800, color: 'var(--good)', background: 'rgba(33,201,139,0.12)', border: '1px solid rgba(33,201,139,0.4)', borderRadius: 999, padding: '2px 9px' }}>● تاريخ حقيقي</span>
+                        <span title="أسعار إغلاق تاريخية حقيقية (سنة) من Yahoo Finance." className="o-real-badge">● تاريخ حقيقي</span>
                       ) : (
                         <SimBadge title="السعر الحالي والتغيّر اليومي حقيقيان؛ سلسلة الأسعار التاريخية لهذا السهم (أبوظبي) توضيحية مُولّدة للعرض فقط.">التاريخ توضيحي</SimBadge>
                       )}
                     </h3>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '4px' }}>
-                      <span style={{ fontSize: '22px', fontWeight: '900', color: 'var(--txt)' }}>
+                    <div className="o-price-row">
+                      <span className="o-price-big">
                         {selectedChartStock.stock.price?.toFixed(2)} د.إ
                       </span>
-                      <span style={{
-                        fontSize: '12px',
-                        fontWeight: '800',
-                        color: selectedChartStock.isOverallUp ? 'var(--good)' : 'var(--bad)',
-                        direction: 'ltr'
-                      }}>
+                      <span className={'o-price-change ' + (selectedChartStock.isOverallUp ? 'up' : 'down')}>
                         {selectedChartStock.isOverallUp ? '▲' : '▼'} {selectedChartStock.change.toFixed(2)} ({selectedChartStock.changePct.toFixed(2)}%)
                       </span>
                     </div>
                   </div>
 
                   {/* أزرار تحديد المدى الزمني للرسم البياني */}
-                  <div style={{ display: 'flex', gap: '3px', background: 'var(--chip)', padding: '3px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                  <div className="o-tf-group">
                     {(['1W', '1M', '3M', '6M', '1Y', 'ALL'] as const).map((tf) => {
                       const tfLabel = tf === '1W' ? 'أسبوع' : tf === '1M' ? 'شهر' : tf === '3M' ? '3 أشهر' : tf === '6M' ? '6 أشهر' : tf === '1Y' ? 'سنة' : 'الكل';
                       return (
@@ -353,7 +350,7 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
                 </div>
 
                 {/* مساحة الرسم البياني التفاعلي المتجاوب مع تلوين ديناميكي للاتجاه */}
-                <div style={{ width: '100%', height: '250px', position: 'relative', marginTop: '10px' }}>
+                <div className="o-chart-area">
                   <ResponsiveContainer width="100%" height={250}>
                     <AreaChart data={selectedChartStock.data} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                       <defs>
@@ -401,45 +398,45 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
                 </div>
 
                 {/* جدول البيانات والملخص الفني السفلي للسهم المختار */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginTop: '10px', borderTop: '1px solid var(--line)', paddingTop: '16px' }}>
-                  
+                <div className="o-chart-stats">
+
                   {/* العمود الأيمن: مؤشرات الأسعار الفنية */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', borderBottom: '1px dashed var(--line)', paddingBottom: '4px' }}>
-                      <span style={{ color: 'var(--muted)' }}>الأعلى سعر:</span>
-                      <b style={{ color: 'var(--txt)' }}>{selectedChartStock.high.toFixed(2)} د.إ</b>
+                  <div className="o-stat-col">
+                    <div className="o-kv">
+                      <span className="k">الأعلى سعر:</span>
+                      <b>{selectedChartStock.high.toFixed(2)} د.إ</b>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', borderBottom: '1px dashed var(--line)', paddingBottom: '4px' }}>
-                      <span style={{ color: 'var(--muted)' }}>الأدنى سعر:</span>
-                      <b style={{ color: 'var(--txt)' }}>{selectedChartStock.low.toFixed(2)} د.إ</b>
+                    <div className="o-kv">
+                      <span className="k">الأدنى سعر:</span>
+                      <b>{selectedChartStock.low.toFixed(2)} د.إ</b>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', borderBottom: '1px dashed var(--line)', paddingBottom: '4px' }}>
-                      <span style={{ color: 'var(--muted)' }}>سعر الافتتاح:</span>
-                      <b style={{ color: 'var(--txt)' }}>{selectedChartStock.open.toFixed(2)} د.إ</b>
+                    <div className="o-kv">
+                      <span className="k">سعر الافتتاح:</span>
+                      <b>{selectedChartStock.open.toFixed(2)} د.إ</b>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-                      <span style={{ color: 'var(--muted)' }}>إغلاق السهم الحالي:</span>
-                      <b style={{ color: 'var(--txt)' }}>{selectedChartStock.close.toFixed(2)} د.إ</b>
+                    <div className="o-kv nb">
+                      <span className="k">إغلاق السهم الحالي:</span>
+                      <b>{selectedChartStock.close.toFixed(2)} د.إ</b>
                     </div>
                   </div>
 
                   {/* العمود الأيسر: مؤشرات التغير والعوائد */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', borderBottom: '1px dashed var(--line)', paddingBottom: '4px' }}>
-                      <span style={{ color: 'var(--muted)' }}>مقدار التغير اليومي:</span>
-                      <b style={{ color: selectedChartStock.stock.price !== null && getDailyData(selectedChartStock.stock).change >= 0 ? 'var(--good)' : 'var(--bad)', direction: 'ltr' }}>
+                  <div className="o-stat-col">
+                    <div className="o-kv">
+                      <span className="k">مقدار التغير اليومي:</span>
+                      <b className={selectedChartStock.stock.price !== null && getDailyData(selectedChartStock.stock).change >= 0 ? 'up' : 'down'}>
                         {selectedChartStock.stock.price !== null ? (getDailyData(selectedChartStock.stock).change >= 0 ? '+' : '') : ''}{selectedChartStock.stock.price !== null ? getDailyData(selectedChartStock.stock).change.toFixed(2) : '—'}
                       </b>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', borderBottom: '1px dashed var(--line)', paddingBottom: '4px' }}>
-                      <span style={{ color: 'var(--muted)' }}>نسبة التغير اليومي:</span>
-                      <b style={{ color: selectedChartStock.stock.price !== null && getDailyData(selectedChartStock.stock).change >= 0 ? 'var(--good)' : 'var(--bad)', direction: 'ltr' }}>
+                    <div className="o-kv">
+                      <span className="k">نسبة التغير اليومي:</span>
+                      <b className={selectedChartStock.stock.price !== null && getDailyData(selectedChartStock.stock).change >= 0 ? 'up' : 'down'}>
                         {getDailyData(selectedChartStock.stock).pct}
                       </b>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-                      <span style={{ color: 'var(--muted)' }}>العائد النقدي (%) الحالي:</span>
-                      <b style={{ color: 'var(--good)' }}>{selectedChartStock.stock.div.yld ?? '—'}</b>
+                    <div className="o-kv nb">
+                      <span className="k">العائد النقدي (%) الحالي:</span>
+                      <b className="good">{selectedChartStock.stock.div.yld ?? '—'}</b>
                     </div>
                   </div>
 
@@ -449,8 +446,8 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
 
               {/* القسم الأيمن: قائمة اختيار ومتابعة الأسهم التفاعلية مع شارات الحركة Sparklines */}
               <div className="chart-dashboard-right">
-                <div style={{ paddingBottom: '6px', borderBottom: '1px solid var(--line)', marginBottom: '4px' }}>
-                  <b style={{ fontSize: '11px', color: 'var(--muted)', display: 'block', textAlign: 'right' }}>الأسهم القيادية المتاحة</b>
+                <div className="o-spark-head">
+                  <b>الأسهم القيادية المتاحة</b>
                 </div>
                 {DATA.filter(st => ['DEWA', 'EMAAR', 'FAB', 'SALIK', 'ADNOCDIST', 'ADIB', 'EAND', 'DIB'].includes(st.sym.toUpperCase())).map((stock) => {
                   const isActive = stock.sym.toUpperCase() === selectedChartSym.toUpperCase();
@@ -472,17 +469,17 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
                       onClick={() => setSelectedChartSym(stock.sym)}
                       className={`chart-stock-item ${isActive ? 'active' : ''}`}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontWeight: 800, fontSize: '12.5px', color: 'var(--txt)' }}>{stock.sym}</span>
-                        <span style={{ fontSize: '11.5px', fontWeight: 700, color: 'var(--txt)' }}>{stock.price?.toFixed(2)} د.إ</span>
+                      <div className="o-spark-row">
+                        <span className="o-spark-sym">{stock.sym}</span>
+                        <span className="o-spark-price">{stock.price?.toFixed(2)} د.إ</span>
                       </div>
-                      
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px' }}>
-                        <span style={{ fontSize: '9.5px', color: 'var(--muted)' }}>{stock.name.split('—')[0]}</span>
-                        
+
+                      <div className="o-spark-row m2">
+                        <span className="o-spark-name">{stock.name.split('—')[0]}</span>
+
                         {/* Sparkline رسم بياني خطي مصغر */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <svg width="40" height="15" style={{ overflow: 'visible' }}>
+                        <div className="o-spark-mini">
+                          <svg width="40" height="15" className="o-spark-svg">
                             <polyline
                               fill="none"
                               stroke={stockDaily.isUp ? 'var(--good)' : 'var(--bad)'}
@@ -490,12 +487,7 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
                               points={normalizedPoints}
                             />
                           </svg>
-                          <span style={{
-                            fontSize: '9.5px',
-                            fontWeight: 800,
-                            color: stockDaily.isUp ? 'var(--good)' : 'var(--bad)',
-                            direction: 'ltr'
-                          }}>
+                          <span className={'o-spark-pct ' + (stockDaily.isUp ? 'up' : 'down')}>
                             {stockDaily.pct}
                           </span>
                         </div>
@@ -509,14 +501,14 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
           </div>
 
           {/* 📊 لوحة حركة السوق التفاعلية الشاملة (حركة السوق) */}
-          <div className="panel" style={{ marginBottom: '28px', padding: '24px', borderRadius: '16px' }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '12px', borderBottom: '1px solid var(--line)', paddingBottom: '14px', marginBottom: '16px' }}>
+          <div className="panel o-movement-panel">
+            <div className="o-mv-head">
               <div>
-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900, color: '#ff6b00', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h3 className="o-mv-title">
                   🟠 حركة السوق
                   <SimBadge title="الأسعار والتغيّر والحجم وقيمة التداول حقيقية من TradingView/Yahoo؛ «عدد الصفقات» فقط تقديري.">الصفقات تقديرية</SimBadge>
                 </h3>
-                <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'var(--muted)', fontWeight: 600 }}>
+                <p className="o-mv-sub">
                   قائمة مرتبة حسب {
                     movementTab === 'gainers' ? 'الأسهم المرتفعة' :
                     movementTab === 'losers' ? 'الأسهم المنخفضة' :
@@ -527,90 +519,31 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
               </div>
 
               {/* تبويبات الفرز والتصفية المطبقة للهوية البصرية الفاخرة */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', background: 'var(--chip)', padding: '4px', borderRadius: '12px', border: '1px solid var(--line)' }}>
-                <button
-                  onClick={() => setMovementTab('gainers')}
-                  style={{
-                    border: 0,
-                    background: movementTab === 'gainers' ? 'linear-gradient(135deg, #ff7b00, #ff4500)' : 'transparent',
-                    color: movementTab === 'gainers' ? '#fff' : 'var(--muted)',
-                    fontSize: '12px',
-                    fontWeight: 800,
-                    padding: '6px 14px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    fontFamily: 'inherit'
-                  }}
-                >
-                  المرتفعة
-                </button>
-                <button
-                  onClick={() => setMovementTab('losers')}
-                  style={{
-                    border: 0,
-                    background: movementTab === 'losers' ? 'linear-gradient(135deg, #ff7b00, #ff4500)' : 'transparent',
-                    color: movementTab === 'losers' ? '#fff' : 'var(--muted)',
-                    fontSize: '12px',
-                    fontWeight: 800,
-                    padding: '6px 14px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    fontFamily: 'inherit'
-                  }}
-                >
-                  المنخفضة
-                </button>
-                <button
-                  onClick={() => setMovementTab('volume')}
-                  style={{
-                    border: 0,
-                    background: movementTab === 'volume' ? 'linear-gradient(135deg, #ff7b00, #ff4500)' : 'transparent',
-                    color: movementTab === 'volume' ? '#fff' : 'var(--muted)',
-                    fontSize: '12px',
-                    fontWeight: 800,
-                    padding: '6px 14px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    fontFamily: 'inherit'
-                  }}
-                >
-                  النشطة بالكمية
-                </button>
-                <button
-                  onClick={() => setMovementTab('value')}
-                  style={{
-                    border: 0,
-                    background: movementTab === 'value' ? 'linear-gradient(135deg, #ff7b00, #ff4500)' : 'transparent',
-                    color: movementTab === 'value' ? '#fff' : 'var(--muted)',
-                    fontSize: '12px',
-                    fontWeight: 800,
-                    padding: '6px 14px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    fontFamily: 'inherit'
-                  }}
-                >
-                  النشطة بالقيمة
-                </button>
+              <div className="o-mv-tabs">
+                {([['gainers', 'المرتفعة'], ['losers', 'المنخفضة'], ['volume', 'النشطة بالكمية'], ['value', 'النشطة بالقيمة']] as const).map(([key, label]) => (
+                  <button
+                    key={key}
+                    onClick={() => setMovementTab(key)}
+                    className={'o-mv-tab' + (movementTab === key ? ' active' : '')}
+                  >
+                    {label}
+                  </button>
+                ))}
               </div>
             </div>
 
             {/* الجدول التفاعلي الفاخر لحركة السوق */}
-            <div style={{ overflowX: 'auto', width: '100%' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', minWidth: '750px' }}>
+            <div className="o-mv-tablewrap">
+              <table className="o-mv-table">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--line)', background: 'rgba(255, 107, 0, 0.02)' }}>
-                    <th style={{ padding: '12px 10px', color: 'var(--muted)', textAlign: 'right', fontWeight: 800 }}>الشركة</th>
-                    <th style={{ padding: '12px 10px', color: 'var(--muted)', textAlign: 'center', fontWeight: 800 }}>السعر</th>
-                    <th style={{ padding: '12px 10px', color: 'var(--muted)', textAlign: 'center', fontWeight: 800 }}>التغير</th>
-                    <th style={{ padding: '12px 10px', color: 'var(--muted)', textAlign: 'center', fontWeight: 800 }}>مكرر الربحية</th>
-                    <th style={{ padding: '12px 10px', color: 'var(--muted)', textAlign: 'center', fontWeight: 800 }}>العائد النقدي</th>
-                    <th style={{ padding: '12px 10px', color: 'var(--muted)', textAlign: 'center', fontWeight: 800 }}>عدد الصفقات</th>
-                    <th style={{ padding: '12px 10px', color: 'var(--muted)', textAlign: 'left', fontWeight: 800 }}>قيمة التداول</th>
+                  <tr>
+                    <th className="al-r">الشركة</th>
+                    <th className="al-c">السعر</th>
+                    <th className="al-c">التغير</th>
+                    <th className="al-c">مكرر الربحية</th>
+                    <th className="al-c">العائد النقدي</th>
+                    <th className="al-c">عدد الصفقات</th>
+                    <th className="al-l">قيمة التداول</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -626,64 +559,53 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
                         key={s.sym}
                         onClick={() => onOpen(s)}
                         className="movement-row"
-                        style={{
-                          borderBottom: '1px solid var(--line)',
-                          cursor: 'pointer',
-                          transition: 'all 0.15s ease'
-                        }}
                       >
                         {/* عمود الشركة */}
-                        <td style={{ padding: '12px 10px', textAlign: 'right', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <td className="o-mv-company">
                           <Avatar sym={s.sym} size={32} />
                           <div>
-                            <span style={{ fontWeight: 800, color: 'var(--txt)', fontSize: '13.5px', display: 'block' }}>{s.sym}</span>
-                            <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600 }}>{s.name.split('—')[0]}</span>
+                            <span className="o-mv-sym">{s.sym}</span>
+                            <span className="o-mv-name">{s.name.split('—')[0]}</span>
                           </div>
-                          {isInPortfolio(s.sym) && <span title="في محفظتك" style={{ fontSize: '12px', marginInlineStart: '6px' }}>💼</span>}
+                          {isInPortfolio(s.sym) && <span title="في محفظتك" className="o-mv-pf">💼</span>}
                         </td>
-                        
+
                         {/* عمود السعر */}
-                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 800, color: 'var(--txt)' }}>
+                        <td className="o-mv-num">
                           {priceFormatted}
                         </td>
-                        
+
                         {/* عمود التغير */}
-                        <td style={{
-                          padding: '12px 10px',
-                          textAlign: 'center',
-                          fontWeight: 800,
-                          direction: 'ltr',
-                          color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)'
-                        }}>
+                        <td className={'o-mv-change ' + (d.isFlat ? 'flat' : d.isUp ? 'up' : 'down')}>
                           {d.isUp ? `+` : ''}{d.pct}
                         </td>
-                        
+
                         {/* عمود مكرر الربحية */}
-                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 700, color: 'var(--txt)' }}>
+                        <td className="o-mv-mut">
                           {peFormatted}
                         </td>
-                        
+
                         {/* عمود العائد النقدي (مقترح يدعم موضوع التطبيق) */}
-                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 800, color: 'var(--good)' }}>
+                        <td className="o-mv-yield">
                           {yieldFormatted}
                         </td>
-                        
+
                         {/* عمود عدد الصفقات (مطلوب) */}
-                        <td style={{ padding: '12px 10px', textAlign: 'center', fontWeight: 700, color: 'var(--txt)' }}>
+                        <td className="o-mv-mut">
                           {tradesFormatted}
                         </td>
-                        
+
                         {/* عمود قيمة التداول */}
-                        <td style={{ padding: '12px 10px', textAlign: 'left', fontWeight: 800, color: 'var(--txt)' }}>
+                        <td className="o-mv-val">
                           {valueFormatted}
                         </td>
                       </tr>
                     );
                   })}
-                  
+
                   {movementStocks.length === 0 && (
                     <tr>
-                      <td colSpan={7} style={{ textAlign: 'center', padding: '24px', color: 'var(--muted)', fontWeight: 600 }}>
+                      <td colSpan={7} className="o-mv-empty">
                         لا توجد أسهم تطابق التصفية الحالية.
                       </td>
                     </tr>
@@ -694,9 +616,9 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
           </div>
 
           {/* خريطة السوق الحرارية التفاعلية الفاخرة */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', margin: '24px 0 14px' }}>
-            <h2 className="sec" style={{ margin: 0 }}>
-              <span className="dot" style={{ background: 'var(--brand2)' }} /> خريطة السوق الحرارية التفاعلية
+          <div className="o-heat-head">
+            <h2 className="sec flush">
+              <span className="dot brand2" /> خريطة السوق الحرارية التفاعلية
             </h2>
             <div className="o-toggle-container">
               <button 
@@ -720,7 +642,7 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
             </div>
           </div>
 
-          <div className="heatmap" style={{ marginBottom: '30px' }}>
+          <div className="heatmap o-heat-grid">
             {DATA.map((s) => {
               let cellBg = 'var(--chip)'
               let labelText = '—'
@@ -760,11 +682,11 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
                   key={s.sym}
                   className="heat-cell"
                   onClick={() => onOpen(s)}
-                  style={{ background: cellBg, border: '1px solid var(--line)', padding: '14px 8px' }}
+                  style={{ background: cellBg }}
                   title={titleText}
                 >
                   <span className="heat-sym">{s.sym}</span>
-                  <span className="heat-y" style={{ fontSize: '11px', fontWeight: 600 }}>{labelText}</span>
+                  <span className="heat-y">{labelText}</span>
                 </button>
               )
             })}
@@ -784,80 +706,51 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
           
           {/* 1. لوحة قطاعات وأسعار الشركات (مطابقة تماماً للصورة) */}
           <div className="o-widget">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: '8px', marginBottom: '12px' }}>
-              <h4 className="o-widget-h" style={{ margin: 0, border: 0, padding: 0 }}>📊 أسعار الشركات</h4>
-              <div style={{ display: 'flex', gap: '4px', background: 'var(--chip)', padding: '2.5px', borderRadius: '8px', border: '1px solid var(--line)' }}>
-                <button 
-                  onClick={() => setMarketTab('dubai')} 
-                  style={{
-                    border: 0,
-                    background: marketTab === 'dubai' ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'transparent',
-                    color: marketTab === 'dubai' ? '#fff' : 'var(--muted)',
-                    fontSize: '11px',
-                    padding: '3px 9px',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    fontWeight: 700,
-                    fontFamily: 'inherit',
-                    transition: 'all 0.15s ease'
-                  }}
+            <div className="o-widget-head">
+              <h4 className="o-widget-h">📊 أسعار الشركات</h4>
+              <div className="o-mkt-tabs">
+                <button
+                  onClick={() => setMarketTab('dubai')}
+                  className={'o-mkt-tab' + (marketTab === 'dubai' ? ' active' : '')}
                 >
                   دبي
                 </button>
-                <button 
-                  onClick={() => setMarketTab('adx')} 
-                  style={{
-                    border: 0,
-                    background: marketTab === 'adx' ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'transparent',
-                    color: marketTab === 'adx' ? '#fff' : 'var(--muted)',
-                    fontSize: '11px',
-                    padding: '3px 9px',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    fontWeight: 700,
-                    fontFamily: 'inherit',
-                    transition: 'all 0.15s ease'
-                  }}
+                <button
+                  onClick={() => setMarketTab('adx')}
+                  className={'o-mkt-tab' + (marketTab === 'adx' ? ' active' : '')}
                 >
                   أبوظبي
                 </button>
               </div>
             </div>
-            
+
             {marketTab === 'dubai' ? (
-              <div style={{ maxHeight: '440px', overflowY: 'auto', paddingRight: '2px' }}>
-                <table style={{ minWidth: '100%', background: 'transparent', fontSize: '12px', borderCollapse: 'collapse' }}>
+              <div className="o-prices-scroll">
+                <table className="o-mini-table">
                   <thead>
-                    <tr style={{ borderBottom: '1px solid var(--line)' }}>
-                      <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'right', fontWeight: 700 }}>الاسم</th>
-                      <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'center', fontWeight: 700 }}>السعر</th>
-                      <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'left', fontWeight: 700 }}>التغير</th>
+                    <tr>
+                      <th className="al-r">الاسم</th>
+                      <th className="al-c">السعر</th>
+                      <th className="al-l">التغير</th>
                     </tr>
                   </thead>
                   <tbody>
                     {DATA.filter(s => s.ex === 'DFM').map((realStock) => {
                       const d = getDailyData(realStock)
                       return (
-                        <tr 
-                          key={realStock.sym} 
+                        <tr
+                          key={realStock.sym}
                           onClick={() => onOpen(realStock)}
                           className="rowlink"
-                          style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', cursor: 'pointer' }}
                         >
-                          <td style={{ padding: '7px 4px', textAlign: 'right' }}>
-                            <span style={{ fontWeight: 700, display: 'block', color: 'var(--txt)' }}>{realStock.name.split('—')[0]}</span>
-                            <span style={{ fontSize: '10px', color: 'var(--muted2)', fontWeight: 600 }}>{realStock.sym}</span>
+                          <td className="o-mini-td">
+                            <span className="o-mini-name">{realStock.name.split('—')[0]}</span>
+                            <span className="o-mini-sym">{realStock.sym}</span>
                           </td>
-                          <td style={{ padding: '7px 4px', textAlign: 'center', fontWeight: 700, color: 'var(--txt)' }}>
+                          <td className="o-mini-price">
                             {realStock.price !== null ? realStock.price.toFixed(2) : '—'}
                           </td>
-                          <td style={{ 
-                            padding: '7px 4px', 
-                            textAlign: 'left', 
-                            fontWeight: 800,
-                            direction: 'ltr',
-                            color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)'
-                          }}>
+                          <td className={'o-mini-change ' + (d.isFlat ? 'flat' : d.isUp ? 'up' : 'down')}>
                             {d.pct}
                           </td>
                         </tr>
@@ -867,12 +760,12 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
                 </table>
               </div>
             ) : (
-              <table style={{ minWidth: '100%', background: 'transparent', fontSize: '12px', borderCollapse: 'collapse' }}>
+              <table className="o-mini-table">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--line)' }}>
-                    <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'right', fontWeight: 700 }}>الاسم</th>
-                    <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'center', fontWeight: 700 }}>السعر</th>
-                    <th style={{ padding: '6px 4px', color: 'var(--muted)', textAlign: 'left', fontWeight: 700 }}>التغير</th>
+                  <tr>
+                    <th className="al-r">الاسم</th>
+                    <th className="al-c">السعر</th>
+                    <th className="al-l">التغير</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -881,26 +774,19 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
                     if (!realStock) return null
                     const d = getDailyData(realStock)
                     return (
-                      <tr 
-                        key={realStock.sym} 
+                      <tr
+                        key={realStock.sym}
                         onClick={() => onOpen(realStock)}
                         className="rowlink"
-                        style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', cursor: 'pointer' }}
                       >
-                        <td style={{ padding: '7px 4px', textAlign: 'right' }}>
-                          <span style={{ fontWeight: 700, display: 'block', color: 'var(--txt)' }}>{realStock.name.split('—')[0]}</span>
-                          <span style={{ fontSize: '10px', color: 'var(--muted2)', fontWeight: 600 }}>{realStock.sym}</span>
+                        <td className="o-mini-td">
+                          <span className="o-mini-name">{realStock.name.split('—')[0]}</span>
+                          <span className="o-mini-sym">{realStock.sym}</span>
                         </td>
-                        <td style={{ padding: '7px 4px', textAlign: 'center', fontWeight: 700, color: 'var(--txt)' }}>
+                        <td className="o-mini-price">
                           {realStock.price !== null ? realStock.price.toFixed(2) : '—'}
                         </td>
-                        <td style={{ 
-                          padding: '7px 4px', 
-                          textAlign: 'left', 
-                          fontWeight: 800,
-                          direction: 'ltr',
-                          color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)'
-                        }}>
+                        <td className={'o-mini-change ' + (d.isFlat ? 'flat' : d.isUp ? 'up' : 'down')}>
                           {d.pct}
                         </td>
                       </tr>
@@ -912,52 +798,30 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
           </div>
 
           {/* 2. متتبع توزيعات الأرباح التفاعلي المتقدم (Upcoming Dividend Tracker) */}
-          <div className="o-widget" style={{ padding: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: '10px', marginBottom: '12px' }}>
-              <h4 className="o-widget-h" style={{ margin: 0, border: 0, padding: 0 }}>📅 متتبع توزيعات الأرباح</h4>
-              
+          <div className="o-widget">
+            <div className="o-widget-head">
+              <h4 className="o-widget-h">📅 متتبع توزيعات الأرباح</h4>
+
               {/* شريط الفلتر المطور (الكل مقابل محفظتي) */}
-              <div style={{ display: 'flex', gap: '3px', background: 'var(--chip)', padding: '2px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+              <div className="o-filter-tabs">
                 <button
                   onClick={(e) => { e.stopPropagation(); setTrackerFilter('all'); }}
-                  style={{
-                    border: 0,
-                    background: trackerFilter === 'all' ? 'linear-gradient(135deg, #ff7b00, #ff4500)' : 'transparent',
-                    color: trackerFilter === 'all' ? '#fff' : 'var(--muted)',
-                    fontSize: '10px',
-                    fontWeight: 700,
-                    padding: '3px 8px',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                    transition: 'all 0.15s ease'
-                  }}
+                  className={'o-filter-tab' + (trackerFilter === 'all' ? ' active' : '')}
                 >
                   الكل
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); setTrackerFilter('portfolio'); }}
-                  style={{
-                    border: 0,
-                    background: trackerFilter === 'portfolio' ? 'linear-gradient(135deg, #ff7b00, #ff4500)' : 'transparent',
-                    color: trackerFilter === 'portfolio' ? '#fff' : 'var(--muted)',
-                    fontSize: '10px',
-                    fontWeight: 700,
-                    padding: '3px 8px',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                    transition: 'all 0.15s ease'
-                  }}
+                  className={'o-filter-tab' + (trackerFilter === 'portfolio' ? ' active' : '')}
                 >
                   محفظتي 💼
                 </button>
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxHeight: '450px', overflowY: 'auto', paddingRight: '2px' }}>
+            <div className="o-tracker-list">
               {filteredAlertRows.length === 0 ? (
-                <div style={{ fontSize: '12.5px', color: 'var(--muted)', textAlign: 'center', padding: '24px 0' }}>
+                <div className="o-tracker-empty">
                   {trackerFilter === 'portfolio' ? 'لا توجد توزيعات قريبة للشركات المدرجة في محفظتك.' : 'لا توجد تواريخ استحقاق قريبة حالياً.'}
                 </div>
               ) : (
@@ -966,13 +830,13 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
                   let countdownBadge;
 
                   if (daysLeft === null) {
-                    countdownBadge = <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '6px', background: 'var(--chip)', border: '1px solid var(--line)', color: 'var(--muted)', fontWeight: 700 }}>متوقع</span>;
+                    countdownBadge = <span className="o-cd exp">متوقع</span>;
                   } else if (daysLeft === 0) {
-                    countdownBadge = <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '6px', background: 'rgba(33, 201, 139, 0.15)', border: '1px solid var(--good)', color: 'var(--good)', fontWeight: 800, animation: 'timeline-glow 1.5s infinite' }}>اليوم! 🎉</span>;
+                    countdownBadge = <span className="o-cd today">اليوم! 🎉</span>;
                   } else if (daysLeft < 7) {
-                    countdownBadge = <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '6px', background: 'rgba(255, 176, 32, 0.15)', border: '1px solid var(--warn)', color: 'var(--warn)', fontWeight: 800 }}>باقي {daysLeft} أيام ⏳</span>;
+                    countdownBadge = <span className="o-cd soon">باقي {daysLeft} أيام ⏳</span>;
                   } else {
-                    countdownBadge = <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '6px', background: 'var(--chip)', border: '1px solid var(--line)', color: 'var(--txt)', fontWeight: 700 }}>بعد {daysLeft} يوم</span>;
+                    countdownBadge = <span className="o-cd future">بعد {daysLeft} يوم</span>;
                   }
 
                   const divValueStr = s.div.ps ?? 'غير معلن';
@@ -981,46 +845,34 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
                     <div
                       key={s.sym}
                       onClick={() => onOpen(s)}
-                      style={{
-                        background: 'var(--chip)',
-                        border: '1px solid var(--line)',
-                        borderRadius: '14px',
-                        padding: '12px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '10px',
-                        transition: 'all 0.18s ease-in-out',
-                        position: 'relative'
-                      }}
-                      className="rowlink"
+                      className="rowlink o-div-card"
                     >
                       {/* ترويسة بطاقة التوزيع */}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div className="o-div-cardhead">
+                        <div className="o-div-id">
                           <Avatar sym={s.sym} size={24} />
                           <div>
-                            <span style={{ fontWeight: 800, fontSize: '12.5px', color: 'var(--txt)', display: 'block' }}>{s.sym}</span>
-                            <span style={{ fontSize: '10px', color: 'var(--muted)', fontWeight: 600 }}>{s.ex}</span>
+                            <span className="o-div-sym">{s.sym}</span>
+                            <span className="o-div-ex">{s.ex}</span>
                           </div>
                         </div>
                         {countdownBadge}
                       </div>
 
                       {/* قيمة التوزيع والعائد */}
-                      <div style={{ background: 'var(--panel-solid)', padding: '6px 10px', borderRadius: '8px', fontSize: '11px', display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>
-                        <span style={{ color: 'var(--muted)' }}>توزيع السهم: <span style={{ color: 'var(--txt)' }}>{divValueStr}</span></span>
-                        <span style={{ color: 'var(--good)' }}>العائد: {s.div.yld}</span>
+                      <div className="o-div-vals">
+                        <span className="mut">توزيع السهم: <span className="txt">{divValueStr}</span></span>
+                        <span className="good">العائد: {s.div.yld}</span>
                       </div>
 
                       {/* متتبع المراحل الرأسي المصغر */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderTop: '1px dashed var(--line)', paddingTop: '8px' }}>
+                      <div className="o-div-timeline">
                         {/* خطوة 1: توصية الأرباح */}
                         <div className="timeline-step">
                           <div className="timeline-dot completed" />
                           <div className="timeline-content">
                             <span>توصية مجلس الإدارة</span>
-                            <div style={{ fontSize: '9.5px', color: 'var(--muted2)' }}>موافقة رسمية معلنة</div>
+                            <div className="o-tl-sub">موافقة رسمية معلنة</div>
                           </div>
                         </div>
 
@@ -1028,9 +880,9 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
                         <div className="timeline-step">
                           <div className={`timeline-dot ${daysLeft !== null && daysLeft >= 0 ? 'active' : ''}`} />
                           <div className={`timeline-content ${daysLeft !== null && daysLeft >= 0 ? 'active' : ''}`}>
-                            <span style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span className="o-tl-row">
                               <span>تاريخ الاستحقاق (Ex-Date)</span>
-                              <b style={{ color: '#ff6b00' }}>{s.div.exd ?? 'قريباً'}</b>
+                              <b className="o-tl-ex">{s.div.exd ?? 'قريباً'}</b>
                             </span>
                           </div>
                         </div>
@@ -1039,7 +891,7 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
                         <div className="timeline-step">
                           <div className="timeline-dot" />
                           <div className="timeline-content">
-                            <span style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span className="o-tl-row">
                               <span>تاريخ توزيع الأرباح (Pay)</span>
                               <span>{s.div.pay ?? 'منتظر'}</span>
                             </span>
@@ -1053,25 +905,7 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
                           e.stopPropagation();
                           triggerToast(`تم تفعيل التذكير لشركة ${s.sym} وإضافته لتقويمك بنجاح! 🔔`);
                         }}
-                        style={{
-                          width: '100%',
-                          border: '1px solid rgba(255, 107, 0, 0.25)',
-                          background: 'rgba(255, 107, 0, 0.05)',
-                          color: '#ff6b00',
-                          padding: '6px 0',
-                          borderRadius: '8px',
-                          fontSize: '11px',
-                          fontWeight: 800,
-                          cursor: 'pointer',
-                          fontFamily: 'inherit',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '6px',
-                          transition: 'all 0.15s ease'
-                        }}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255, 107, 0, 0.1)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255, 107, 0, 0.05)'; }}
+                        className="o-remind-btn"
                       >
                         <span>🔔</span> ذكّرني بالتوزيع
                       </button>
@@ -1083,7 +917,7 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
             {onNavigate && (
               <button
                 onClick={() => onNavigate('dividends')}
-                style={{ width: '100%', marginTop: '10px', border: '1px solid var(--line)', background: 'var(--chip)', color: 'var(--brand)', padding: '8px 0', borderRadius: '10px', fontSize: '12px', fontWeight: 800, cursor: 'pointer', fontFamily: 'inherit' }}
+                className="o-viewall-btn"
               >
                 عرض كل تواريخ التوزيعات ↗
               </button>
@@ -1097,26 +931,7 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
       </div>
 
       {toastMessage && (
-        <div style={{
-          position: 'fixed',
-          bottom: '24px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          background: 'rgba(0, 0, 0, 0.85)',
-          color: '#fff',
-          padding: '10px 20px',
-          borderRadius: '20px',
-          zIndex: 10000,
-          fontSize: '12.5px',
-          fontWeight: 700,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          border: '1px solid rgba(255, 107, 0, 0.3)',
-          backdropFilter: 'blur(8px)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          animation: 'fade-in-toast 0.25s ease-out'
-        }}>
+        <div className="o-toast">
           <span>🔔</span> {toastMessage}
         </div>
       )}

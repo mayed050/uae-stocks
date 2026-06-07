@@ -24,7 +24,7 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
     DATA.forEach((s) => {
       const add = (raw: string | null | undefined, kind: 'ex' | 'pay') => {
         const d = parseISO(raw ?? null)
-        if (d && d.getFullYear() === year) months[d.getMonth()].push({ s, kind, date: d, raw: raw! })
+        if (d && d.getFullYear() === year) months[d.getMonth()]?.push({ s, kind, date: d, raw: raw! })
       }
       add(s.div.exd, 'ex'); add(s.div.nextExd, 'ex'); add(s.div.pay, 'pay'); add(s.div.nextPay, 'pay')
     })
@@ -43,7 +43,7 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
       if (ev.date >= now && ev.date <= in7) within7++
     }))
     const currentMonth = now.getFullYear() === year ? now.getMonth() : -1
-    const thisMonth = currentMonth >= 0 ? byMonth[currentMonth].length : 0
+    const thisMonth = currentMonth >= 0 ? (byMonth[currentMonth]?.length ?? 0) : 0
     return { within7, total, exTotal, payTotal, currentMonth, thisMonth }
   }, [byMonth, year])
 
@@ -116,13 +116,15 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
       </div>
 
       <div className="calendar">
-        {MONTHS_AR.map((m, i) => (
-          <div key={m} className={'cal-month' + (byMonth[i].length ? '' : ' empty-month') + (i === summary.currentMonth ? ' current' : '')}>
+        {MONTHS_AR.map((m, i) => {
+          const evs = byMonth[i] ?? []
+          return (
+          <div key={m} className={'cal-month' + (evs.length ? '' : ' empty-month') + (i === summary.currentMonth ? ' current' : '')}>
             <div className="cal-h">{m}{i === summary.currentMonth ? ' • الآن' : ''}</div>
-            {byMonth[i].length === 0 ? (
+            {evs.length === 0 ? (
               <div className="cal-none">—</div>
             ) : (
-              byMonth[i].map((ev, j) => (
+              evs.map((ev, j) => (
                 <button key={j} className={'cal-ev ' + ev.kind} onClick={() => onOpen(ev.s)}>
                   <span className="cal-ev-day">{ev.date.getDate()}</span>
                   <Avatar sym={ev.s.sym} size={22} />
@@ -132,7 +134,8 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
               ))
             )}
           </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* حاسبة الحرية المالية التفاعلية */}

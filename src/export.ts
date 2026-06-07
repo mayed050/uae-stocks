@@ -1,13 +1,13 @@
 /**
  * تصدير صفوف إلى ملف CSV يفتح مباشرةً في Excel.
- * يضيف BOM (﻿) لضمان ظهور العربية بشكل صحيح.
+ * يضيف BOM (U+FEFF) لضمان ظهور العربية بشكل صحيح.
  */
 export function exportCsv(
   filename: string,
   headers: string[],
   rows: (string | number | null | undefined)[][],
 ) {
-  const esc = (v: unknown) => {
+  const esc = (v: string | number | null | undefined) => {
     const s = v == null ? '' : String(v)
     return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
   }

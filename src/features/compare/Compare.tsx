@@ -99,12 +99,12 @@ export default function Compare() {
         <div className="empty">اختر سهماً واحداً على الأقل من القائمة أعلاه لبدء المقارنة الفورية.</div>
       ) : (
         <>
-          {leaderboard.ranked.length > 0 && leaderboard.ranked[0].count > 0 && (
+          {(leaderboard.ranked[0]?.count ?? 0) > 0 && (
             <div className="panel" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', padding: '14px 18px', marginBottom: '18px' }}>
               <span style={{ fontSize: '22px' }}>🏆</span>
               <div>
                 <div style={{ fontWeight: 800, fontSize: '14px', color: 'var(--txt)' }}>
-                  الأكثر تصدّراً: <span style={{ color: 'var(--good)' }}>{leaderboard.ranked[0].sym}</span> — تصدّر {leaderboard.ranked[0].count} من {leaderboard.scored} فئة مقارَنة
+                  الأكثر تصدّراً: <span style={{ color: 'var(--good)' }}>{leaderboard.ranked[0]?.sym}</span> — تصدّر {leaderboard.ranked[0]?.count} من {leaderboard.scored} فئة مقارَنة
                 </div>
                 <div style={{ fontSize: '11.5px', color: 'var(--muted)', marginTop: '3px' }}>
                   {leaderboard.ranked.map((r) => `${r.sym}: ${r.count}`).join('  ·  ')}

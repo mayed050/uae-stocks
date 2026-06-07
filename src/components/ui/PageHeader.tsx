@@ -1,5 +1,12 @@
+import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { useStocks } from '@/store'
+
+/** لقطة لوقت تركيب المكوّن (تُؤخذ مرة واحدة) لتفادي استدعاء Date.now أثناء الـ render. */
+function useMountTime(): number {
+  const [t] = useState(() => Date.now())
+  return t
+}
 
 /**
  * ترويسة صفحة موحّدة: عنوان + وصف + شارة «آخر تحديث» تلقائية (من بيانات المتجر).
@@ -7,7 +14,9 @@ import { useStocks } from '@/store'
  */
 export default function PageHeader({ title, children }: { title: ReactNode; children?: ReactNode }) {
   const { lastUpdated } = useStocks()
-  const days = lastUpdated ? Math.floor((Date.now() - new Date(lastUpdated).getTime()) / 86400000) : null
+  // لقطة زمنية تُؤخذ مرة واحدة عند التركيب (Date.now دالة غير نقية لا تُستدعى أثناء الـ render).
+  const mountNow = useMountTime()
+  const days = lastUpdated ? Math.floor((mountNow - new Date(lastUpdated).getTime()) / 86400000) : null
   const stale = days !== null && days > 3 // أكثر من 3 أيام (يستوعب عطلة نهاية الأسبوع)
   return (
     <div className="page-head">

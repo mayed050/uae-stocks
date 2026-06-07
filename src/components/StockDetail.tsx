@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Stock } from '../data'
 import { CAT_LABEL } from '../data'
 import { upcoming, isAlert } from '../lib'
@@ -18,14 +18,35 @@ function Row({ k, val }: { k: string; val: React.ReactNode }) {
   )
 }
 
+function readTheme(): 'dark' | 'light' {
+  return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
+}
+
 export default function StockDetail({ item, onClose }: { item: Stock; onClose: () => void }) {
   const { isInPortfolio, togglePortfolioStock } = usePortfolio()
   const added = isInPortfolio(item.sym)
+  const closeRef = useRef<HTMLButtonElement>(null)
 
+  // تتبّع السمة لحظياً ليُحدَّث مخطّط TradingView عند التبديل بين الفاتح والداكن
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => readTheme())
+  useEffect(() => {
+    const el = document.documentElement
+    const obs = new MutationObserver(() => setTheme(readTheme()))
+    obs.observe(el, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => obs.disconnect()
+  }, [])
+
+  // إغلاق بمفتاح Escape + قفل تمرير الخلفية + تركيز مبدئي على زر الإغلاق
   useEffect(() => {
     const h = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
     window.addEventListener('keydown', h)
-    return () => window.removeEventListener('keydown', h)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    closeRef.current?.focus()
+    return () => {
+      window.removeEventListener('keydown', h)
+      document.body.style.overflow = prevOverflow
+    }
   }, [onClose])
 
   const u = upcoming(item)
@@ -33,8 +54,14 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-x" onClick={onClose} aria-label="إغلاق">✕</button>
+      <div
+        className="modal"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`تفاصيل سهم ${item.name}`}
+      >
+        <button ref={closeRef} className="modal-x" onClick={onClose} aria-label="إغلاق">✕</button>
 
         <div className="modal-head">
           <Avatar sym={item.sym} size={56} />
@@ -50,14 +77,7 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
           <div className="modal-price">
             <div className="v">{item.price !== null ? item.price.toFixed(2) : NA}</div>
             {typeof item.change === 'number' && (
-              <div
-                style={{
-                  direction: 'ltr',
-                  fontWeight: 800,
-                  fontSize: 13,
-                  color: item.change > 0 ? 'var(--good)' : item.change < 0 ? 'var(--bad)' : 'var(--muted)',
-                }}
-              >
+              <div className={'modal-change ' + (item.change > 0 ? 'up' : item.change < 0 ? 'down' : 'flat')}>
                 {item.change > 0 ? '▲ +' : item.change < 0 ? '▼ ' : ''}
                 {Math.abs(item.change).toFixed(2)}% اليوم
               </div>
@@ -71,26 +91,10 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 10, margin: '14px 0 2px', justifyContent: 'flex-start' }}>
-          <button 
+        <div className="modal-actions">
+          <button
             className={`portfolio-toggle-btn ${added ? 'added' : ''}`}
             onClick={() => togglePortfolioStock(item.sym)}
-            style={{
-              padding: '7px 14px',
-              borderRadius: '10px',
-              border: '1px solid var(--line)',
-              background: added ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'var(--chip)',
-              color: added ? '#fff' : 'var(--txt)',
-              fontFamily: 'inherit',
-              fontWeight: 700,
-              fontSize: '12.5px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              transition: 'all 0.15s ease',
-              boxShadow: added ? 'var(--shadow)' : 'none'
-            }}
           >
             <span>{added ? '💼 مضاف للمحفظة (حذف 🗑️)' : '💼 أضف إلى المحفظة +'}</span>
           </button>
@@ -138,11 +142,11 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
             </div>
             {item.div.note && <div className="modal-tag">ℹ️ {item.div.note}</div>}
           </section>
-          <section className="modal-card wide" style={{ padding: '12px', minHeight: '380px' }}>
-            <h3 style={{ margin: '0 0 12px 0', fontSize: '15px' }}>📈 المخطط البياني الفني التفاعلي (TradingView)</h3>
+          <section className="modal-card wide chart">
+            <h3 className="modal-chart-h">📈 المخطط البياني الفني التفاعلي (TradingView)</h3>
             <iframe
-              src={`https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${(item.tradingview ?? `${item.ex}-${item.sym}`).replace('-', ':')}&interval=D&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=f1f3f6&theme=${document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'}&style=1&timezone=Exchange&locale=ar`}
-              style={{ width: '100%', height: '340px', border: 'none', borderRadius: '12px', background: 'var(--panel-solid)', display: 'block' }}
+              src={`https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${(item.tradingview ?? `${item.ex}-${item.sym}`).replace('-', ':')}&interval=D&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=f1f3f6&theme=${theme}&style=1&timezone=Exchange&locale=ar`}
+              className="modal-chart-frame"
               title={`مخطط أسعار ${item.name}`}
             />
           </section>
