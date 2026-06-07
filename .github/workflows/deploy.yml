@@ -21,6 +21,9 @@ concurrency:
 
 jobs:
   deploy:
+    # عند التشغيل عبر workflow_run، انشر فقط إذا نجح سير عمل تحديث البيانات
+    # (تبقى دفعات push و workflow_dispatch تعمل دائماً).
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

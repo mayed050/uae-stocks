@@ -12,7 +12,7 @@ export function parseISO(s: string | null | undefined): Date | null {
   if (!s) return null
   const m = String(s).match(/(\d{4})-(\d{2})-(\d{2})/)
   if (!m) return null
-  return new Date(+m[1], +m[2] - 1, +m[3])
+  return new Date(+m[1]!, +m[2]! - 1, +m[3]!)
 }
 
 export function daysUntil(d: Date | null): number | null {
@@ -36,14 +36,14 @@ export function upcoming(item: Stock): Upcoming | null {
     .filter((c): c is { d: Date; label: string; ps?: string | null; n: number } => c.n !== null && c.n >= 0)
     .sort((a, b) => a.n - b.n)
 
-  if (future.length) return { n: future[0].n, label: future[0].label, ps: future[0].ps }
+  if (future[0]) return { n: future[0].n, label: future[0].label, ps: future[0].ps }
 
   // ثانياً: إن لم يوجد مستقبلي، أعد آخر تاريخ منقضٍ مع علامة "تم الإيداع"
   const past = withDays
     .filter((c): c is { d: Date; label: string; ps?: string | null; n: number } => c.n !== null && c.n < 0)
     .sort((a, b) => b.n - a.n) // الأقرب للحاضر أولاً
 
-  if (past.length) {
+  if (past[0]) {
     return {
       n: past[0].n,
       label: 'تم الإيداع ✅',

@@ -62,8 +62,24 @@ export function getTechnicalData(s: Stock) {
   }
 }
 
+/** آخر N جلسة تداول (أيام عمل، تتخطّى السبت والأحد) بصيغة DD-MM-YYYY، الأحدث أولاً. */
+function lastTradingDays(count: number, from: Date = new Date()): string[] {
+  const out: string[] = []
+  const d = new Date(from)
+  while (out.length < count) {
+    const day = d.getDay() // 0=الأحد، 6=السبت — عطلة سوقي الإمارات (التداول الإثنين–الجمعة)
+    if (day !== 0 && day !== 6) {
+      const dd = String(d.getDate()).padStart(2, '0')
+      const mm = String(d.getMonth() + 1).padStart(2, '0')
+      out.push(`${dd}-${mm}-${d.getFullYear()}`)
+    }
+    d.setDate(d.getDate() - 1)
+  }
+  return out
+}
+
 /** صفوف تاريخية يومية مستقرة (آخر 7 جلسات) لتبويب «ملخص يومي». */
-export function generateHistoricalData(s: Stock) {
+export function generateDailySessions(s: Stock) {
   const symbol = s.sym.toUpperCase()
   const rand = seededRand(symbolSeed(symbol))
 
@@ -71,15 +87,8 @@ export function generateHistoricalData(s: Stock) {
   const rawMcap = parseAmount(s.mcap) ?? 5e9
   const mcapVal = rawMcap > 1e6 ? rawMcap / 1e9 : rawMcap
 
-  const dates = [
-    '28-05-2026',
-    '27-05-2026',
-    '26-05-2026',
-    '25-05-2026',
-    '22-05-2026',
-    '21-05-2026',
-    '20-05-2026'
-  ]
+  // تُشتقّ التواريخ من اليوم الحالي بدل تثبيتها يدويًا (كانت تتقادم مع الزمن).
+  const dates = lastTradingDays(7)
 
   let currentClose = basePrice
   const rows: {
@@ -87,7 +96,7 @@ export function generateHistoricalData(s: Stock) {
     volume: number; value: number; close: number; prevClose: number; change: number; changePct: number;
   }[] = []
 
-  for (let i = 0; i < dates.length; i++) {
+  for (const date of dates) {
     // محاكاة التغير اليومي
     const changePct = rand(3.2, -2.8) // -2.8% to +3.2%
     const change = Math.round((currentClose * (changePct / 100)) * 100) / 100
@@ -101,7 +110,7 @@ export function generateHistoricalData(s: Stock) {
     const trades = Math.round(volume * rand(0.00005, 0.00001)) + 5
 
     rows.push({
-      date: dates[i],
+      date,
       open,
       high,
       low,

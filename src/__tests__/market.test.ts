@@ -51,7 +51,7 @@ describe('generateHistoricalData', () => {
   it('عدد النقاط حسب الإطار الزمني وآخر سعر = السعر الحالي', () => {
     const h = generateHistoricalData('DEWA', '1W', 2.61)
     expect(h.data).toHaveLength(7)
-    expect(h.data[h.data.length - 1].price).toBeCloseTo(2.61)
+    expect(h.data[h.data.length - 1]!.price).toBeCloseTo(2.61)
   })
   it('الإطار غير المعروف يرجع 365 نقطة', () => {
     expect(generateHistoricalData('DEWA', 'ALL', 2.61).data).toHaveLength(365)

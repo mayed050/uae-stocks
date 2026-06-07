@@ -19,7 +19,7 @@ export default defineConfig({
     // الرئيسية وتحسين التخزين المؤقت في المتصفح — مع الإبقاء على الاستيراد الساكن.
     rolldownOptions: {
       output: {
-        advancedChunks: {
+        codeSplitting: {
           groups: [
             {
               name: 'charts',

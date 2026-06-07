@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { SEED } from '@/data'
 import type { Dataset, Stock } from '@/data'
@@ -103,8 +103,8 @@ export function StocksProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('dividend_goal', String(goal))
   }, [goal])
 
-  // دوال تعديل المحفظة
-  const addStock = (sym: string, defaultAmount = 10000) => {
+  // دوال تعديل المحفظة — مغلّفة بـ useCallback لتبقى مراجعها ثابتة بين عمليات الرسم
+  const addStock = useCallback((sym: string, defaultAmount = 10000) => {
     const stock = data.stocks.find(s => s.sym === sym)
     if (!stock) return
     const price = stock.price ?? 1.0
@@ -120,67 +120,66 @@ export function StocksProvider({ children }: { children: ReactNode }) {
         }
       ]
     })
-  }
+  }, [data])
 
-  const deleteStock = (sym: string) => {
+  const deleteStock = useCallback((sym: string) => {
     setPortfolio(prev => prev.filter(p => p.sym !== sym))
-  }
+  }, [])
 
-  const updateAmount = (sym: string, amt: number) => {
+  const updateAmount = useCallback((sym: string, amt: number) => {
     setPortfolio(prev => prev.map(p => {
       if (p.sym !== sym) return p
       const stock = data.stocks.find(s => s.sym === sym)
       const price = stock?.price ?? 1.0
       return { ...p, sym, amount: amt, shares: price > 0 ? amt / price : 0 }
     }))
-  }
+  }, [data])
 
-  const updateShares = (sym: string, shs: number) => {
+  const updateShares = useCallback((sym: string, shs: number) => {
     setPortfolio(prev => prev.map(p => {
       if (p.sym !== sym) return p
       const stock = data.stocks.find(s => s.sym === sym)
       const price = stock?.price ?? 1.0
       return { ...p, sym, amount: shs * price, shares: shs }
     }))
-  }
+  }, [data])
 
   // تحديث أساس التكلفة (إجمالي تكلفة الشراء) — لا يمسّ الكمية ولا القيمة السوقية
-  const updateCost = (sym: string, cost: number) => {
+  const updateCost = useCallback((sym: string, cost: number) => {
     setPortfolio(prev => prev.map(p => (p.sym === sym ? { ...p, cost } : p)))
-  }
+  }, [])
 
-  const isInPortfolio = (sym: string) => {
+  const isInPortfolio = useCallback((sym: string) => {
     return portfolio.some(p => p.sym === sym)
-  }
+  }, [portfolio])
 
-  const togglePortfolioStock = (sym: string) => {
+  const togglePortfolioStock = useCallback((sym: string) => {
     if (isInPortfolio(sym)) {
       deleteStock(sym)
     } else {
       addStock(sym)
     }
-  }
+  }, [isInPortfolio, deleteStock, addStock])
 
-  return (
-    <Ctx.Provider value={{
-      stocks: data.stocks,
-      lastUpdated: data.lastUpdated,
-      source: data.source,
-      loading,
-      portfolio,
-      goal,
-      setGoal,
-      addStock,
-      deleteStock,
-      updateAmount,
-      updateShares,
-      updateCost,
-      isInPortfolio,
-      togglePortfolioStock
-    }}>
-      {children}
-    </Ctx.Provider>
-  )
+  // قيمة السياق مُحفّظة — تتغيّر فقط عند تغيّر اعتماد فعلي، فلا يُعاد رسم كل المستهلكين بلا داعٍ
+  const value = useMemo<StoreValue>(() => ({
+    stocks: data.stocks,
+    lastUpdated: data.lastUpdated,
+    source: data.source,
+    loading,
+    portfolio,
+    goal,
+    setGoal,
+    addStock,
+    deleteStock,
+    updateAmount,
+    updateShares,
+    updateCost,
+    isInPortfolio,
+    togglePortfolioStock,
+  }), [data, loading, portfolio, goal, addStock, deleteStock, updateAmount, updateShares, updateCost, isInPortfolio, togglePortfolioStock])
+
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }
 
 export function useStocks() {

@@ -9,7 +9,7 @@ export function parseAmount(s: string | null | undefined): number | null {
   const direct = str.match(/([\d.,]+)\s*(مليار|مليون|ألف)\s*درهم/)
   const m = direct || str.match(/([\d.,]+)\s*(مليار|مليون|ألف)/) || str.match(/([\d.,]+)/)
   if (!m) return null
-  let num = parseFloat(m[1].replace(/,/g, ''))
+  let num = parseFloat((m[1] ?? '').replace(/,/g, ''))
   if (isNaN(num)) return null
   const unit = m[2]
   if (unit === 'مليار') num *= 1e9
@@ -26,14 +26,14 @@ export function parseGrowth(s: string | null | undefined): number | null {
   const m = String(s).match(/\(\s*([+−-]?)\s*(\d+(?:\.\d+)?)\s*[–-]?/)
   if (!m) return null
   const sign = m[1] === '-' || m[1] === '−' ? -1 : 1
-  return parseFloat(m[2]) * sign
+  return parseFloat(m[2] ?? '') * sign
 }
 
 /** العائد النقدي كرقم من نص مثل "~4.7% سنوي" أو "~7–8%". */
 export function parseYield(s: string | null | undefined): number | null {
   if (!s) return null
   const m = String(s).match(/(\d+(?:\.\d+)?)/)
-  return m ? parseFloat(m[1]) : null
+  return m ? parseFloat(m[1] ?? '') : null
 }
 
 /** صيغة مختصرة للأرقام الكبيرة بالدرهم. */
@@ -96,7 +96,7 @@ export function parseDivPs(s: string | null | undefined): number | null {
   const clean = s.replace(/~/g, '').trim()
   const m = clean.match(/(\d+(?:\.\d+)?)/)
   if (!m) return null
-  const val = parseFloat(m[1])
+  const val = parseFloat(m[1] ?? '')
   if (clean.includes('فلس')) {
     return val / 100
   }

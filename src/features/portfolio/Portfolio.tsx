@@ -75,14 +75,15 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
   const advisorOutput = useMemo(() => {
     if (items.length === 0) {
       return {
-        title: '🔮 الفارابي بانتظار إعداد المحفظة',
-        text: 'قم بالبحث وإضافة أسهم استثمارية وتعيين كمياتها أدناه، وسيقوم الفارابي فوراً بتحليل تنويعك القطاعي وعوائدك المرجحة وتقديم نصائح تخصيص أصول مخصصة وحقيقية.',
+        title: '🔮 بانتظار إعداد المحفظة',
+        text: 'أضِف أسهماً وعيّن كمياتها أدناه، وستظهر هنا قراءة وصفية لتنويعك القطاعي وعائدك المرجّح — لأغراض تثقيفية فقط، دون أي توصية بالشراء أو البيع.',
         rating: 'بانتظار البيانات'
       }
     }
 
-    let title = '🔮 مستشار المحفظة الذكي (الفارابي)'
-    let text = 'محفظتك تظهر أداءً متزناً، استمر في إعادة استثمار توزيعاتك لتشهد قوة الفائدة المركبة.'
+    // ملاحظات وصفية محايدة عن تركيبة المحفظة — ليست توصية استثمارية.
+    let title = '🔮 قراءة وصفية للمحفظة'
+    let text = 'تركيبة المحفظة تبدو متوازنة نسبياً عبر القطاعات. هذه قراءة وصفية لأغراض التثقيف فقط — تحقّق دائماً من المصادر الرسمية.'
     let rating = 'متوازنة'
 
     const maxSector = sectorData.length > 0 ? sectorData[0] : null
@@ -90,25 +91,25 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
     const companyCount = items.length
 
     if (companyCount === 1) {
-      title = '⚠️ تنبيه: تركز استثماري عالي الخطورة'
-      text = `تحتوي محفظتك حالياً على سهم شركة واحدة فقط وهي (${items[0].sym}). من الحكمة الاستثمارية لتأمين رأس مالك توزيع استثماراتك على 3 إلى 5 شركات في قطاعات مختلفة لتجنب مخاطر التذبذب الفردي المفاجئ.`
-      rating = 'مخاطر عالية'
+      title = '⚠️ ملاحظة: تركّز في سهم واحد'
+      text = `المحفظة مكوّنة حالياً من سهم واحد فقط (${items[0]?.sym}). من منظور تثقيفي عام، يقلّل توزيع الاستثمارات على عدّة شركات وقطاعات من أثر تذبذب سهم منفرد. هذه ملاحظة وصفية لا توصية.`
+      rating = 'تركّز مرتفع'
     } else if (maxSector && maxSectorPct > 55) {
-      title = '⚠️ تنبيه: تركز قطاعي مرتفع'
-      text = `تتركز استثماراتك بشكل كبير جداً بنسبة ${maxSectorPct.toFixed(1)}% في قطاع واحد وهو (${maxSector.name}). لتفادي أزمات القطاعات الفردية، ننصحك بتوجيه سيولتك الاستثمارية القادمة نحو قطاعات دفاعية ومستقرة أخرى مثل قطاع المرافق والخدمات أو قطاع الطاقة.`
-      rating = 'تركز مرتفع'
+      title = '⚠️ ملاحظة: تركّز قطاعي مرتفع'
+      text = `تتركّز ${maxSectorPct.toFixed(1)}% من المحفظة في قطاع واحد (${maxSector.name}). عموماً، يرتبط التركّز القطاعي العالي بحساسية أكبر لأحداث ذلك القطاع. قراءة وصفية لأغراض التثقيف فقط.`
+      rating = 'تركّز قطاعي'
     } else if (weightedYield < 4) {
-      title = '💡 توصية: تعزيز عائد توزيعات المحفظة'
-      text = `متوسط عائد توزيعات محفظتك المرجح الحالي (${weightedYield.toFixed(2)}%) يقل عن متوسط السوق الإماراتي البالغ 5.5%. ننصح بزيادة حصتك في أسهم ريادية ذات عوائد ممتازة (مثل إعمار العقارية، بنك دبي الإسلامي، أو أدنوك للتوزيع) لرفع التدفقات النقدية.`
+      title = '💡 ملاحظة: عائد توزيعات منخفض نسبياً'
+      text = `العائد المرجّح الحالي للمحفظة (${weightedYield.toFixed(2)}%) أقل من متوسط مرجعي للسوق الإماراتي يقارب 5.5%. هذه مقارنة وصفية لأغراض التثقيف فقط، وليست توصية بشراء أسهم بعينها.`
       rating = 'عائد منخفض'
     } else if (weightedYield > 8.5) {
-      title = '⚠️ تنبيه: عوائد محفظة مرتفعة وحساسة'
-      text = `عائد محفظتك المرجح مرتفع للغاية (${weightedYield.toFixed(2)}%). تذكر دوماً أن العوائد الفوق طبيعية ترتبط غالباً بمخاطر أعلى أو حساسية شديدة للدورات الاقتصادية (مثل أسهم العقارات). ننصح بدمج حصص مستقرة كحماية.`
-      rating = 'عوائد حساسة'
+      title = '⚠️ ملاحظة: عائد مرتفع وحسّاس'
+      text = `العائد المرجّح للمحفظة مرتفع (${weightedYield.toFixed(2)}%). عموماً، قد ترتبط العوائد المرتفعة جداً بمخاطر أعلى أو حساسية للدورات الاقتصادية. قراءة وصفية لا توصية.`
+      rating = 'عائد حسّاس'
     } else if (companyCount >= 3 && sectorData.length >= 2) {
-      title = '🎉 محفظة متوازنة وممتازة'
-      text = `أداء استثنائي مذهل! محفظتك متوازنة للغاية وموزعة بذكاء على قطاعات متعددة بعائد مرجح يبلغ (${weightedYield.toFixed(2)}%). نوصي بالاستمرار في استثمار مبالغ إضافية دورية وإعادة ضخ الأرباح لتفعيل أثر كرة الثلج الرائع.`
-      rating = 'متوازنة جداً'
+      title = '🎉 توزيع متوازن عبر القطاعات'
+      text = `المحفظة موزّعة على عدّة قطاعات بعائد مرجّح يبلغ ${weightedYield.toFixed(2)}%. هذه قراءة وصفية لتركيبة المحفظة لأغراض التثقيف فقط — دون أي توصية استثمارية.`
+      rating = 'متوازنة'
     }
 
     return { title, text, rating }
@@ -147,11 +148,11 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
 
       // نصف سنوي
       if (item.stock.div.freq === 'نصف سنوي' && payoutMonths.length === 1) {
-        payoutMonths.push((payoutMonths[0] + 6) % 12)
+        payoutMonths.push(((payoutMonths[0] ?? 0) + 6) % 12)
       }
       // ربعي
       if ((item.stock.div.freq === 'ربعي' || item.stock.div.ps?.includes('ربع')) && payoutMonths.length >= 1) {
-        const first = payoutMonths[0]
+        const first = payoutMonths[0] ?? 0
         payoutMonths.push((first + 3) % 12, (first + 6) % 12, (first + 9) % 12)
       }
 
@@ -159,19 +160,19 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
       if (uniqueMonths.length > 0) {
         const payoutPerActiveMonth = item.expectedAnnualDiv / uniqueMonths.length
         uniqueMonths.forEach(m => {
-          months[m] += payoutPerActiveMonth
+          months[m] = (months[m] ?? 0) + payoutPerActiveMonth
         })
       } else {
         // توزيع افتراضي بالتساوي على الـ 12 شهراً في حال لم يُحدد تاريخ
         months.forEach((_, m) => {
-          months[m] += item.expectedAnnualDiv / 12
+          months[m] = (months[m] ?? 0) + item.expectedAnnualDiv / 12
         })
       }
     })
 
     return MONTHS_AR.map((m, i) => ({
       name: m,
-      amount: Math.round(months[i])
+      amount: Math.round(months[i] ?? 0)
     }))
   }, [items])
 
@@ -419,6 +420,66 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
           margin-bottom: 0;
         }
         
+        /* تخطيطات مستخرَجة من الأنماط المضمّنة (inline) إلى أصناف */
+        .p-head-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-bottom:1px solid var(--line); padding-bottom:14px; margin-bottom:22px; }
+        .print-btn { background:linear-gradient(120deg, var(--brand), var(--brand2)); color:#fff; border:0; border-radius:10px; padding:9px 16px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; display:flex; align-items:center; gap:8px; box-shadow:var(--shadow); transition:transform .1s ease; }
+        .p-tabs { margin:4px 0 18px; }
+        .p-empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:60px 20px; text-align:center; background:var(--panel); border-radius:20px; border:1px dashed var(--line); margin:24px 0; }
+        .p-empty-icon { font-size:56px; }
+        .p-empty-title { font-weight:800; font-size:18px; margin-bottom:8px; }
+        .p-empty-text { color:var(--muted); font-size:13.5px; max-width:360px; line-height:1.7; }
+        .p-empty-cta { background:linear-gradient(120deg, var(--brand), var(--brand2)); color:#fff; padding:10px 22px; border-radius:12px; font-size:13.5px; font-weight:700; box-shadow:0 4px 16px rgba(58,160,255,0.3); animation:pulse-glow 2s infinite; }
+        .p-panel-mb { margin-bottom:20px; }
+        .p-goal-row { display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:space-between; }
+        .p-goal-col { flex:1; min-width:260px; }
+        .p-goal-label { margin:0; color:var(--muted); font-size:13.5px; }
+        .p-goal-meta { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); }
+        .p-goal-input-group { display:flex; align-items:center; gap:10px; }
+        .p-goal-input-group .lbl { font-size:13.5px; color:var(--muted); }
+        .p-goal-input-group .unit { font-size:13.5px; }
+        .p-goal-hint { margin-top:14px; font-size:13px; color:var(--muted2); }
+        .p-goal-hint.done { color:var(--good); font-weight:600; }
+        .drip-head { border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:18px; }
+        .drip-head .panel-h { margin:0; display:flex; align-items:center; gap:8px; }
+        .drip-head p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+        .drip-val { font-weight:700; }
+        .drip-val.brand { color:var(--brand); } .drip-val.good { color:var(--good); }
+        .drip-val.warn { color:var(--warn); } .drip-val.brand2 { color:var(--brand2); }
+        .drip-stats { margin:0 0 20px; }
+        .drip-chart-box { width:100%; height:320px; margin-top:14px; }
+        .drip-legend { display:flex; gap:20px; justify-content:center; font-size:12px; color:var(--muted); margin-top:8px; }
+        .drip-legend-item { display:inline-flex; align-items:center; gap:6px; }
+        .drip-legend-item i { width:12px; height:12px; border-radius:3px; display:inline-block; }
+        .p-controls-row { display:flex; flex-wrap:wrap; gap:16px; align-items:center; width:100%; justify-content:space-between; }
+        .p-dropdown-empty { padding:12px; color:var(--muted2); font-size:13px; text-align:center; }
+        .p-dropdown-name { color:var(--muted2); font-size:12px; flex:1; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; }
+        .p-dropdown-overlay { position:fixed; inset:0; z-index:90; }
+        .p-quick-add { width:220px; }
+        .p-summary-row { display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; margin-bottom:12px; }
+        .p-summary-metrics { display:flex; flex-wrap:wrap; gap:18px; font-size:13px; color:var(--muted); }
+        .p-summary-metrics b { color:var(--txt); }
+        .p-gain { direction:ltr; display:inline-block; }
+        .p-gain.up { color:var(--good); } .p-gain.down { color:var(--bad); }
+        .linkbtn { background:transparent; border:0; color:inherit; padding:0; font:inherit; cursor:pointer; text-align:right; }
+        .cell-gain { font-weight:700; direction:ltr; }
+        .cell-gain.up { color:var(--good); } .cell-gain.down { color:var(--bad); }
+        .cell-gain .pct { font-size:10.5px; color:var(--muted); display:block; }
+        .cell-div { font-weight:700; color:var(--good); }
+        .td-loading { text-align:center; padding:30px; }
+        .p-my24 { margin:24px 0; }
+        .p-search-full { width:100%; }
+        .sec-dot-brand2 { background:var(--brand2); }
+        .p-dropdown-sym { font-weight:600; }
+        .p-summary-metrics b.good { color:var(--good); }
+        .drip-legend-item i.drip { background:var(--brand2); }
+        .drip-legend-item i.cash { background:var(--muted2); }
+        .drip-stat-cash { background:rgba(255,255,255,0.02); }
+        .drip-stat-cash .n { color:#fff; font-size:22px; }
+        .drip-stat-drip { background:rgba(124,92,255,0.05); border:1px solid rgba(124,92,255,0.2); }
+        .drip-stat-drip .n { color:var(--brand2); font-size:22px; }
+        .drip-stat-gain { background:rgba(33,201,139,0.06); border:1px solid rgba(33,201,139,0.2); }
+        .drip-stat-gain .n { color:var(--good); font-size:22px; }
+
         @media print {
           /* إخفاء جميع العناصر التفاعلية وعناصر التنقل */
           .sidebar, .theme-toggle-floating, .p-search-container,
@@ -464,27 +525,11 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
         }
       `}</style>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', borderBottom: '1px solid var(--line)', paddingBottom: '14px', marginBottom: '22px' }}>
+      <div className="p-head-row">
         <PageHeader title="حاسبة محفظة التوزيعات الذكية">خطط وقم بمحاكاة أرباحك السنوية والشهرية بناءً على مبالغ استثمارك في الأسهم الإماراتية</PageHeader>
         <button
           onClick={() => window.print()}
           className="print-btn"
-          style={{
-            background: 'linear-gradient(120deg, var(--brand), var(--brand2))',
-            color: '#fff',
-            border: 0,
-            borderRadius: '10px',
-            padding: '9px 16px',
-            fontSize: '13px',
-            fontWeight: 700,
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            boxShadow: 'var(--shadow)',
-            transition: 'transform 0.1s ease'
-          }}
           title="حفظ طباعة التقرير الاستثماري للمحفظة كملف PDF"
         >
           <span>🖨️ تصدير التقرير (PDF)</span>
@@ -515,7 +560,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
 
       {/* شريط التبويب الداخلي */}
       {items.length > 0 && (
-        <div className="o-toggle-container" style={{ margin: '4px 0 18px' }}>
+        <div className="o-toggle-container p-tabs">
           <button className={'o-toggle-btn' + (tab === 'overview' ? ' active' : '')} onClick={() => setTab('overview')}>📋 نظرة عامة</button>
           <button className={'o-toggle-btn' + (tab === 'analytics' ? ' active' : '')} onClick={() => setTab('analytics')}>📈 التحليلات والمحاكاة</button>
         </div>
@@ -523,25 +568,15 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
 
       {/* حالة المحفظة الفارغة */}
       {items.length === 0 && (
-        <div style={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          gap: 20, padding: '60px 20px', textAlign: 'center',
-          background: 'var(--panel)', borderRadius: 20, border: '1px dashed var(--line)',
-          margin: '24px 0'
-        }}>
-          <div style={{ fontSize: 56 }}>📂</div>
+        <div className="p-empty-state">
+          <div className="p-empty-icon">📂</div>
           <div>
-            <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 8 }}>محفظتك فارغة</div>
-            <div style={{ color: 'var(--muted)', fontSize: 13.5, maxWidth: 360, lineHeight: 1.7 }}>
+            <div className="p-empty-title">محفظتك فارغة</div>
+            <div className="p-empty-text">
               ابحث عن أسهم في الحقل أدناه وأضفها لتبدأ في تتبع توزيعاتك وحساب دخلك الشهري المتوقع.
             </div>
           </div>
-          <div style={{
-            background: 'linear-gradient(120deg, var(--brand), var(--brand2))',
-            color: '#fff', padding: '10px 22px', borderRadius: 12,
-            fontSize: 13.5, fontWeight: 700,
-            boxShadow: '0 4px 16px rgba(58,160,255,0.3)', animation: 'pulse-glow 2s infinite'
-          }}>↓ ابحث عن سهم وأضفه أدناه</div>
+          <div className="p-empty-cta">↓ ابحث عن سهم وأضفه أدناه</div>
         </div>
       )}
 
@@ -552,38 +587,38 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
 
       {/* قسم تتبع الهدف المالي للمستثمر */}
       {tab === 'overview' && (
-      <div className="panel" style={{ marginBottom: 20 }}>
+      <div className="panel p-panel-mb">
         <h3 className="panel-h">🎯 مستهدف التوزيعات الشهري</h3>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ flex: 1, minWidth: 260 }}>
-            <p style={{ margin: 0, color: 'var(--muted)', fontSize: 13.5 }}>
+        <div className="p-goal-row">
+          <div className="p-goal-col">
+            <p className="p-goal-label">
               نسبة تحقيق المستهدف المالي الشهري:
             </p>
             <div className="p-progress-bar">
               <div className="p-progress-fill" style={{ width: `${progressPercent}%` }} />
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--muted)' }}>
+            <div className="p-goal-meta">
               <span>{Math.round(monthlyAverage).toLocaleString('en-US')} درهم / شهرياً</span>
               <span>{progressPercent}% من الهدف ({goal.toLocaleString('en-US')} درهم)</span>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 13.5, color: 'var(--muted)' }}>حدد هدفك الشهري:</span>
+          <div className="p-goal-input-group">
+            <span className="lbl">حدد هدفك الشهري:</span>
             <input
               type="number"
               className="p-input"
               value={goal || ''}
               onChange={(e) => setGoal(Math.max(0, parseFloat(e.target.value) || 0))}
             />
-            <span style={{ fontSize: 13.5 }}>درهم</span>
+            <span className="unit">درهم</span>
           </div>
         </div>
         {progressPercent < 100 ? (
-          <div style={{ marginTop: 14, fontSize: 13, color: 'var(--muted2)' }}>
+          <div className="p-goal-hint">
             💡 لسد الفجوة وتحقيق هدفك ({goal - Math.round(monthlyAverage)} درهم إضافي شهرياً)، تحتاج إلى استثمار ما يقارب <b>{Math.round(((goal - monthlyAverage) * 12) / (weightedYield > 0 ? weightedYield / 100 : 0.05)).toLocaleString('en-US')} درهم</b> في أسهم ذات عائد متوسط {weightedYield > 0 ? weightedYield.toFixed(1) : '5'}%.
           </div>
         ) : (
-          <div style={{ marginTop: 14, fontSize: 13, color: 'var(--good)', fontWeight: 600 }}>
+          <div className="p-goal-hint done">
             🎉 تهانينا! لقد تجاوزت أرباح محفظتك الشهرية مستهدفك المالي المخطط له!
           </div>
         )}
@@ -638,12 +673,12 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
 
       {/* ===================== محاكي DRIP التفاعلي المتقدم ===================== */}
       {items.length > 0 && tab === 'analytics' && (
-        <div className="panel" style={{ margin: '24px 0' }}>
-          <div style={{ borderBottom: '1px solid var(--line)', paddingBottom: '12px', marginBottom: '18px' }}>
-            <h3 className="panel-h" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="panel p-my24">
+          <div className="drip-head">
+            <h3 className="panel-h">
               ❄️ محاكي أثر إعادة استثمار الأرباح (DRIP Snowball Simulator)
             </h3>
-            <p style={{ margin: '4px 0 0', color: 'var(--muted)', fontSize: '13px' }}>
+            <p>
               شاهد كيف تنمو ثروتك ومحفظتك بشكل أسي على المدى الطويل عند إعادة استثمار أرباح الأسهم بدلاً من سحبها
             </p>
           </div>
@@ -653,7 +688,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
             <div className="drip-slider-box">
               <div className="drip-slider-header">
                 <span>⏳ أفق الاستثمار</span>
-                <span style={{ fontWeight: 700, color: 'var(--brand)' }}>{dripYears} سنة</span>
+                <span className="drip-val brand">{dripYears} سنة</span>
               </div>
               <input 
                 type="range" 
@@ -668,7 +703,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
             <div className="drip-slider-box">
               <div className="drip-slider-header">
                 <span>💵 مساهمة شهرية إضافية</span>
-                <span style={{ fontWeight: 700, color: 'var(--good)' }}>{dripMonthly.toLocaleString('en-US')} د.إ</span>
+                <span className="drip-val good">{dripMonthly.toLocaleString('en-US')} د.إ</span>
               </div>
               <input 
                 type="range" 
@@ -684,7 +719,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
             <div className="drip-slider-box">
               <div className="drip-slider-header">
                 <span>📈 نمو سعر الأسهم سنويًا</span>
-                <span style={{ fontWeight: 700, color: 'var(--warn)' }}>{dripPriceGrowth}%</span>
+                <span className="drip-val warn">{dripPriceGrowth}%</span>
               </div>
               <input 
                 type="range" 
@@ -700,7 +735,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
             <div className="drip-slider-box">
               <div className="drip-slider-header">
                 <span>💸 نمو التوزيعات سنويًا</span>
-                <span style={{ fontWeight: 700, color: 'var(--brand2)' }}>{dripDivGrowth}%</span>
+                <span className="drip-val brand2">{dripDivGrowth}%</span>
               </div>
               <input 
                 type="range" 
@@ -715,24 +750,21 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
           </div>
 
           {/* لوحة المؤشرات السريعة للمحاكاة */}
-          <div className="stats" style={{ margin: '0 0 20px' }}>
+          <div className="stats drip-stats">
             <StatCard
-              style={{ background: 'rgba(255, 255, 255, 0.02)' }}
-              valueStyle={{ color: '#fff', fontSize: '22px' }}
+              className="drip-stat-cash"
               value={`${finalCashWealth.toLocaleString('en-US')} درهم`}
               label="ثروة سحب الأرباح نقداً (Cash)"
               sub="توزيعات مسحوبة وغير مستثمرة"
             />
             <StatCard
-              style={{ background: 'rgba(124, 92, 255, 0.05)', border: '1px solid rgba(124, 92, 255, 0.2)' }}
-              valueStyle={{ color: 'var(--brand2)', fontSize: '22px' }}
+              className="drip-stat-drip"
               value={`${finalDripWealth.toLocaleString('en-US')} درهم`}
               label="ثروة إعادة الاستثمار (DRIP)"
               sub="توزيعات يعاد ضخها فورياً بالسوق"
             />
             <StatCard
-              style={{ background: 'rgba(33, 201, 139, 0.06)', border: '1px solid rgba(33, 201, 139, 0.2)' }}
-              valueStyle={{ color: 'var(--good)', fontSize: '22px' }}
+              className="drip-stat-gain"
               value={`+${snowballEffectValue.toLocaleString('en-US')} درهم`}
               label="🔥 عائد أثر كرة الثلج الإضافي"
               sub="مكاسب خالصة من قوة الفائدة المركبة"
@@ -740,7 +772,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
           </div>
 
           {/* الرسم البياني لنمو الثروة */}
-          <div style={{ width: '100%', height: 320, marginTop: 14 }}>
+          <div className="drip-chart-box">
             <ResponsiveContainer width="100%" height={320}>
               <AreaChart data={dripData} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
                 <defs>
@@ -784,13 +816,13 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
               </AreaChart>
             </ResponsiveContainer>
           </div>
-          <div style={{ display: 'flex', gap: 20, justifyContent: 'center', fontSize: '12px', color: 'var(--muted)', marginTop: '8px' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              <i style={{ width: 12, height: 12, borderRadius: 3, background: 'var(--brand2)', display: 'inline-block' }} /> 
+          <div className="drip-legend">
+            <span className="drip-legend-item">
+              <i className="drip" />
               المحفظة مع إعادة استثمار الأرباح (DRIP)
             </span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              <i style={{ width: 12, height: 12, borderRadius: 3, background: 'var(--muted2)', display: 'inline-block' }} /> 
+            <span className="drip-legend-item">
+              <i className="cash" />
               المحفظة مع سحب الأرباح نقداً (Cash)
             </span>
           </div>
@@ -799,12 +831,12 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
 
       {/* جدول إدارة المحفظة التفاعلي */}
       {tab === 'overview' && (<>
-      <h2 className="sec"><span className="dot" style={{ background: 'var(--brand2)' }} /> أصول المحفظة والحاسبة الآلية</h2>
+      <h2 className="sec"><span className="dot sec-dot-brand2" /> أصول المحفظة والحاسبة الآلية</h2>
 
       <div className="controls">
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
+        <div className="p-controls-row">
           <div className="p-search-container">
-            <div className="search" style={{ width: '100%' }}>
+            <div className="search p-search-full">
               <span>🔍</span>
               <input
                 placeholder="ابحث عن سهم لإضافته للمحفظة..."
@@ -816,13 +848,13 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
             {showDropdown && searchQuery && (
               <div className="p-dropdown">
                 {availableStocks.length === 0 ? (
-                  <div style={{ padding: 12, color: 'var(--muted2)', fontSize: 13, textAlign: 'center' }}>لا توجد نتائج مطابقة أو تم إضافة السهم بالفعل.</div>
+                  <div className="p-dropdown-empty">لا توجد نتائج مطابقة أو تم إضافة السهم بالفعل.</div>
                 ) : (
                   availableStocks.map(s => (
                     <button key={s.sym} className="p-dropdown-item" onClick={() => { addStock(s.sym); setSearchQuery(''); setShowDropdown(false); }}>
                       <Avatar sym={s.sym} size={24} />
-                      <span style={{ fontWeight: 600 }}>{s.sym}</span>
-                      <span style={{ color: 'var(--muted2)', fontSize: 12, flex: 1, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{s.name}</span>
+                      <span className="p-dropdown-sym">{s.sym}</span>
+                      <span className="p-dropdown-name">{s.name}</span>
                       <span className="exch">{s.ex}</span>
                     </button>
                   ))
@@ -830,14 +862,14 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
               </div>
             )}
             {showDropdown && (
-              <div 
-                style={{ position: 'fixed', inset: 0, zIndex: 90 }} 
+              <div
+                className="p-dropdown-overlay"
                 onClick={() => setShowDropdown(false)}
               />
             )}
           </div>
           {searchQuery === '' && availableStocks.length > 0 && (
-            <select style={{ width: 220 }} onChange={(e) => { if(e.target.value !== '') { addStock(e.target.value); }; e.target.value = '' }}>
+            <select className="p-quick-add" onChange={(e) => { if(e.target.value !== '') { addStock(e.target.value); }; e.target.value = '' }}>
               <option value="">أضف سهماً سريعا من القائمة...</option>
               {availableStocks.map(s => (
                 <option key={s.sym} value={s.sym}>{s.sym} — {s.name.split('—')[0]}</option>
@@ -848,12 +880,12 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
       </div>
 
       {items.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 18, fontSize: 13 }}>
-            <span style={{ color: 'var(--muted)' }}>القيمة السوقية: <b style={{ color: 'var(--txt)' }}>{Math.round(totalMarketValue).toLocaleString('en-US')}</b></span>
-            <span style={{ color: 'var(--muted)' }}>التكلفة: <b style={{ color: 'var(--txt)' }}>{Math.round(totalCost).toLocaleString('en-US')}</b></span>
-            <span style={{ color: 'var(--muted)' }}>ربح/خسارة: <b style={{ color: totalGain >= 0 ? 'var(--good)' : 'var(--bad)', direction: 'ltr', display: 'inline-block' }}>{totalGain >= 0 ? '+' : ''}{Math.round(totalGain).toLocaleString('en-US')} ({totalGainPct.toFixed(1)}%)</b></span>
-            <span style={{ color: 'var(--muted)' }}>العائد على التكلفة: <b style={{ color: 'var(--good)' }}>{yieldOnCost.toFixed(2)}%</b></span>
+        <div className="p-summary-row">
+          <div className="p-summary-metrics">
+            <span>القيمة السوقية: <b>{Math.round(totalMarketValue).toLocaleString('en-US')}</b></span>
+            <span>التكلفة: <b>{Math.round(totalCost).toLocaleString('en-US')}</b></span>
+            <span>ربح/خسارة: <b className={'p-gain ' + (totalGain >= 0 ? 'up' : 'down')}>{totalGain >= 0 ? '+' : ''}{Math.round(totalGain).toLocaleString('en-US')} ({totalGainPct.toFixed(1)}%)</b></span>
+            <span>العائد على التكلفة: <b className="good">{yieldOnCost.toFixed(2)}%</b></span>
           </div>
           <button
             className="chip"
@@ -861,7 +893,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
               `محفظتي-${new Date().toISOString().slice(0, 10)}`,
               ['السهم', 'الرمز', 'السوق', 'السعر الحالي', 'عدد الأسهم', 'التكلفة', 'القيمة السوقية', 'ربح/خسارة', 'العائد على التكلفة %', 'التوزيع السنوي المتوقع'],
               items.map((it) => [
-                it.stock.name.split('—')[0].trim(), it.sym, it.stock.ex,
+                (it.stock.name.split('—')[0] ?? '').trim(), it.sym, it.stock.ex,
                 it.price.toFixed(2), Math.round(it.shares), Math.round(it.cost),
                 Math.round(it.marketValue), Math.round(it.gain),
                 it.yieldOnCost.toFixed(2), Math.round(it.expectedAnnualDiv),
@@ -893,7 +925,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={10} style={{ textAlign: 'center', padding: '30px' }}>جاري تحميل البيانات...</td>
+                <td colSpan={10} className="td-loading">جاري تحميل البيانات...</td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
@@ -905,10 +937,9 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
               items.map((item) => (
                 <tr key={item.sym}>
                   <td>
-                    <button 
-                      className="cellname" 
+                    <button
+                      className="cellname linkbtn"
                       onClick={() => onOpen(item.stock)}
-                      style={{ background: 'transparent', border: 0, color: 'inherit', padding: 0, font: 'inherit', cursor: 'pointer', textAlign: 'right' }}
                     >
                       <Avatar sym={item.sym} size={28} />
                       <span>
@@ -945,11 +976,11 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
                       title="إجمالي ما دفعته لشراء هذه الحيازة"
                     />
                   </td>
-                  <td style={{ fontWeight: 700, direction: 'ltr', color: item.gain >= 0 ? 'var(--good)' : 'var(--bad)' }}>
+                  <td className={'cell-gain ' + (item.gain >= 0 ? 'up' : 'down')}>
                     {item.gain >= 0 ? '+' : ''}{Math.round(item.gain).toLocaleString('en-US')}
-                    <span style={{ fontSize: 10.5, color: 'var(--muted)', display: 'block' }}>({item.gainPct.toFixed(1)}%)</span>
+                    <span className="pct">({item.gainPct.toFixed(1)}%)</span>
                   </td>
-                  <td style={{ fontWeight: 700, color: 'var(--good)' }}>
+                  <td className="cell-div">
                     {Math.round(item.expectedAnnualDiv).toLocaleString('en-US')} درهم
                   </td>
                   <td>
