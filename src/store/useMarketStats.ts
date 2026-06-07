@@ -74,10 +74,10 @@ export function useMarketStats() {
     DATA.forEach((s) => {
       ;[s.div.exd, s.div.nextExd, s.div.pay, s.div.nextPay].forEach((d) => {
         const dt = parseISO(d ?? null)
-        if (dt) counts[dt.getMonth()]++
+        if (dt) { const mo = dt.getMonth(); counts[mo] = (counts[mo] ?? 0) + 1 }
       })
     })
-    return MONTHS_AR.map((m, i) => ({ m, count: counts[i] }))
+    return MONTHS_AR.map((m, i) => ({ m, count: counts[i] ?? 0 }))
   }, [DATA])
 
   const maxYield = useMemo(() => Math.max(...DATA.map(s => parseYield(s.div.yld) ?? 0)), [DATA])

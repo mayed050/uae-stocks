@@ -11,9 +11,9 @@ function load(): Promise<HistoryMap> {
   if (cache) return Promise.resolve(cache)
   if (!inflight) {
     inflight = fetch(`${import.meta.env.BASE_URL}history.json`, { cache: 'no-store' })
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('no history'))))
+      .then((r) => (r.ok ? (r.json() as Promise<{ history?: HistoryMap }>) : Promise.reject(new Error('no history'))))
       .then((j) => {
-        cache = (j?.history ?? {}) as HistoryMap
+        cache = j.history ?? {}
         return cache
       })
       .catch(() => {
@@ -29,7 +29,7 @@ export function useHistory(): HistoryMap {
   const [h, setH] = useState<HistoryMap>(cache ?? {})
   useEffect(() => {
     let alive = true
-    load().then((m) => {
+    void load().then((m) => {
       if (alive) setH(m)
     })
     return () => {

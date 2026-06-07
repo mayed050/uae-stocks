@@ -133,7 +133,8 @@ export function realHistory(points: [string, number][], timeframe: string, curre
       : dt.toLocaleDateString('ar-AE', { month: 'short', year: '2-digit' })
     return { date: label, price: c }
   })
-  if (data.length) data[data.length - 1].price = currentPrice
+  const lastPoint = data[data.length - 1]
+  if (lastPoint) lastPoint.price = currentPrice
   const prices = data.map((d) => d.price)
   const high = prices.length ? Math.max(...prices) : currentPrice
   const low = prices.length ? Math.min(...prices) : currentPrice
@@ -168,11 +169,11 @@ export function generateHistoricalData(sym: string, timeframe: string, currentPr
     price = price * (1 - changePct)
   }
 
-  data[data.length - 1].price = currentPrice
+  data[data.length - 1]!.price = currentPrice
   const prices = data.map(d => d.price)
   const high = Math.max(...prices)
   const low = Math.min(...prices)
-  const open = data[0].price
+  const open = data[0]!.price
   const close = currentPrice
   const change = close - open
   const changePct = (change / open) * 100

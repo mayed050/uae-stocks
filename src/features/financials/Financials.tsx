@@ -5,7 +5,7 @@ import { fmtAmount } from '@/format'
 import Avatar from '@/components/Avatar'
 import SimBadge from '@/components/ui/SimBadge'
 import PageHeader from '@/components/ui/PageHeader'
-import { getTechnicalData, generateHistoricalData } from './tradingSim'
+import { getTechnicalData, generateDailySessions } from './tradingSim'
 
 // تجميع التبويبات التسعة في 4 مجموعات لتقليل الحمل الإدراكي
 const TAB_GROUPS = {
@@ -33,7 +33,7 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
   // السهم النشط المختار للعرض التفصيلي
   const [selectedSym, setSelectedSym] = useState<string>(() => {
     const defaultStock = DATA.find(st => st.ex === 'DFM')
-    return defaultStock ? defaultStock.sym : DATA[0]?.sym
+    return defaultStock ? defaultStock.sym : (DATA[0]?.sym ?? '')
   })
 
   // المجموعة النشطة (4 مجموعات تضم التبويبات التسعة)
@@ -64,7 +64,7 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
   // البيانات التاريخية لتبويب ملخص يومي
   const historicalData = useMemo(() => {
     if (!currentStock) return []
-    return generateHistoricalData(currentStock)
+    return generateDailySessions(currentStock)
   }, [currentStock])
 
   // دالة تحميل ملف إكسل كـ CSV تفاعلي متوافق مع الحسابات العربية
@@ -92,7 +92,7 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.setAttribute('href', url)
-    link.setAttribute('download', `ملخص_يومي_${currentStock.sym}.csv`)
+    link.setAttribute('download', `ملخص_يومي_${currentStock?.sym ?? 'سهم'}.csv`)
     link.style.visibility = 'hidden'
     document.body.appendChild(link)
     link.click()

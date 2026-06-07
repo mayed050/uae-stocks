@@ -8,6 +8,7 @@ export default function StatCard({
   color,
   style,
   valueStyle,
+  className,
 }: {
   value: ReactNode
   label: ReactNode
@@ -15,9 +16,10 @@ export default function StatCard({
   color?: string
   style?: CSSProperties
   valueStyle?: CSSProperties
+  className?: string
 }) {
   return (
-    <div className="stat" style={style}>
+    <div className={'stat' + (className ? ' ' + className : '')} style={style}>
       <div className="n" style={{ ...(color ? { color } : {}), ...valueStyle }}>{value}</div>
       <div className="l">{label}</div>
       {sub != null && <div className="stat-sub">{sub}</div>}
