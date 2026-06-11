@@ -1,0 +1,307 @@
+/* أنماط صفحة النتائج المالية — مستخرَجة من وسم <style> المضمّن في Financials.tsx */
+
+.financials-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  width: 100%;
+  margin-top: 14px;
+}
+.financials-list-panel {
+  width: 300px;
+  flex: 0 0 300px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 780px;
+}
+.financials-detail-panel {
+  flex: 1;
+  min-width: 0;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.market-pill-container {
+  display: flex;
+  background: var(--chip);
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  width: 100%;
+}
+.market-pill-btn {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+  padding: 7px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+.market-pill-btn.active {
+  background: linear-gradient(135deg, #ff7b00, #ff4500);
+  color: #fff;
+}
+.search-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--txt);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 12.5px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-input:focus {
+  border-color: var(--brand);
+}
+.stock-scroll-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  flex: 1;
+  padding-left: 2px;
+}
+.stock-list-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--chip);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: right;
+}
+.stock-list-row:hover {
+  border-color: var(--brand);
+  background: var(--panel-solid);
+}
+.stock-list-row.active {
+  border-color: #ff6b00;
+  background: rgba(255, 107, 0, 0.05);
+}
+.detail-header-price-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 800;
+  direction: ltr;
+}
+.detail-header-price-badge.up {
+  background: rgba(33, 201, 139, 0.12);
+  color: var(--good);
+  border: 1px solid rgba(33, 201, 139, 0.2);
+}
+.detail-header-price-badge.down {
+  background: rgba(255, 90, 114, 0.12);
+  color: var(--bad);
+  border: 1px solid rgba(255, 90, 114, 0.2);
+}
+.financial-tabs-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  border-bottom: 2px solid var(--line);
+  padding-bottom: 4px;
+  overflow-x: auto;
+  width: 100%;
+}
+.financial-tab-btn {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.financial-tab-btn:hover {
+  color: var(--txt);
+  background: var(--chip);
+}
+.financial-tab-btn.active {
+  color: #ff6b00;
+  font-weight: 800;
+}
+.financial-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #ff6b00;
+  border-radius: 4px;
+}
+.metrics-quad-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+.metrics-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--chip);
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+.metric-cell {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  border-bottom: 1px dashed var(--line);
+  padding-bottom: 6px;
+}
+.metric-cell:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.metric-label {
+  color: var(--muted);
+  font-weight: 700;
+}
+.metric-value {
+  color: var(--txt);
+  font-weight: 800;
+}
+.disclosure-card {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--chip);
+  border: 1px solid var(--line);
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.summary-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 16px;
+}
+.summary-title-section {
+  text-align: right;
+}
+.summary-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--txt);
+  margin: 0;
+}
+.summary-subtitle {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 4px 0 0 0;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.excel-download-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #107c41;
+  color: #ffffff;
+  border: 0;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  direction: ltr;
+}
+.excel-download-btn:hover {
+  background: #0b592e;
+}
+.summary-table-container {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+}
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  text-align: center;
+}
+.summary-table th {
+  background: var(--chip);
+  color: var(--muted);
+  font-weight: 800;
+  padding: 12px 8px;
+  border-bottom: 2px solid var(--line);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.summary-table td {
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--line);
+  color: var(--txt);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.summary-table tr:last-child td {
+  border-bottom: 0;
+}
+.summary-table tr:hover td {
+  background: rgba(255, 107, 0, 0.02);
+}
+.change-badge-table {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 800;
+}
+.change-badge-table.up {
+  color: var(--good);
+}
+.change-badge-table.down {
+  color: var(--bad);
+}
+@media (max-width: 900px) {
+  .financials-layout {
+    flex-direction: column;
+  }
+  .financials-list-panel {
+    width: 100%;
+    flex: none;
+    max-height: 250px;
+  }
+}

@@ -6,6 +6,11 @@ import type { Stock } from '@/data'
 import { parseAmount } from '@/format'
 import { seededRand, symbolSeed } from '@/market'
 
+/** نوع بيانات اليوم الفنية — يُستخدم في مكوّنات التبويبات الفرعية. */
+export type TechnicalData = ReturnType<typeof getTechnicalData>
+/** صفّ جلسة تداول يومية في تبويب «ملخص يومي». */
+export type DailySessionRow = ReturnType<typeof generateDailySessions>[number]
+
 /** بيانات اليوم الفنية والطلبات/العروض والمدى السنوي لسهم. */
 export function getTechnicalData(s: Stock) {
   const symbol = s.sym.toUpperCase()
