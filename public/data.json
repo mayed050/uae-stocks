@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-06-23T14:46:36.267Z",
+  "lastUpdated": "2026-06-24T14:27:29.443Z",
   "source": "tradingview+yahoo",
   "stocks": [
     {
@@ -10,10 +10,10 @@
       "cat": "income",
       "yahoo": "DEWA.AE",
       "priceAuto": true,
-      "price": 2.85,
-      "asof": "2026-06-23",
-      "mcap": "143 مليار",
-      "pe": 16.3,
+      "price": 2.9,
+      "asof": "2026-06-24",
+      "mcap": "142 مليار",
+      "pe": 16.6,
       "eps": "0.17",
       "roe": "14%",
       "net": "9.09 مليار (+25.6%)",
@@ -29,11 +29,11 @@
         "freq": "نصف سنوي",
         "note": "التزام سنوي ~6.2 مليار درهم"
       },
-      "change": -0.7,
-      "open": 2.87,
-      "high": 2.88,
+      "change": 1.75,
+      "open": 2.85,
+      "high": 2.91,
       "low": 2.84,
-      "volume": 8727932
+      "volume": 13868107
     },
     {
       "sym": "EMIRATESNBD",
@@ -43,9 +43,9 @@
       "cat": "income",
       "yahoo": "EMIRATESNBD.AE",
       "priceAuto": true,
-      "price": 30.82,
-      "asof": "2026-06-23",
-      "mcap": "199 مليار",
+      "price": 30.8,
+      "asof": "2026-06-24",
+      "mcap": "194 مليار",
       "pe": 8.2,
       "eps": "3.71",
       "roe": "22%",
@@ -61,11 +61,11 @@
         "agm": "2026-02-17",
         "freq": "سنوي"
       },
-      "change": -2.41,
-      "open": 31.5,
-      "high": 31.5,
-      "low": 30.28,
-      "volume": 2314702
+      "change": -0.06,
+      "open": 30.92,
+      "high": 31.1,
+      "low": 30.46,
+      "volume": 2540241
     },
     {
       "sym": "DIB",
@@ -75,10 +75,10 @@
       "cat": "income",
       "yahoo": "DIB.AE",
       "priceAuto": true,
-      "price": 7.71,
-      "asof": "2026-06-23",
-      "mcap": "55.8 مليار",
-      "pe": 7.8,
+      "price": 7.63,
+      "asof": "2026-06-24",
+      "mcap": "55.6 مليار",
+      "pe": 7.7,
       "eps": "0.98",
       "roe": "16%",
       "net": "7.50 مليار",
@@ -93,11 +93,11 @@
         "agm": "2026-04-01",
         "freq": "سنوي"
       },
-      "change": -0.39,
-      "open": 7.75,
-      "high": 7.76,
-      "low": 7.68,
-      "volume": 3496562
+      "change": -1.04,
+      "open": 7.68,
+      "high": 7.78,
+      "low": 7.63,
+      "volume": 4678818
     },
     {
       "sym": "EMAAR",
@@ -107,9 +107,9 @@
       "cat": "growth",
       "yahoo": "EMAAR.AE",
       "priceAuto": true,
-      "price": 12.6,
-      "asof": "2026-06-23",
-      "mcap": "114 مليار",
+      "price": 12.56,
+      "asof": "2026-06-24",
+      "mcap": "111 مليار",
       "pe": 5.9,
       "eps": "2.14",
       "roe": "21%",
@@ -126,11 +126,11 @@
         "freq": "سنوي",
         "note": "توزيع مرتفع حساس للدورة العقارية"
       },
-      "change": -2.33,
-      "open": 12.88,
-      "high": 12.92,
-      "low": 12.48,
-      "volume": 28162957
+      "change": -0.32,
+      "open": 12.62,
+      "high": 12.7,
+      "low": 12.46,
+      "volume": 21925353
     },
     {
       "sym": "DU",
@@ -141,8 +141,8 @@
       "yahoo": "DU.AE",
       "priceAuto": true,
       "price": 11.5,
-      "asof": "2026-06-23",
-      "mcap": "51.6 مليار",
+      "asof": "2026-06-24",
+      "mcap": "52 مليار",
       "pe": 17.3,
       "eps": "0.64",
       "roe": "19%",
@@ -158,11 +158,11 @@
         "agm": "2026-03-30",
         "freq": "سنوي"
       },
-      "change": 0.88,
-      "open": 11.4,
-      "high": 11.56,
-      "low": 11.36,
-      "volume": 2342789
+      "change": 0,
+      "open": 11.54,
+      "high": 11.6,
+      "low": 11.48,
+      "volume": 1695166
     },
     {
       "sym": "SALIK",
@@ -172,10 +172,10 @@
       "cat": "growth",
       "yahoo": "SALIK.AE",
       "priceAuto": true,
-      "price": 5.8,
-      "asof": "2026-06-23",
-      "mcap": "44.1 مليار",
-      "pe": 28,
+      "price": 6,
+      "asof": "2026-06-24",
+      "mcap": "43.4 مليار",
+      "pe": 29,
       "eps": "0.20",
       "roe": "42%",
       "net": "1.55 مليار (+33%)",
@@ -191,11 +191,11 @@
         "freq": "نصف سنوي",
         "note": "إجمالي سنوي ~22 فلس"
       },
-      "change": -1.53,
-      "open": 5.93,
+      "change": 3.45,
+      "open": 5.8,
       "high": 6,
       "low": 5.8,
-      "volume": 3532064
+      "volume": 7066516
     },
     {
       "sym": "TALABAT",
@@ -205,10 +205,10 @@
       "cat": "risk",
       "yahoo": "TALABAT.AE",
       "priceAuto": true,
-      "price": 1.24,
-      "asof": "2026-06-23",
-      "mcap": "29.1 مليار",
-      "pe": 13.3,
+      "price": 1.25,
+      "asof": "2026-06-24",
+      "mcap": "28.8 مليار",
+      "pe": 13.5,
       "eps": "0.08",
       "roe": "24%",
       "net": "1.67 مليار",
@@ -224,11 +224,11 @@
         "freq": "سنوي",
         "note": "إدراج حديث بالبورصة"
       },
-      "change": -0.8,
-      "open": 1.25,
+      "change": 0.81,
+      "open": 1.24,
       "high": 1.25,
-      "low": 1.22,
-      "volume": 25330577
+      "low": 1.23,
+      "volume": 41185683
     },
     {
       "sym": "EMPOWER",
@@ -238,10 +238,10 @@
       "cat": "income",
       "yahoo": "EMPOWER.AE",
       "priceAuto": true,
-      "price": 1.66,
-      "asof": "2026-06-23",
-      "mcap": "16.7 مليار",
-      "pe": 15.7,
+      "price": 1.68,
+      "asof": "2026-06-24",
+      "mcap": "16.6 مليار",
+      "pe": 15.9,
       "eps": "0.10",
       "roe": "14%",
       "net": "1.004 مليار (+10.5%)",
@@ -256,11 +256,11 @@
         "agm": "2026-03-28",
         "freq": "نصف سنوي"
       },
-      "change": -0.6,
+      "change": 1.2,
       "open": 1.67,
-      "high": 1.67,
-      "low": 1.64,
-      "volume": 2908531
+      "high": 1.68,
+      "low": 1.65,
+      "volume": 4889826
     },
     {
       "sym": "TECOM",
@@ -270,10 +270,10 @@
       "cat": "growth",
       "yahoo": "TECOM.AE",
       "priceAuto": true,
-      "price": 3.52,
-      "asof": "2026-06-23",
-      "mcap": "18 مليار",
-      "pe": 8.3,
+      "price": 3.6,
+      "asof": "2026-06-24",
+      "mcap": "17.6 مليار",
+      "pe": 8.5,
       "eps": "0.21",
       "roe": "12%",
       "net": "1.04 مليار",
@@ -288,11 +288,11 @@
         "agm": "2026-03-10",
         "freq": "سنوي"
       },
-      "change": -2.22,
-      "open": 3.49,
-      "high": 3.54,
-      "low": 3.46,
-      "volume": 66362
+      "change": 2.27,
+      "open": 3.52,
+      "high": 3.6,
+      "low": 3.47,
+      "volume": 135410
     },
     {
       "sym": "AIRARABIA",
@@ -302,10 +302,10 @@
       "cat": "income",
       "yahoo": "AIRARABIA.AE",
       "priceAuto": true,
-      "price": 5.67,
-      "asof": "2026-06-23",
-      "mcap": "27 مليار",
-      "pe": 16.8,
+      "price": 5.6,
+      "asof": "2026-06-24",
+      "mcap": "26.4 مليار",
+      "pe": 16.6,
       "eps": "0.32",
       "roe": "18%",
       "net": "1.50 مليار (+15%)",
@@ -320,11 +320,11 @@
         "agm": "2026-03-28",
         "freq": "سنوي"
       },
-      "change": -2.24,
-      "open": 5.8,
-      "high": 5.8,
-      "low": 5.63,
-      "volume": 4776921
+      "change": -1.23,
+      "open": 5.67,
+      "high": 5.69,
+      "low": 5.6,
+      "volume": 3253041
     },
     {
       "sym": "DTC",
@@ -334,10 +334,10 @@
       "cat": "growth",
       "yahoo": "DTC.AE",
       "priceAuto": true,
-      "price": 2.38,
-      "asof": "2026-06-23",
-      "mcap": "6 مليار",
-      "pe": 18.4,
+      "price": 2.33,
+      "asof": "2026-06-24",
+      "mcap": "5.9 مليار",
+      "pe": 18,
       "eps": "0.14",
       "roe": "22%",
       "net": "345 مليون (+21%)",
@@ -352,11 +352,11 @@
         "agm": "2026-04-12",
         "freq": "نصف سنوي"
       },
-      "change": -1.65,
-      "open": 2.4,
-      "high": 2.41,
-      "low": 2.36,
-      "volume": 2884873
+      "change": -2.1,
+      "open": 2.38,
+      "high": 2.38,
+      "low": 2.32,
+      "volume": 3205547
     },
     {
       "sym": "EMAARDEV",
@@ -366,10 +366,10 @@
       "cat": "growth",
       "yahoo": "EMAARDEV.AE",
       "priceAuto": true,
-      "price": 14.48,
-      "asof": "2026-06-23",
-      "mcap": "60.1 مليار",
-      "pe": 4.7,
+      "price": 14.2,
+      "asof": "2026-06-24",
+      "mcap": "57.8 مليار",
+      "pe": 4.6,
       "eps": "1.65",
       "roe": "32%",
       "net": "6.60 مليار (+42%)",
@@ -384,11 +384,11 @@
         "agm": "2026-04-20",
         "freq": "سنوي"
       },
-      "change": -3.85,
-      "open": 15.16,
-      "high": 15.16,
-      "low": 14.44,
-      "volume": 5682075
+      "change": -1.93,
+      "open": 14.5,
+      "high": 14.56,
+      "low": 14.2,
+      "volume": 5859412
     },
     {
       "sym": "DFM",
@@ -399,8 +399,8 @@
       "yahoo": "DFM.AE",
       "priceAuto": true,
       "price": 1.53,
-      "asof": "2026-06-23",
-      "mcap": "12.5 مليار",
+      "asof": "2026-06-24",
+      "mcap": "12.2 مليار",
       "pe": 12,
       "eps": "0.04",
       "roe": "4%",
@@ -416,11 +416,11 @@
         "agm": "2026-03-15",
         "freq": "سنوي"
       },
-      "change": -1.92,
-      "open": 1.57,
-      "high": 1.57,
-      "low": 1.52,
-      "volume": 2499319
+      "change": 0,
+      "open": 1.54,
+      "high": 1.55,
+      "low": 1.53,
+      "volume": 536971
     },
     {
       "sym": "MASHREQ",
@@ -430,8 +430,8 @@
       "cat": "income",
       "yahoo": "MASQ.AE",
       "priceAuto": true,
-      "price": 257,
-      "asof": "2026-06-23",
+      "price": 255,
+      "asof": "2026-06-24",
       "mcap": "40.5 مليار",
       "pe": 4.7,
       "eps": "43.00",
@@ -448,11 +448,11 @@
         "agm": "2026-02-22",
         "freq": "سنوي"
       },
-      "change": -0.39,
-      "open": 257,
-      "high": 261.1,
-      "low": 257,
-      "volume": 704
+      "change": -0.78,
+      "open": 258,
+      "high": 260,
+      "low": 254,
+      "volume": 350
     },
     {
       "sym": "DIC",
@@ -462,10 +462,10 @@
       "cat": "income",
       "yahoo": "DIC.AE",
       "priceAuto": true,
-      "price": 3.75,
-      "asof": "2026-06-23",
-      "mcap": "16.1 مليار",
-      "pe": 10.3,
+      "price": 3.8,
+      "asof": "2026-06-24",
+      "mcap": "15.9 مليار",
+      "pe": 10.4,
       "eps": "0.26",
       "roe": "11%",
       "net": "1.10 مليار (ثابت)",
@@ -480,11 +480,11 @@
         "agm": "2026-04-12",
         "freq": "نصف سنوي"
       },
-      "change": -1.32,
-      "open": 3.8,
-      "high": 3.84,
-      "low": 3.74,
-      "volume": 3586553
+      "change": 1.33,
+      "open": 3.75,
+      "high": 3.81,
+      "low": 3.75,
+      "volume": 1559619
     },
     {
       "sym": "GFH",
@@ -494,10 +494,10 @@
       "cat": "income",
       "yahoo": "GFH.AE",
       "priceAuto": true,
-      "price": 2.18,
-      "asof": "2026-06-23",
+      "price": 2.14,
+      "asof": "2026-06-24",
       "mcap": "8.2 مليار",
-      "pe": 14.6,
+      "pe": 14.3,
       "eps": "0.026",
       "roe": "9%",
       "net": "380 مليون (+12%)",
@@ -512,11 +512,11 @@
         "agm": "2026-03-20",
         "freq": "سنوي"
       },
-      "change": 0,
-      "open": 2.18,
-      "high": 2.18,
-      "low": 2.15,
-      "volume": 251808
+      "change": -1.83,
+      "open": 2.15,
+      "high": 2.17,
+      "low": 2.14,
+      "volume": 613835
     },
     {
       "sym": "ALANSARI",
@@ -526,8 +526,8 @@
       "cat": "income",
       "yahoo": "ALANSARI.AE",
       "priceAuto": true,
-      "price": 0.958,
-      "asof": "2026-06-23",
+      "price": 0.954,
+      "asof": "2026-06-24",
       "mcap": "7.2 مليار",
       "pe": 19.4,
       "eps": "0.066",
@@ -544,11 +544,11 @@
         "agm": "2026-04-02",
         "freq": "نصف سنوي"
       },
-      "change": -0.1,
-      "open": 0.946,
-      "high": 0.96,
-      "low": 0.946,
-      "volume": 19299
+      "change": -0.42,
+      "open": 0.948,
+      "high": 0.959,
+      "low": 0.948,
+      "volume": 11880
     },
     {
       "sym": "SPINNEYS",
@@ -558,10 +558,10 @@
       "cat": "growth",
       "yahoo": "SPINNEYS.AE",
       "priceAuto": true,
-      "price": 1.26,
-      "asof": "2026-06-23",
+      "price": 1.25,
+      "asof": "2026-06-24",
       "mcap": "4.5 مليار",
-      "pe": 13.2,
+      "pe": 13.1,
       "eps": "0.076",
       "roe": "28%",
       "net": "290 مليون (+18%)",
@@ -576,11 +576,11 @@
         "agm": "2026-05-10",
         "freq": "نصف سنوي"
       },
-      "change": 0.8,
-      "open": 1.25,
-      "high": 1.26,
-      "low": 1.24,
-      "volume": 8167797
+      "change": -0.79,
+      "open": 1.26,
+      "high": 1.27,
+      "low": 1.25,
+      "volume": 545408
     },
     {
       "sym": "PARKINS",
@@ -590,8 +590,8 @@
       "cat": "growth",
       "yahoo": "PARKIN.AE",
       "priceAuto": true,
-      "price": 5.97,
-      "asof": "2026-06-23",
+      "price": 6,
+      "asof": "2026-06-24",
       "mcap": "9.06 مليار",
       "pe": 34.3,
       "eps": "0.088",
@@ -608,11 +608,11 @@
         "agm": "2026-04-05",
         "freq": "نصف سنوي"
       },
-      "change": 1.02,
-      "open": 5.94,
-      "high": 5.97,
-      "low": 5.88,
-      "volume": 995863
+      "change": 0.5,
+      "open": 5.97,
+      "high": 6,
+      "low": 5.96,
+      "volume": 924368
     },
     {
       "sym": "AMANAT",
@@ -623,7 +623,7 @@
       "yahoo": "AMANAT.AE",
       "priceAuto": true,
       "price": 1.34,
-      "asof": "2026-06-23",
+      "asof": "2026-06-24",
       "mcap": "3.3 مليار",
       "pe": 15.1,
       "eps": "0.065",
@@ -643,8 +643,8 @@
       "change": 0,
       "open": 1.34,
       "high": 1.35,
-      "low": 1.33,
-      "volume": 2567600
+      "low": 1.32,
+      "volume": 1942070
     },
     {
       "sym": "FAB",
@@ -655,10 +655,10 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-FAB",
-      "price": 18.04,
-      "asof": "2026-06-23",
-      "mcap": "200 مليار",
-      "pe": 9.8,
+      "price": 17.8,
+      "asof": "2026-06-24",
+      "mcap": "199 مليار",
+      "pe": 9.7,
       "eps": "1.90",
       "roe": "14%",
       "net": "21.1 مليار (+24%)",
@@ -673,11 +673,11 @@
         "agm": "2026-02-28",
         "freq": "سنوي"
       },
-      "change": -0.77,
-      "open": 18.18,
-      "high": 18.22,
-      "low": 17.82,
-      "volume": 3873813
+      "change": -1.33,
+      "open": 18.04,
+      "high": 18.16,
+      "low": 17.8,
+      "volume": 4997679
     },
     {
       "sym": "ADCB",
@@ -688,10 +688,10 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-ADCB",
-      "price": 15.16,
-      "asof": "2026-06-23",
-      "mcap": "119 مليار",
-      "pe": 10,
+      "price": 15.04,
+      "asof": "2026-06-24",
+      "mcap": "120 مليار",
+      "pe": 9.9,
       "eps": "1.05",
       "roe": "15%",
       "net": "11.4 مليار (+22%)",
@@ -706,11 +706,11 @@
         "agm": "2026-03-03",
         "freq": "سنوي"
       },
-      "change": 0.93,
-      "open": 15,
-      "high": 15.18,
-      "low": 14.82,
-      "volume": 5895344
+      "change": -0.79,
+      "open": 15.18,
+      "high": 15.4,
+      "low": 15.04,
+      "volume": 6202142
     },
     {
       "sym": "ADIB",
@@ -721,9 +721,9 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-ADIB",
-      "price": 21.52,
-      "asof": "2026-06-23",
-      "mcap": "79.2 مليار",
+      "price": 21.4,
+      "asof": "2026-06-24",
+      "mcap": "78 مليار",
       "pe": 12.1,
       "eps": "1.74",
       "roe": "18%",
@@ -739,11 +739,11 @@
         "agm": "2026-03-05",
         "freq": "سنوي"
       },
-      "change": -1.47,
-      "open": 21.8,
+      "change": -0.56,
+      "open": 21.48,
       "high": 21.84,
-      "low": 21.46,
-      "volume": 4933302
+      "low": 21.4,
+      "volume": 3288607
     },
     {
       "sym": "ADNIC",
@@ -754,10 +754,10 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-ADNIC",
-      "price": 7.28,
-      "asof": "2026-06-23",
+      "price": 7.24,
+      "asof": "2026-06-24",
       "mcap": "4.1 مليار",
-      "pe": 9.2,
+      "pe": 9.1,
       "eps": "0.83",
       "roe": "12%",
       "net": "422 مليون",
@@ -772,11 +772,11 @@
         "agm": "2026-04-02",
         "freq": "سنوي"
       },
-      "change": 0,
-      "open": 7.32,
-      "high": 7.32,
-      "low": 7.25,
-      "volume": 16955
+      "change": -0.55,
+      "open": 7.28,
+      "high": 7.28,
+      "low": 7.24,
+      "volume": 6220
     },
     {
       "sym": "EAND",
@@ -787,8 +787,8 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-EAND",
-      "price": 19.54,
-      "asof": "2026-06-23",
+      "price": 19.58,
+      "asof": "2026-06-24",
       "mcap": "170 مليار",
       "pe": 14.3,
       "eps": "1.32",
@@ -807,11 +807,11 @@
         "nextExd": "2026-08-10",
         "nextPay": "2026-08-25"
       },
-      "change": -0.2,
-      "open": 19.56,
-      "high": 19.62,
-      "low": 19.38,
-      "volume": 2225333
+      "change": 0.2,
+      "open": 19.52,
+      "high": 19.7,
+      "low": 19.36,
+      "volume": 3835375
     },
     {
       "sym": "ADNOCGAS",
@@ -822,10 +822,10 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-ADNOCGAS",
-      "price": 3.46,
-      "asof": "2026-06-23",
+      "price": 3.43,
+      "asof": "2026-06-24",
       "mcap": "265 مليار",
-      "pe": 14.5,
+      "pe": 14.3,
       "eps": "0.24",
       "roe": "16%",
       "net": "19.1 مليار",
@@ -842,11 +842,11 @@
         "nextExd": "2026-08-20",
         "nextPay": "2026-09-10"
       },
-      "change": 0,
-      "open": 3.46,
-      "high": 3.46,
+      "change": -0.87,
+      "open": 3.45,
+      "high": 3.47,
       "low": 3.43,
-      "volume": 16843938
+      "volume": 53360352
     },
     {
       "sym": "ADNOCDIST",
@@ -857,10 +857,10 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-ADNOCDIST",
-      "price": 4,
-      "asof": "2026-06-23",
-      "mcap": "49.7 مليار",
-      "pe": 17.1,
+      "price": 3.99,
+      "asof": "2026-06-24",
+      "mcap": "49.9 مليار",
+      "pe": 17,
       "eps": "0.22",
       "roe": "21%",
       "net": "2.79 مليار (+15%)",
@@ -875,11 +875,11 @@
         "agm": "2026-03-25",
         "freq": "ربعي"
       },
-      "change": 0.5,
-      "open": 3.98,
-      "high": 4,
-      "low": 3.96,
-      "volume": 6053553
+      "change": -0.25,
+      "open": 4,
+      "high": 4.04,
+      "low": 3.99,
+      "volume": 18800130
     },
     {
       "sym": "ADNOCDRILL",
@@ -890,10 +890,10 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-ADNOCDRILL",
-      "price": 5.94,
-      "asof": "2026-06-23",
+      "price": 5.9,
+      "asof": "2026-06-24",
       "mcap": "94.9 مليار",
-      "pe": 17.8,
+      "pe": 17.7,
       "eps": "0.32",
       "roe": "20%",
       "net": "5.32 مليار (+11%)",
@@ -908,11 +908,11 @@
         "agm": "2026-04-02",
         "freq": "ربعي"
       },
-      "change": 0,
+      "change": -0.67,
       "open": 5.94,
       "high": 6.02,
-      "low": 5.84,
-      "volume": 13857117
+      "low": 5.9,
+      "volume": 13733215
     },
     {
       "sym": "NMDCENR",
@@ -923,10 +923,10 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-NMDCENR",
-      "price": 3,
-      "asof": "2026-06-23",
-      "mcap": "14.9 مليار",
-      "pe": 10.2,
+      "price": 2.96,
+      "asof": "2026-06-24",
+      "mcap": "15 مليار",
+      "pe": 10.1,
       "eps": "0.31",
       "roe": "15%",
       "net": "1.60 مليار (+14%)",
@@ -941,11 +941,11 @@
         "agm": "2026-04-05",
         "freq": "سنوي"
       },
-      "change": 0.33,
-      "open": 2.98,
-      "high": 3.01,
-      "low": 2.98,
-      "volume": 1359122
+      "change": -1.33,
+      "open": 2.99,
+      "high": 3,
+      "low": 2.96,
+      "volume": 1037284
     },
     {
       "sym": "IHC",
@@ -956,10 +956,10 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-IHC",
-      "price": 386,
-      "asof": "2026-06-23",
-      "mcap": "843 مليار",
-      "pe": 33.3,
+      "price": 385,
+      "asof": "2026-06-24",
+      "mcap": "845 مليار",
+      "pe": 33.2,
       "eps": "14.20",
       "roe": "19%",
       "net": "32.90 مليار (+18%)",
@@ -974,11 +974,11 @@
         "agm": null,
         "freq": "سنوي"
       },
-      "change": 0.26,
-      "open": 385.1,
-      "high": 387,
+      "change": -0.26,
+      "open": 386.8,
+      "high": 386.9,
       "low": 385,
-      "volume": 208760
+      "volume": 217598
     },
     {
       "sym": "TAQA",
@@ -989,10 +989,10 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-TAQA",
-      "price": 2.64,
-      "asof": "2026-06-23",
+      "price": 2.63,
+      "asof": "2026-06-24",
       "mcap": "296 مليار",
-      "pe": 39.8,
+      "pe": 39.6,
       "eps": "0.14",
       "roe": "14%",
       "net": "16.60 مليار (+21%)",
@@ -1007,11 +1007,11 @@
         "agm": "2026-04-02",
         "freq": "ربعي"
       },
-      "change": 0,
-      "open": 2.63,
+      "change": -0.38,
+      "open": 2.64,
       "high": 2.64,
       "low": 2.62,
-      "volume": 3211989
+      "volume": 2821923
     },
     {
       "sym": "ALDAR",
@@ -1022,10 +1022,10 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-ALDAR",
-      "price": 8.74,
-      "asof": "2026-06-23",
-      "mcap": "69.4 مليار",
-      "pe": 8.7,
+      "price": 8.66,
+      "asof": "2026-06-24",
+      "mcap": "68.6 مليار",
+      "pe": 8.6,
       "eps": "0.56",
       "roe": "12%",
       "net": "4.40 مليار (+40%)",
@@ -1040,11 +1040,11 @@
         "agm": "2026-04-05",
         "freq": "سنوي"
       },
-      "change": -1.13,
-      "open": 8.83,
-      "high": 8.93,
-      "low": 8.67,
-      "volume": 22994565
+      "change": -0.92,
+      "open": 8.74,
+      "high": 8.77,
+      "low": 8.66,
+      "volume": 13840877
     },
     {
       "sym": "ALPHADHABI",
@@ -1055,10 +1055,10 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-ALPHADHABI",
-      "price": 8.02,
-      "asof": "2026-06-23",
-      "mcap": "80.4 مليار",
-      "pe": 8.2,
+      "price": 8.16,
+      "asof": "2026-06-24",
+      "mcap": "80.1 مليار",
+      "pe": 8.3,
       "eps": "1.30",
       "roe": "17%",
       "net": "13.30 مليار (+22%)",
@@ -1073,11 +1073,11 @@
         "agm": null,
         "freq": "سنوي"
       },
-      "change": -0.37,
-      "open": 8.04,
-      "high": 8.1,
-      "low": 7.8,
-      "volume": 11676609
+      "change": 1.75,
+      "open": 8.03,
+      "high": 8.23,
+      "low": 8,
+      "volume": 12791487
     },
     {
       "sym": "ADNOCLS",
@@ -1088,10 +1088,10 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-ADNOCLS",
-      "price": 5.93,
-      "asof": "2026-06-23",
-      "mcap": "44 مليار",
-      "pe": 13.9,
+      "price": 5.97,
+      "asof": "2026-06-24",
+      "mcap": "43.8 مليار",
+      "pe": 14,
       "eps": "0.26",
       "roe": "21%",
       "net": "1.92 مليار (+35%)",
@@ -1106,11 +1106,11 @@
         "agm": "2026-05-02",
         "freq": "نصف سنوي"
       },
-      "change": -0.5,
-      "open": 5.96,
-      "high": 5.99,
-      "low": 5.89,
-      "volume": 6389755
+      "change": 0.67,
+      "open": 5.93,
+      "high": 6.07,
+      "low": 5.92,
+      "volume": 18622112
     },
     {
       "sym": "MULTIPLY",
@@ -1122,8 +1122,8 @@
       "priceAuto": true,
       "tradingview": "ADX-2POINTZERO",
       "price": 2.27,
-      "asof": "2026-06-23",
-      "mcap": "78 مليار",
+      "asof": "2026-06-24",
+      "mcap": "78.3 مليار",
       "pe": 7.6,
       "eps": "0.12",
       "roe": "9%",
@@ -1139,11 +1139,11 @@
         "agm": null,
         "freq": "سنوي"
       },
-      "change": 0.44,
-      "open": 2.27,
+      "change": 0,
+      "open": 2.26,
       "high": 2.28,
-      "low": 2.23,
-      "volume": 8118845
+      "low": 2.25,
+      "volume": 2901518
     },
     {
       "sym": "BOROUGE",
@@ -1154,10 +1154,10 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-BOROUGE",
-      "price": 2.55,
-      "asof": "2026-06-23",
-      "mcap": "76.8 مليار",
-      "pe": 21.5,
+      "price": 2.56,
+      "asof": "2026-06-24",
+      "mcap": "76.5 مليار",
+      "pe": 21.6,
       "eps": "0.12",
       "roe": "15%",
       "net": "3.70 مليار (+12%)",
@@ -1172,11 +1172,11 @@
         "agm": "2026-04-12",
         "freq": "نصف سنوي"
       },
-      "change": -0.39,
+      "change": 0.39,
       "open": 2.55,
       "high": 2.57,
       "low": 2.54,
-      "volume": 4575319
+      "volume": 19042424
     },
     {
       "sym": "WAHAT",
@@ -1187,9 +1187,9 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-WAHA",
-      "price": 1.9,
-      "asof": "2026-06-23",
-      "mcap": "3.9 مليار",
+      "price": 1.93,
+      "asof": "2026-06-24",
+      "mcap": "3.8 مليار",
       "pe": 3.6,
       "eps": "0.18",
       "roe": "11%",
@@ -1205,11 +1205,11 @@
         "agm": "2026-04-02",
         "freq": "سنوي"
       },
-      "change": -2.06,
-      "open": 1.93,
-      "high": 1.94,
+      "change": 1.58,
+      "open": 1.89,
+      "high": 1.93,
       "low": 1.89,
-      "volume": 1655377
+      "volume": 1477505
     },
     {
       "sym": "DANA",
@@ -1220,10 +1220,10 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-DANA",
-      "price": 0.943,
-      "asof": "2026-06-23",
+      "price": 0.945,
+      "asof": "2026-06-24",
       "mcap": "6.6 مليار",
-      "pe": 11.1,
+      "pe": 11.2,
       "eps": "0.08",
       "roe": "8%",
       "net": "580 مليون (-10%)",
@@ -1238,11 +1238,11 @@
         "agm": "2026-05-10",
         "freq": "نصف سنوي"
       },
-      "change": 0.11,
+      "change": 0.21,
       "open": 0.945,
-      "high": 0.951,
-      "low": 0.935,
-      "volume": 15447499
+      "high": 0.946,
+      "low": 0.937,
+      "volume": 6354018
     },
     {
       "sym": "BURJEEL",
@@ -1253,10 +1253,10 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-BURJEEL",
-      "price": 1.16,
-      "asof": "2026-06-23",
-      "mcap": "6.1 مليار",
-      "pe": 12.4,
+      "price": 1.17,
+      "asof": "2026-06-24",
+      "mcap": "6 مليار",
+      "pe": 12.5,
       "eps": "0.10",
       "roe": "24%",
       "net": "540 مليون (+52%)",
@@ -1271,11 +1271,11 @@
         "agm": "2026-05-05",
         "freq": "نصف سنوي"
       },
-      "change": -0.85,
-      "open": 1.17,
-      "high": 1.19,
+      "change": 0.86,
+      "open": 1.16,
+      "high": 1.18,
       "low": 1.16,
-      "volume": 4888334
+      "volume": 2572158
     },
     {
       "sym": "PHOENIX",
@@ -1286,9 +1286,9 @@
       "yahoo": null,
       "priceAuto": true,
       "tradingview": "ADX-PHX",
-      "price": 0.686,
-      "asof": "2026-06-23",
-      "mcap": "4.2 مليار",
+      "price": 0.681,
+      "asof": "2026-06-24",
+      "mcap": "4.1 مليار",
       "pe": 18,
       "eps": "0.06",
       "roe": "15%",
@@ -1304,11 +1304,11 @@
         "agm": null,
         "freq": "سنوي"
       },
-      "change": -1.58,
-      "open": 0.699,
-      "high": 0.705,
-      "low": 0.675,
-      "volume": 3941363
+      "change": -0.73,
+      "open": 0.686,
+      "high": 0.694,
+      "low": 0.68,
+      "volume": 1689500
     }
   ]
 }
