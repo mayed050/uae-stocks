@@ -1,4 +1,4 @@
-import type { z } from 'zod'
+import type * as z from 'zod/mini'
 import type { DatasetSchema, DividendSchema, IndexQuoteSchema, StockSchema } from './schema'
 import seed from './seed.json'
 
