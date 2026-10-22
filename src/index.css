@@ -480,3 +480,26 @@ th.sortable:hover{color:var(--txt)}
 .skeleton-pulse {
   animation: skeleton-pulse 1.8s infinite ease-in-out;
 }
+
+/* ===== جدول المستكشف (TanStack Table) ===== */
+.sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
+.sort-btn{display:inline-flex; align-items:center; gap:5px; background:none; border:0; padding:0; font:inherit; color:inherit; cursor:pointer}
+.sort-btn svg{opacity:.45}
+.sort-btn.active{color:var(--txt)}
+.sort-btn.active svg{opacity:1; color:var(--brand)}
+.cell-link{color:inherit; text-decoration:none}
+.cell-link:hover .cn-name{text-decoration:underline}
+.chg{font-weight:700; color:var(--muted)}
+.chg.up{color:var(--good)}
+.chg.down{color:var(--bad)}
+.grid-iconbtn{background:transparent; border:0; cursor:pointer; padding:4px 8px; color:var(--muted); display:inline-flex; border-radius:8px}
+.grid-iconbtn:hover{background:var(--chip); color:var(--txt)}
+.col-menu{position:relative; display:inline-block; margin-bottom:10px}
+.col-menu summary{list-style:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700;
+  color:var(--muted); background:var(--chip); border:1px solid var(--line); border-radius:10px; padding:6px 12px}
+.col-menu summary::-webkit-details-marker{display:none}
+.col-menu[open] summary{color:var(--txt); border-color:var(--brand)}
+.col-menu-list{position:absolute; z-index:20; inset-inline-start:0; margin-top:6px; min-width:190px; background:var(--panel-solid);
+  border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); padding:8px; display:grid; gap:2px}
+.col-menu-list label{display:flex; align-items:center; gap:8px; font-size:13px; padding:6px 8px; border-radius:8px; cursor:pointer}
+.col-menu-list label:hover{background:var(--chip)}

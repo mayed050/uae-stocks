@@ -1,7 +1,6 @@
 import { Search, X, Table2, LayoutGrid, BriefcaseBusiness, Plus, ListFilter } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearch } from '@tanstack/react-router'
-import { CAT_LABEL } from '@/data'
 import type { Stock } from '@/data'
 import { useStocks, usePortfolio } from '@/store'
 import { parseYield, parseAmount } from '@/format'
@@ -11,6 +10,7 @@ import { cell } from '@/components/ui/cell'
 import StatCard from '@/components/ui/StatCard'
 import PageHeader from '@/components/ui/PageHeader'
 import { SECTOR_TITLES, mapDFMSectorToDb } from '@/data/sectors'
+import ScreenerGrid from './ScreenerGrid'
 import type { DisplayMode, ScreenerSearch, SortKey } from '@/search'
 
 const defaultDir = (k: SortKey): 1 | -1 => (k === 'name' ? 1 : -1)
@@ -110,14 +110,6 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
     return groups
   }, [rows])
 
-  function toggleSort(k: SortKey) {
-    const next: 1 | -1 = sort === k ? (dir === 1 ? -1 : 1) : defaultDir(k)
-    update({
-      sort: k === 'mcap' ? undefined : k,
-      dir: next === defaultDir(k) ? undefined : next === 1 ? 'asc' : 'desc',
-    })
-  }
-  const arrow = (k: SortKey) => (sort === k ? (dir === 1 ? ' ▲' : ' ▼') : '')
 
   // ملخّص حيّ للنتائج المطابقة للفلتر الحالي (يتحدّث تلقائياً)
   const summary = useMemo(() => {
@@ -209,67 +201,18 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
           </div>
 
           {displayMode === 'list' ? (
-            <div className="tablewrap">
-              <table className="screener">
-                <thead>
-                  <tr>
-                    <th className="sortable" onClick={() => toggleSort('name')}>السهم{arrow('name')}</th>
-                    <th>السوق</th>
-                    <th className="sortable" onClick={() => toggleSort('price')}>السعر{arrow('price')}</th>
-                    <th className="sortable" onClick={() => toggleSort('change')}>التغيّر اليومي{arrow('change')}</th>
-                    <th className="sortable" onClick={() => toggleSort('pe')}>P/E{arrow('pe')}</th>
-                    <th>EPS</th>
-                    <th className="sortable" onClick={() => toggleSort('mcap')}>القيمة السوقية{arrow('mcap')}</th>
-                    <th>صافي الربح</th>
-                    <th className="sortable" onClick={() => toggleSort('yield')}>العائد{arrow('yield')}</th>
-                    <th>التصنيف</th>
-                    <th>المحفظة</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((s) => (
-                    <tr key={s.sym} onClick={() => onOpen(s)} className="rowlink">
-                      <td>
-                        <span className="cellname">
-                          <Avatar sym={s.sym} size={30} />
-                          <span>
-                            <span className="cn-name">{s.name}</span>
-                            <span className="cn-sym">{s.sym}</span>
-                          </span>
-                        </span>
-                      </td>
-                      <td><span className={'exch ex-' + s.ex}>{s.ex}</span></td>
-                      <td>{cell(s.price !== null ? s.price.toFixed(2) : null)}</td>
-                      <td style={{ direction: 'ltr', fontWeight: 700, color: typeof s.change === 'number' ? (s.change > 0 ? 'var(--good)' : s.change < 0 ? 'var(--bad)' : 'var(--muted)') : 'var(--muted2)' }}>
-                        {typeof s.change === 'number' ? `${s.change > 0 ? '▲ +' : s.change < 0 ? '▼ ' : ''}${Math.abs(s.change).toFixed(2)}%` : '—'}
-                      </td>
-                      <td>{cell(s.pe)}</td>
-                      <td>{cell(s.eps)}</td>
-                      <td>{cell(s.mcap)}</td>
-                      <td>{cell(s.net)}</td>
-                      <td>{cell(s.div.yld)}</td>
-                      <td><span className={'ribbon cat-' + s.cat}>{CAT_LABEL[s.cat]}</span></td>
-                      <td onClick={(e) => e.stopPropagation()}>
-                        <button 
-                          onClick={() => togglePortfolioStock(s.sym)}
-                          style={{
-                            background: 'transparent',
-                            border: 0,
-                            cursor: 'pointer',
-                            fontSize: '15px',
-                            padding: '4px 8px',
-                            transition: 'transform 0.12s ease'
-                          }}
-                          title={isInPortfolio(s.sym) ? 'إزالة من المحفظة' : 'إضافة إلى المحفظة +'}
-                        >
-                          {isInPortfolio(s.sym) ? <BriefcaseBusiness size={16} color="var(--brand)" aria-hidden /> : <Plus size={16} aria-hidden />}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <ScreenerGrid
+              rows={rows}
+              sort={sort}
+              desc={dir === -1}
+              onOpen={onOpen}
+              onSort={(k, desc) =>
+                update({
+                  sort: k === 'mcap' ? undefined : k,
+                  dir: (desc ? -1 : 1) === defaultDir(k) ? undefined : desc ? 'desc' : 'asc',
+                })
+              }
+            />
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
               {sectorGroups.map(group => (
