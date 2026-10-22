@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { symColor } from '../format'
-import { TRADINGVIEW_LOGO_MAP, EMOJI_MAP } from '@/data/logos'
+import { TRADINGVIEW_LOGO_MAP } from '@/data/logos'
 
 export default function Avatar({ sym, size = 40 }: { sym: string; size?: number }) {
   const cleanSym = sym.replace(/\d+$/, '').toUpperCase()
   const logoUrl = TRADINGVIEW_LOGO_MAP[cleanSym]
-  const emoji = EMOJI_MAP[cleanSym] || '🏢'
   
   const [imgFailed, setImgFailed] = useState(false)
 
@@ -47,12 +46,10 @@ export default function Avatar({ sym, size = 40 }: { sym: string; size?: number 
     )
   }
 
-  // في حال فشل تحميل الصورة أو عدم توافر دومين، يعرض الإيموجي المناسب
+  // عند تعذّر الشعار: حرفان من الرمز على لون ثابت مشتق منه (نمط المنصات المالية الاحترافية)
   return (
-    <span className="avatar" style={avatarStyle} aria-label={sym} title={sym}>
-      <span style={{ fontSize: size * 0.48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {emoji}
-      </span>
+    <span className="avatar" style={{ ...avatarStyle, fontSize: size * 0.34, letterSpacing: '0.02em' }} aria-label={sym} title={sym}>
+      {cleanSym.slice(0, 2)}
     </span>
   )
 }

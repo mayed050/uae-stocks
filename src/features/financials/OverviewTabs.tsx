@@ -1,3 +1,4 @@
+import { Download } from 'lucide-react'
 import type { Stock } from '@/data'
 import { fmtAmount } from '@/format'
 import type { TechnicalData, DailySessionRow } from './tradingSim'
@@ -152,7 +153,7 @@ export default function OverviewTabs({
         <div className="summary-header-container">
           <button onClick={handleExcelDownload} className="excel-download-btn">
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '14px' }}>📥</span>
+              <Download size={14} className="ico" aria-hidden />
               تحميل اكسل
             </span>
           </button>
@@ -165,7 +166,7 @@ export default function OverviewTabs({
 
         {/* الجزء النصي التلقائي للملخص الفوري اليومي للسهم */}
         <div style={{ padding: '14px 16px', background: 'var(--chip)', borderRadius: '10px', border: '1px solid var(--line)', fontSize: '13px', lineHeight: '1.6', color: 'var(--txt)', textAlign: 'right' }}>
-          <b style={{ color: '#ff6b00', display: 'block', marginBottom: '6px', fontSize: '14px' }}>📝 نظرة تداولية سريعة لـ {stock.sym}</b>
+          <b style={{ color: '#ff6b00', display: 'block', marginBottom: '6px', fontSize: '14px' }}>نظرة تداولية سريعة لـ {stock.sym}</b>
           يتداول سهم {stock.name.split('—')[0]} اليوم بمدى تذبذب يبلغ {(tech.high - tech.low).toFixed(3)} د.إ بين أدنى سعر مسجل عند {tech.low.toFixed(3)} د.إ وأعلى سعر عند {tech.high.toFixed(3)} د.إ.
           شهدت الجلسة زخم تداول كلي بقيمة تداول بلغت {fmtAmount(tech.value)} د.إ موزعة على {tech.trades.toLocaleString()} صفقة منفذة بنجاح.
           يظهر السهم حالياً مستويات سيولة قوية مع اتجاه طلبات متوازن يدعم استقرار الحركة الفنية للسهم ضمن النطاقات الأفقية المعتادة.

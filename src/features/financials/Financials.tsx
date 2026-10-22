@@ -59,7 +59,7 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
   return (
     <div className="view" style={{ direction: 'rtl' }}>
       {/* ترويسة الصفحة العامة */}
-      <PageHeader title="📊 النتائج والتقارير المالية المفصلة">
+      <PageHeader title="النتائج والتقارير المالية المفصلة">
         استعراض شامل وتحليل فني وتداولي لـ {DATA.length} شركة مدرجة في أسواق المال الإماراتية
       </PageHeader>
 

@@ -1,3 +1,4 @@
+import { X, RefreshCw, PenLine, BriefcaseBusiness, ChartCandlestick, AlarmClock, Info } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import type { Stock } from '../data'
 import { CAT_LABEL } from '../data'
@@ -61,7 +62,7 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
         aria-modal="true"
         aria-label={`تفاصيل سهم ${item.name}`}
       >
-        <button ref={closeRef} className="modal-x" onClick={onClose} aria-label="إغلاق">✕</button>
+        <button ref={closeRef} className="modal-x" onClick={onClose} aria-label="إغلاق"><X size={18} aria-hidden /></button>
 
         <div className="modal-head">
           <Avatar sym={item.sym} size={56} />
@@ -85,7 +86,7 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
             <div className="c">
               درهم · {item.asof ?? NA}
               <span className={'src-badge ' + (item.priceAuto ? 'auto' : 'manual')}>
-                {item.priceAuto ? '⟳ آلي' : '✎ يدوي'}
+                {item.priceAuto ? <><RefreshCw size={11} className="ico" aria-hidden /> آلي</> : <><PenLine size={11} className="ico" aria-hidden /> يدوي</>}
               </span>
             </div>
           </div>
@@ -96,13 +97,13 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
             className={`portfolio-toggle-btn ${added ? 'added' : ''}`}
             onClick={() => togglePortfolioStock(item.sym)}
           >
-            <span>{added ? '💼 مضاف للمحفظة (حذف 🗑️)' : '💼 أضف إلى المحفظة +'}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><BriefcaseBusiness size={16} className="ico" aria-hidden />{added ? 'مضاف للمحفظة (اضغط للحذف)' : 'أضف إلى المحفظة'}</span>
           </button>
         </div>
 
         {u && isAlert(u) && (
           <div className="modal-alert">
-            ⏰ {u.label}{' '}
+            <AlarmClock size={14} className="ico" aria-hidden /> {u.label}{' '}
             {u.n === null ? '(التاريخ لم يُعلن بعد)' : `— خلال ${u.n} يوم`}
             {u.ps ? ` · ${u.ps}` : ''}
           </div>
@@ -140,10 +141,10 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
               {item.div.nextExd && <Row k="استبعاد الشريحة القادمة" val={v(item.div.nextExd)} />}
               {item.div.nextPay && <Row k="دفع الشريحة القادمة" val={v(item.div.nextPay)} />}
             </div>
-            {item.div.note && <div className="modal-tag">ℹ️ {item.div.note}</div>}
+            {item.div.note && <div className="modal-tag"><Info size={13} className="ico" aria-hidden /> {item.div.note}</div>}
           </section>
           <section className="modal-card wide chart">
-            <h3 className="modal-chart-h">📈 المخطط البياني الفني التفاعلي (TradingView)</h3>
+            <h3 className="modal-chart-h"><ChartCandlestick size={16} className="ico" aria-hidden /> المخطط البياني الفني التفاعلي (TradingView)</h3>
             <iframe
               src={`https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${(item.tradingview ?? `${item.ex}-${item.sym}`).replace('-', ':')}&interval=D&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=f1f3f6&theme=${theme}&style=1&timezone=Exchange&locale=ar`}
               className="modal-chart-frame"

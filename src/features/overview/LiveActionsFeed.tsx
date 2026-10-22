@@ -1,3 +1,4 @@
+import { Bell, Building2, Clock } from 'lucide-react'
 import type { Stock } from '@/data'
 import Avatar from '@/components/Avatar'
 
@@ -23,7 +24,7 @@ export default function LiveActionsFeed({
   return (
     <div className="o-widget" style={{ marginTop: '10px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--line)', paddingBottom: '8px', marginBottom: '12px' }}>
-        <h4 className="o-widget-h" style={{ margin: 0, border: 0, padding: 0 }}>🔔 إجراءات وأحداث الشركات</h4>
+        <h4 className="o-widget-h" style={{ margin: 0, border: 0, padding: 0 }}><Bell size={16} className="ico" aria-hidden /> إجراءات وأحداث الشركات</h4>
         <span className="live-badge-pulse" title="عرض توضيحي لإجراءات الشركات يتجدّد تلقائياً — أمثلة محاكاة وليست إفصاحات رسمية لحظية. تأكّد من المصادر الرسمية (DFM / ADX).">
           <span className="pulse-dot" />
           عرض تجريبي
@@ -55,7 +56,7 @@ export default function LiveActionsFeed({
                 {realStock ? (
                   <Avatar sym={realStock.sym} size={20} />
                 ) : (
-                  <span style={{ fontSize: '12px' }}>🏢</span>
+                  <Building2 size={14} className="ico" aria-hidden />
                 )}
                 <span style={{ fontWeight: 800, fontSize: '11.5px', color: 'var(--txt)' }}>
                   {realStock ? realStock.name.split('—')[0] : act.sym}
@@ -79,7 +80,7 @@ export default function LiveActionsFeed({
               </p>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9.5px', color: 'var(--muted2)', marginTop: '4px', borderTop: '1px dashed var(--line)', paddingTop: '4px' }}>
-                <span>🕒 {act.time}</span>
+                <span><Clock size={11} className="ico" aria-hidden /> {act.time}</span>
                 <span>{realStock ? `رمز السهم: ${realStock.sym}` : ''}</span>
               </div>
             </div>

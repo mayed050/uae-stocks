@@ -46,7 +46,7 @@ export function upcoming(item: Stock): Upcoming | null {
   if (past[0]) {
     return {
       n: past[0].n,
-      label: 'تم الإيداع ✅',
+      label: 'تم الإيداع',
       ps: item.div.ps,
       payHint: item.div.pay ?? undefined
     }

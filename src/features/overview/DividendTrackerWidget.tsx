@@ -1,11 +1,14 @@
+import { CalendarDays, CalendarPlus, BriefcaseBusiness, ArrowUpLeft } from 'lucide-react'
 import { useState, useMemo } from 'react'
 import type { Stock } from '@/data'
 import type { Upcoming } from '@/lib'
 import type { View } from '@/components/Sidebar'
 import { usePortfolio } from '@/store'
 import Avatar from '@/components/Avatar'
+import { dividendEvents, buildIcs } from '@/calendar'
+import { exportIcs } from '@/export'
 
-/** متتبع توزيعات الأرباح الجانبي: فلتر (الكل / محفظتي)، خط زمني للمراحل، وزر تذكير بإشعار toast. */
+/** متتبع توزيعات الأرباح الجانبي: فلتر (الكل / محفظتي)، خط زمني للمراحل، وتصدير المواعيد إلى التقويم (.ics). */
 export default function DividendTrackerWidget({
   alertRows,
   onOpen,
@@ -40,7 +43,7 @@ export default function DividendTrackerWidget({
   return (
     <div className="o-widget">
       <div className="o-widget-head">
-        <h4 className="o-widget-h">📅 متتبع توزيعات الأرباح</h4>
+        <h4 className="o-widget-h"><CalendarDays size={16} className="ico" aria-hidden /> متتبع توزيعات الأرباح</h4>
 
         {/* شريط الفلتر (الكل مقابل محفظتي) */}
         <div className="o-filter-tabs">
@@ -54,7 +57,7 @@ export default function DividendTrackerWidget({
             onClick={(e) => { e.stopPropagation(); setTrackerFilter('portfolio') }}
             className={'o-filter-tab' + (trackerFilter === 'portfolio' ? ' active' : '')}
           >
-            محفظتي 💼
+            <BriefcaseBusiness size={13} className="ico" aria-hidden /> محفظتي
           </button>
         </div>
       </div>
@@ -72,14 +75,15 @@ export default function DividendTrackerWidget({
             if (daysLeft === null) {
               countdownBadge = <span className="o-cd exp">متوقع</span>
             } else if (daysLeft === 0) {
-              countdownBadge = <span className="o-cd today">اليوم! 🎉</span>
+              countdownBadge = <span className="o-cd today">اليوم</span>
             } else if (daysLeft < 7) {
-              countdownBadge = <span className="o-cd soon">باقي {daysLeft} أيام ⏳</span>
+              countdownBadge = <span className="o-cd soon">باقي {daysLeft} أيام</span>
             } else {
               countdownBadge = <span className="o-cd future">بعد {daysLeft} يوم</span>
             }
 
             const divValueStr = s.div.ps ?? 'غير معلن'
+            const calEvents = dividendEvents(s)
 
             return (
               <div
@@ -139,15 +143,19 @@ export default function DividendTrackerWidget({
                   </div>
                 </div>
 
-                {/* زر تذكيري بالتقويم */}
+                {/* تنزيل ملف تقويم حقيقي بمواعيد التوزيع القادمة (مع تنبيه قبلها بيوم) */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
-                    triggerToast(`تم تفعيل التذكير لشركة ${s.sym} وإضافته لتقويمك بنجاح! 🔔`)
+                    if (!calEvents.length) return
+                    exportIcs(`${s.sym}-dividend`, buildIcs(calEvents))
+                    triggerToast(`نُزّل ملف تقويم ${s.sym} (${calEvents.length} موعد) — افتحه لإضافته إلى تقويمك`)
                   }}
+                  disabled={calEvents.length === 0}
+                  title={calEvents.length === 0 ? 'لم تُعلن تواريخ قادمة بعد' : 'تنزيل المواعيد كملف تقويم (.ics)'}
                   className="o-remind-btn"
                 >
-                  <span>🔔</span> ذكّرني بالتوزيع
+                  <CalendarPlus size={14} aria-hidden /> أضف المواعيد إلى التقويم
                 </button>
               </div>
             )
@@ -159,14 +167,14 @@ export default function DividendTrackerWidget({
           onClick={() => onNavigate('dividends')}
           className="o-viewall-btn"
         >
-          عرض كل تواريخ التوزيعات ↗
+          عرض كل تواريخ التوزيعات <ArrowUpLeft size={14} className="ico" aria-hidden />
         </button>
       )}
 
       {/* الإشعار العائم (position: fixed فلا يتأثر بموضعه داخل الودجة) */}
       {toastMessage && (
         <div className="o-toast">
-          <span>🔔</span> {toastMessage}
+          <CalendarPlus size={15} aria-hidden /> {toastMessage}
         </div>
       )}
     </div>

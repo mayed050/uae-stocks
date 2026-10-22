@@ -1,3 +1,4 @@
+import { ChartPie } from 'lucide-react'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { PALETTE, TIP_STYLE as tipStyle } from '@/constants/ui'
 
@@ -6,7 +7,7 @@ export default function SectorDistribution({ sectorData }: { sectorData: { name:
   return (
     <div className="panel o-sector-panel">
       <h3 className="panel-h o-h-underline">
-        📊 توزيع هيكل السوق حسب القطاعات
+        <ChartPie size={16} className="ico" aria-hidden /> توزيع هيكل السوق حسب القطاعات
       </h3>
       <div className="o-sector-wrap">
         <div className="o-sector-chart">

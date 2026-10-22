@@ -36,6 +36,22 @@ export function parseTvRow(d) {
   }
 }
 
+// المؤشران العامّان للسوقين ورمزاهما في TradingView Scanner.
+export const INDEX_TICKERS = {
+  DFMGI: { tv: 'DFM:DFMGI', name: 'مؤشر سوق دبي المالي العام', ex: 'DFM' },
+  FADGI: { tv: 'ADX:FADGI', name: 'مؤشر فوتسي سوق أبوظبي العام', ex: 'ADX' },
+}
+
+/** يحوّل اقتباس TradingView لمؤشر إلى السجل المخزّن في data.json (التغيّر بالنقاط مشتق من النسبة). */
+export function toIndexQuote(code, q, time) {
+  const meta = INDEX_TICKERS[code]
+  if (!meta || !q || num(q.price) === null) return null
+  const value = round(q.price, 2)
+  const changePct = num(q.changePct) != null ? round(q.changePct, 2) : null
+  const change = changePct != null ? round(value - value / (1 + changePct / 100), 2) : null
+  return { code, name: meta.name, ex: meta.ex, value, change, changePct, asof: isoDate(time) }
+}
+
 /** يطبّق اقتباسًا على كائن سهم (يحدّث الحقول المتوفّرة فقط). يعيد السهم نفسه. */
 export function applyQuote(s, r, time) {
   s.price = round(r.price, 3)

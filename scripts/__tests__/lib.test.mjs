@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { num, round, fmtMcap, parseTvRow, applyQuote, USD_AED } from '../lib.mjs'
+import { num, round, fmtMcap, parseTvRow, applyQuote, USD_AED, toIndexQuote } from '../lib.mjs'
 
 describe('num', () => {
   it('يقبل الأرقام الصحيحة', () => {
@@ -93,5 +93,24 @@ describe('applyQuote', () => {
     expect(s.pe).toBe(8) // لم يتغيّر (pe=0 مرفوض)
     expect(s.mcap).toBe('يدوي') // لم يتغيّر (mcapAed=null)
     expect(s.change).toBe(5) // changePct=null لا يكتب
+  })
+})
+
+describe('toIndexQuote', () => {
+  const t = new Date('2026-10-22T12:00:00Z')
+  it('يبني سجل المؤشر ويشتق التغيّر بالنقاط من النسبة', () => {
+    const iq = toIndexQuote('DFMGI', { price: 4215.8, changePct: 0.39 }, t)
+    expect(iq).toEqual({
+      code: 'DFMGI', name: 'مؤشر سوق دبي المالي العام', ex: 'DFM',
+      value: 4215.8, change: 16.38, changePct: 0.39, asof: '2026-10-22',
+    })
+  })
+  it('التغيّر null عند غياب النسبة', () => {
+    expect(toIndexQuote('FADGI', { price: 9350.4, changePct: null }, t).change).toBeNull()
+  })
+  it('null لرمز غير معروف أو اقتباس بلا سعر', () => {
+    expect(toIndexQuote('XYZ', { price: 1 }, t)).toBeNull()
+    expect(toIndexQuote('DFMGI', undefined, t)).toBeNull()
+    expect(toIndexQuote('DFMGI', { price: null }, t)).toBeNull()
   })
 })

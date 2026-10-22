@@ -1,3 +1,4 @@
+import { Search, X, Table2, LayoutGrid, BriefcaseBusiness, Plus, ListFilter } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { CAT_LABEL } from '@/data'
 import type { Stock, Exchange, Category } from '@/data'
@@ -120,7 +121,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
           
           <div className="controls">
             <div className="search">
-              <span>🔍</span>
+              <Search size={16} className="ico" aria-hidden />
               <input placeholder="ابحث بالاسم أو الرمز أو القطاع…" value={q} onChange={(e) => setQ(e.target.value)} />
             </div>
             <div className="chips">
@@ -135,7 +136,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
             </div>
             {sector !== 'all' && (
               <button className="chip" style={{ background: 'var(--bad)', color: '#fff', border: 0 }} onClick={() => setSector('all')}>
-                إلغاء فلتر القطاع: {sector} ✕
+                إلغاء فلتر القطاع: {sector} <X size={13} className="ico" aria-hidden />
               </button>
             )}
             
@@ -157,7 +158,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                   transition: 'all 0.15s ease'
                 }}
               >
-                📋 جدول موحد
+                <Table2 size={14} className="ico" aria-hidden /> جدول موحد
               </button>
               <button 
                 className={'o-toggle-btn' + (displayMode === 'sectors' ? ' active' : '')} 
@@ -175,7 +176,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                   transition: 'all 0.15s ease'
                 }}
               >
-                🗂️ حسب القطاعات
+                <LayoutGrid size={14} className="ico" aria-hidden /> حسب القطاعات
               </button>
             </div>
           </div>
@@ -232,9 +233,9 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                             padding: '4px 8px',
                             transition: 'transform 0.12s ease'
                           }}
-                          title={isInPortfolio(s.sym) ? 'إزالة من المحفظة 🗑️' : 'إضافة إلى المحفظة +'}
+                          title={isInPortfolio(s.sym) ? 'إزالة من المحفظة' : 'إضافة إلى المحفظة +'}
                         >
-                          {isInPortfolio(s.sym) ? '💼' : '➕'}
+                          {isInPortfolio(s.sym) ? <BriefcaseBusiness size={16} color="var(--brand)" aria-hidden /> : <Plus size={16} aria-hidden />}
                         </button>
                       </td>
                     </tr>
@@ -248,7 +249,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                 <div key={group.title} className="panel" style={{ border: '1px solid var(--line)', background: 'var(--panel)', padding: '16px', borderRadius: '18px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
                     <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: 'var(--brand)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ color: 'var(--brand2)' }}>🔸</span>
+                      <span style={{ width: 8, height: 8, borderRadius: 2, background: 'var(--brand2)', transform: 'rotate(45deg)' }} aria-hidden />
                       {group.title}
                       <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 500 }}>({group.stocks.length} شركات مطابقة)</span>
                     </h3>
@@ -334,9 +335,9 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                                     padding: '4px 8px',
                                     transition: 'transform 0.12s ease'
                                   }}
-                                  title={isInPortfolio(s.sym) ? 'إزالة من المحفظة 🗑️' : 'إضافة إلى المحفظة +'}
+                                  title={isInPortfolio(s.sym) ? 'إزالة من المحفظة' : 'إضافة إلى المحفظة +'}
                                 >
-                                  {isInPortfolio(s.sym) ? '💼' : '➕'}
+                                  {isInPortfolio(s.sym) ? <BriefcaseBusiness size={16} color="var(--brand)" aria-hidden /> : <Plus size={16} aria-hidden />}
                                 </button>
                               </td>
                             </tr>
@@ -356,7 +357,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
         {/* الشريط الجانبي: ملخّص حيّ للنتائج المطابقة */}
         <div className="overview-sidebar">
           <div className="o-widget">
-            <h4 className="o-widget-h">🔎 ملخّص النتائج</h4>
+            <h4 className="o-widget-h"><ListFilter size={16} className="ico" aria-hidden /> ملخّص النتائج</h4>
 
             <div className="stats" style={{ gridTemplateColumns: '1fr 1fr', gap: '10px', margin: '0 0 14px' }}>
               <StatCard color="var(--brand)" value={rows.length} label="أسهم مطابقة" />

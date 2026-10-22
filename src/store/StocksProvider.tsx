@@ -2,10 +2,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { SEED } from '@/data'
-import type { Dataset, Stock } from '@/data'
+import type { Dataset, IndexQuote, Stock } from '@/data'
 
 interface StoreValue {
   stocks: Stock[]
+  indices?: Record<string, IndexQuote>
   lastUpdated: string | null
   source: string
   loading: boolean
@@ -164,6 +165,7 @@ export function StocksProvider({ children }: { children: ReactNode }) {
   // قيمة السياق مُحفّظة — تتغيّر فقط عند تغيّر اعتماد فعلي، فلا يُعاد رسم كل المستهلكين بلا داعٍ
   const value = useMemo<StoreValue>(() => ({
     stocks: data.stocks,
+    indices: data.indices,
     lastUpdated: data.lastUpdated,
     source: data.source,
     loading,

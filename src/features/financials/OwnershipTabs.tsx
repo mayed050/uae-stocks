@@ -1,3 +1,4 @@
+import { Users } from 'lucide-react'
 import type { Stock } from '@/data'
 
 /** مجموعة «الملكية»: هيكل كبار المساهمين + حدود الاستثمارات الأجنبية. */
@@ -6,7 +7,7 @@ export default function OwnershipTabs({ stock }: { stock: Stock }) {
     <>
       {/* 8. تبويب أكبر المساهمين */}
       <div style={{ background: 'var(--chip)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)' }}>
-        <h4 style={{ margin: '0 0 12px 0', color: 'var(--txt)', borderBottom: '1px solid var(--line)', paddingBottom: '6px' }}>👥 هيكل كبار مساهمي شركة {stock.name.split('—')[0]}</h4>
+        <h4 style={{ margin: '0 0 12px 0', color: 'var(--txt)', borderBottom: '1px solid var(--line)', paddingBottom: '6px' }}><Users size={16} className="ico" aria-hidden /> هيكل كبار مساهمي شركة {stock.name.split('—')[0]}</h4>
         <table style={{ width: '100%', fontSize: '12px', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid var(--line)', color: 'var(--muted)' }}>

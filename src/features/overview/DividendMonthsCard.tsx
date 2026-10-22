@@ -1,3 +1,5 @@
+import { CalendarDays } from 'lucide-react'
+
 export interface MonthDatum {
   m: string
   count: number
@@ -11,7 +13,7 @@ export default function DividendMonthsCard({ data }: { data: MonthDatum[] }) {
   return (
     <div className="panel" style={{ padding: '20px', borderRadius: '16px' }}>
       <h3 className="panel-h" style={{ borderBottom: '1px solid var(--line)', paddingBottom: '10px', marginBottom: '16px' }}>
-        🗓️ ازدحام شهور التوزيعات
+        <CalendarDays size={16} className="ico" aria-hidden /> ازدحام شهور التوزيعات
       </h3>
       <div style={{ display: 'flex', alignItems: 'stretch', gap: '6px', height: '170px' }}>
         {data.map((d, i) => (

@@ -43,10 +43,22 @@ export interface Stock {
   div: Dividend
 }
 
+/** قراءة مؤشر عام للسوق (DFMGI / FADGI) يجلبها التحديث اليومي. */
+export interface IndexQuote {
+  code: string
+  name: string
+  ex: Exchange
+  value: number
+  change: number | null
+  changePct: number | null
+  asof: string
+}
+
 export interface Dataset {
   lastUpdated: string | null
   source: string
   stocks: Stock[]
+  indices?: Record<string, IndexQuote>
 }
 
 export const CAT_LABEL: Record<Category, string> = {

@@ -1,3 +1,4 @@
+import { TriangleAlert } from 'lucide-react'
 import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { useStocks } from '@/store'
@@ -41,7 +42,7 @@ export default function PageHeader({ title, children }: { title: ReactNode; chil
                 padding: '2px 9px',
               }}
             >
-              ⚠️ بيانات قديمة ({days} يوم)
+              <TriangleAlert size={12} className="ico" aria-hidden /> بيانات قديمة ({days} يوم)
             </span>
           )}
         </p>

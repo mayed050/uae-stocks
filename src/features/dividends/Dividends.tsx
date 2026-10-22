@@ -1,7 +1,9 @@
+import { Calculator, Download, CalendarPlus } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import type { Stock } from '@/data'
 import { useStocks } from '@/store'
-import { exportCsv } from '@/export'
+import { exportCsv, exportIcs } from '@/export'
+import { dividendEvents, buildIcs } from '@/calendar'
 import { parseISO } from '@/lib'
 import { MONTHS_AR, parseYield, getAnnualPs } from '@/format'
 import Avatar from '@/components/Avatar'
@@ -13,6 +15,8 @@ interface Ev { s: Stock; kind: 'ex' | 'pay'; date: Date; raw: string }
 
 export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA } = useStocks()
+  // كل مواعيد التوزيع القادمة (لتصديرها دفعة واحدة إلى التقويم)
+  const upcomingEvents = useMemo(() => DATA.flatMap((s) => dividendEvents(s)), [DATA])
   const [year] = useState(2026)
   
   // حاسبة الحرية المالية
@@ -139,7 +143,7 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
       </div>
 
       {/* حاسبة الحرية المالية التفاعلية */}
-      <h2 className="sec"><span className="dot" style={{ background: 'var(--brand)' }} /> 🧮 حاسبة الحرية المالية من التوزيعات النقدية (العوائد)</h2>
+      <h2 className="sec"><span className="dot" style={{ background: 'var(--brand)' }} /> <Calculator size={16} className="ico" aria-hidden /> حاسبة الحرية المالية من التوزيعات النقدية (العوائد)</h2>
       <div className="panel" style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '22px', border: '1px solid var(--line)', background: 'var(--panel)', marginBottom: '30px', borderRadius: '18px' }}>
         <p style={{ fontSize: '13.5px', color: 'var(--muted)', margin: 0, marginTop: '-4px' }}>
           أدخل هدفك الشهري ومتوسط العائد المتوقع، وسيقوم النظام بتحديد رأس المال المطلوب واقتراح محفظة ذكية متنوعة ومباشرة لتبدأ بها فوراً!
@@ -147,7 +151,7 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
           <div style={{ flex: '1 1 200px' }}>
-            <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '800', marginBottom: '8px', color: 'var(--muted)' }}>💵 الدخل الشهري المستهدف (د.إ):</label>
+            <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '800', marginBottom: '8px', color: 'var(--muted)' }}>الدخل الشهري المستهدف (د.إ):</label>
             <input 
               type="number" 
               value={targetMonthly || ''}
@@ -159,7 +163,7 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
             />
           </div>
           <div style={{ flex: '1 1 200px' }}>
-            <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '800', marginBottom: '8px', color: 'var(--muted)' }}>📈 متوسط العائد المستهدف للفائدة (%):</label>
+            <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '800', marginBottom: '8px', color: 'var(--muted)' }}>متوسط العائد المستهدف للفائدة (%):</label>
             <input 
               type="number" 
               step="0.1"
@@ -191,7 +195,7 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
         </div>
 
         <div style={{ marginTop: '12px' }}>
-          <h4 style={{ margin: '0 0 10px 0', fontSize: '13.5px', color: 'var(--txt)' }}>💼 سلة الاستثمار المقترحة للتنويع الفعال (توزيع تلقائي للميزانية):</h4>
+          <h4 style={{ margin: '0 0 10px 0', fontSize: '13.5px', color: 'var(--txt)' }}>سلة الاستثمار المقترحة للتنويع الفعال (توزيع تلقائي للميزانية):</h4>
           <div className="tablewrap">
             <table style={{ minWidth: '100%', fontSize: '12px' }}>
               <thead>
@@ -240,7 +244,15 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
           )}
           title="تصدير جدول التوزيعات إلى Excel/CSV"
         >
-          ⬇️ تصدير CSV
+          <Download size={14} className="ico" aria-hidden /> تصدير CSV
+        </button>
+        <button
+          className="chip"
+          onClick={() => exportIcs(`مواعيد-التوزيعات-${new Date().toISOString().slice(0, 10)}`, buildIcs(upcomingEvents))}
+          disabled={upcomingEvents.length === 0}
+          title={upcomingEvents.length === 0 ? 'لا توجد مواعيد توزيع قادمة معلنة حاليًا' : `تنزيل ${upcomingEvents.length} موعدًا قادمًا كملف تقويم (.ics)`}
+        >
+          <CalendarPlus size={14} className="ico" aria-hidden /> إضافة المواعيد القادمة للتقويم
         </button>
       </div>
       <div className="tablewrap">

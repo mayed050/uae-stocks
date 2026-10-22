@@ -1,3 +1,4 @@
+import { Download, Trash2 } from 'lucide-react'
 import type { Stock } from '@/data'
 import type { PortfolioItem } from '@/store/usePortfolio'
 import { exportCsv } from '@/export'
@@ -55,7 +56,7 @@ export default function HoldingsTable({
             )}
             title="تصدير المحفظة إلى ملف Excel/CSV"
           >
-            ⬇️ تصدير CSV
+            <Download size={14} className="ico" aria-hidden /> تصدير CSV
           </button>
         </div>
       )}
@@ -144,7 +145,7 @@ export default function HoldingsTable({
                       title="احذف من المحفظة"
                       aria-label="حذف"
                     >
-                      🗑️
+                      <Trash2 size={15} aria-hidden />
                     </button>
                   </td>
                 </tr>

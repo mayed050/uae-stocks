@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import type { Stock } from './data'
+import { Sun, Moon, X } from 'lucide-react'
 import Sidebar from './components/Sidebar'
-import type { View } from './components/Sidebar'
+import { NAV } from './components/nav'
+import type { View } from './components/nav'
 import StockDetail from './components/StockDetail'
 
-// الاستيراد المباشر (Static Imports) لضمان موثوقية كاملة بنسبة 100% وتفادي أخطاء تحميل الحزم الديناميكية على منصات Vercel و GitHub Pages 🚀
+// الاستيراد المباشر (Static Imports) لضمان موثوقية كاملة بنسبة 100% وتفادي أخطاء تحميل الحزم الديناميكية على منصات Vercel و GitHub Pages
 import Overview from '@/features/overview/Overview'
 import Screener from '@/features/screener/Screener'
 import Dividends from '@/features/dividends/Dividends'
@@ -48,8 +50,13 @@ export default function App() {
   return (
     <div className="app">
       <Sidebar view={view} setView={setView} />
-      <button className="theme-toggle-floating" onClick={toggleTheme} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
-        {dark ? '☀️' : '🌙'}
+      <button
+        className="theme-toggle-floating"
+        onClick={toggleTheme}
+        title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}
+        aria-label={dark ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'}
+      >
+        {dark ? <Sun size={18} aria-hidden /> : <Moon size={18} aria-hidden />}
       </button>
       <main className="main">
         {!disclaimerHidden && (
@@ -59,8 +66,9 @@ export default function App() {
             <button
               onClick={dismissDisclaimer}
               title="إخفاء التنويه"
-              style={{ marginInlineStart: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: 16, lineHeight: 1, padding: '0 4px' }}
-            >✕</button>
+              aria-label="إخفاء التنويه"
+              style={{ marginInlineStart: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', lineHeight: 1, padding: '0 4px', display: 'inline-flex' }}
+            ><X size={16} aria-hidden /></button>
           </div>
         )}
         {view === 'overview' && <Overview onOpen={setDetail} onNavigate={setView} />}
@@ -73,14 +81,15 @@ export default function App() {
       
       {/* شريط التنقل السفلي المطور لتطبيقات الهواتف الذكية (Bottom Navigation Bar) */}
       <nav className="bottom-nav">
-        {BOTTOM_NAV.map((n) => (
+        {NAV.map((n) => (
           <button
             key={n.v}
             className={'bottom-navitem' + (view === n.v ? ' active' : '')}
             onClick={() => setView(n.v)}
+            aria-current={view === n.v ? 'page' : undefined}
           >
-            <span className="bottom-navitem-icon">{n.icon}</span>
-            <span className="bottom-navitem-label">{n.label}</span>
+            <span className="bottom-navitem-icon"><n.icon size={20} aria-hidden /></span>
+            <span className="bottom-navitem-label">{n.short}</span>
           </button>
         ))}
       </nav>
@@ -89,12 +98,3 @@ export default function App() {
     </div>
   )
 }
-
-const BOTTOM_NAV: { v: View; label: string; icon: string }[] = [
-  { v: 'overview', label: 'الرئيسية', icon: '📊' },
-  { v: 'screener', label: 'المستكشف', icon: '🔎' },
-  { v: 'dividends', label: 'التوزيعات', icon: '💵' },
-  { v: 'financials', label: 'النتائج', icon: '📈' },
-  { v: 'compare', label: 'المقارنة', icon: '⚖️' },
-  { v: 'portfolio', label: 'المحفظة', icon: '💼' },
-]

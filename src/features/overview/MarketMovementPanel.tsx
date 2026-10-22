@@ -1,3 +1,4 @@
+import { Activity, BriefcaseBusiness } from 'lucide-react'
 import { useState, useMemo } from 'react'
 import type { Stock } from '@/data'
 import { usePortfolio } from '@/store'
@@ -55,7 +56,7 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
       <div className="o-mv-head">
         <div>
           <h3 className="o-mv-title">
-            🟠 حركة السوق
+            <Activity size={16} className="ico" aria-hidden /> حركة السوق
             <SimBadge title="الأسعار والتغيّر والحجم وقيمة التداول حقيقية من TradingView/Yahoo؛ «عدد الصفقات» فقط تقديري.">الصفقات تقديرية</SimBadge>
           </h3>
           <p className="o-mv-sub">
@@ -117,7 +118,7 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
                       <span className="o-mv-sym">{s.sym}</span>
                       <span className="o-mv-name">{s.name.split('—')[0]}</span>
                     </div>
-                    {isInPortfolio(s.sym) && <span title="في محفظتك" className="o-mv-pf">💼</span>}
+                    {isInPortfolio(s.sym) && <span title="في محفظتك" className="o-mv-pf"><BriefcaseBusiness size={13} className="ico" aria-hidden /></span>}
                   </td>
 
                   {/* عمود السعر */}

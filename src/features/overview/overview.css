@@ -314,8 +314,10 @@
           color: #fff;
         }
         @media (max-width: 1100px) {
+          /* stretch بدل flex-start: وإلا تأخذ الأعمدة عرض محتواها (جداول/مخططات) فتتجاوز الشاشة */
           .overview-layout {
             flex-direction: column;
+            align-items: stretch;
           }
           .overview-sidebar {
             width: 100%;
@@ -493,7 +495,33 @@
 .o-tl-ex { color: #ff6b00; }
 .o-remind-btn { width: 100%; border: 1px solid rgba(255,107,0,0.25); background: rgba(255,107,0,0.05); color: #ff6b00; padding: 6px 0; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s ease; }
 .o-remind-btn:hover { background: rgba(255,107,0,0.1); }
+.o-remind-btn:disabled { opacity: .5; cursor: not-allowed; }
 .o-viewall-btn { width: 100%; margin-top: 10px; border: 1px solid var(--line); background: var(--chip); color: var(--brand); padding: 8px 0; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; font-family: inherit; }
 
 /* إشعار منبثق (toast) */
 .o-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: #fff; padding: 10px 20px; border-radius: 20px; z-index: 10000; font-size: 12.5px; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid rgba(255,107,0,0.3); backdrop-filter: blur(8px); display: flex; align-items: center; gap: 8px; animation: fade-in-toast 0.25s ease-out; }
+
+/* ===== مؤشرا السوقين ونشاط الأسهم المغطّاة ===== */
+.idx-panel { margin-bottom: 20px; padding: 20px; }
+.idx-title { margin: 0 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; }
+.idx-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.idx-card { background: var(--chip); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.idx-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.idx-name { font-size: 13px; font-weight: 700; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.idx-code { font-size: 10.5px; font-weight: 700; color: var(--muted2); border: 1px solid var(--line); border-radius: 6px; padding: 1px 7px; white-space: nowrap; }
+.idx-value { font-size: 26px; font-weight: 700; color: var(--txt); line-height: 1.2; text-align: right; }
+.idx-value small { font-size: 13px; color: var(--muted); font-weight: 600; }
+.idx-missing { color: var(--muted2); }
+.idx-change { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 700; justify-content: flex-end; }
+.idx-change.up { color: var(--good); }
+.idx-change.down { color: var(--bad); }
+.idx-change.flat { color: var(--muted); }
+.idx-sub, .idx-foot { font-size: 11.5px; color: var(--muted2); }
+.idx-foot { margin-top: auto; padding-top: 8px; border-top: 1px dashed var(--line); }
+.breadth { display: flex; height: 8px; border-radius: 999px; overflow: hidden; background: var(--line); margin-top: 6px; }
+.breadth .b-up { background: var(--good); }
+.breadth .b-flat { background: var(--muted2); }
+.breadth .b-down { background: var(--bad); }
+.breadth-legend { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); font-weight: 600; }
+.breadth-legend .up { color: var(--good); }
+.breadth-legend .down { color: var(--bad); }

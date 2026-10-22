@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import type { Stock } from '@/data'
 import type { View } from '@/components/Sidebar'
 import { useStocks, useMarketStats } from '@/store'
-import { getDailyData } from '@/market'
 import PageHeader from '@/components/ui/PageHeader'
 import MarketKpiStrip from './MarketKpiStrip'
 import MarketIndexCards from './MarketIndexCards'
@@ -20,7 +19,7 @@ import './overview.css'
 
 /** صفحة النظرة العامة — جذر تركيب: عمود رئيسي (رسوم وحركة وخريطة حرارية) وعمود جانبي (ودجات). */
 export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) => void; onNavigate?: (v: View) => void }) {
-  const { stocks: DATA } = useStocks()
+  const { stocks: DATA, indices } = useStocks()
   const {
     stats,
     alertRows,
@@ -36,32 +35,28 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
   // التنبيهات المباشرة لإجراءات الشركات (عرض تجريبي يتجدد تلقائياً)
   const liveActions = useLiveActions()
 
-  // حساب إجمالي الصفقات وحجم التداول اليومي التراكمي للأسواق الإماراتية
+  // نشاط آخر جلسة للأسهم المغطّاة — من الحقول الحقيقية فقط (حجم + نسبة تغيّر) ولأحدث تاريخ تداول،
+  // فلا تدخل أسهم متقادمة السعر أو أحجام مولّدة في المجاميع.
   const marketActivity = useMemo(() => {
-    let dfmTrades = 0
-    let adxTrades = 0
+    const sessionDate = DATA.reduce<string | null>((m, s) => (s.asof && (!m || s.asof > m) ? s.asof : m), null)
+    const session = DATA.filter((s) => s.asof === sessionDate && typeof s.volume === 'number' && typeof s.price === 'number')
     let dfmVolume = 0
     let adxVolume = 0
-
-    DATA.forEach(s => {
-      const d = getDailyData(s)
-      if (s.ex === 'DFM') {
-        dfmTrades += d.trades
-        dfmVolume += d.volume
-      } else {
-        adxTrades += d.trades
-        adxVolume += d.volume
-      }
+    let totalValue = 0
+    let advancers = 0
+    let decliners = 0
+    let unchanged = 0
+    session.forEach((s) => {
+      const vol = s.volume as number
+      if (s.ex === 'DFM') dfmVolume += vol
+      else adxVolume += vol
+      totalValue += vol * (s.price as number)
+      const c = s.change ?? 0
+      if (c > 0) advancers++
+      else if (c < 0) decliners++
+      else unchanged++
     })
-
-    return {
-      dfmTrades,
-      adxTrades,
-      totalTrades: dfmTrades + adxTrades,
-      dfmVolume,
-      adxVolume,
-      totalVolume: dfmVolume + adxVolume
-    }
+    return { sessionCount: session.length, sessionDate, dfmVolume, adxVolume, totalValue, advancers, decliners, unchanged }
   }, [DATA])
 
   return (
@@ -77,7 +72,7 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
         {/* العمود الأيمن الرئيسي (المحتوى التفاعلي والبياني 70%) */}
         <div className="overview-main">
           {/* 📊 بطاقة نشاط مؤشرات الأسواق والنشاط اليومي */}
-          <MarketIndexCards marketActivity={marketActivity} />
+          <MarketIndexCards indices={indices} marketActivity={marketActivity} />
 
           {/* قسم التحليل: توزيع القطاعات + ازدحام شهور التوزيعات */}
           <div className="chart-grid o-sector-grid">

@@ -1,3 +1,4 @@
+import { Megaphone } from 'lucide-react'
 import type { Stock } from '@/data'
 
 /** مجموعة «الإفصاحات والحوكمة»: الإفصاحات + الجمعية العمومية + إجراءات الشركات. */
@@ -8,7 +9,7 @@ export default function GovernanceTabs({ stock }: { stock: Stock }) {
       <div>
         <div className="disclosure-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#ff6b00', fontWeight: 800 }}>
-            <span>📢 إفصاح مالي رسمي</span>
+            <span><Megaphone size={13} className="ico" aria-hidden /> إفصاح مالي رسمي</span>
             <span>25 مايو 2026</span>
           </div>
           <b style={{ fontSize: '13px', color: 'var(--txt)', margin: '4px 0' }}>موافقة الجمعية العمومية لشركة {stock.name.split('—')[0]} على مقترحات توزيع الأرباح النقدية للمساهمين.</b>
@@ -18,7 +19,7 @@ export default function GovernanceTabs({ stock }: { stock: Stock }) {
         </div>
         <div className="disclosure-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--brand)', fontWeight: 800 }}>
-            <span>📢 نتائج فصلية</span>
+            <span><Megaphone size={13} className="ico" aria-hidden /> نتائج فصلية</span>
             <span>18 مايو 2026</span>
           </div>
           <b style={{ fontSize: '13px', color: 'var(--txt)', margin: '4px 0' }}>التقرير المالي المفصل للفترة الربعية المنتهية في 31 مارس 2026.</b>

@@ -1,13 +1,8 @@
-export type View = 'overview' | 'screener' | 'dividends' | 'compare' | 'portfolio' | 'financials'
+import { NAV } from './nav'
+import type { View } from './nav'
+import { useStocks } from '@/store'
 
-const NAV: { v: View; label: string; icon: string }[] = [
-  { v: 'overview', label: 'نظرة عامة', icon: '📊' },
-  { v: 'screener', label: 'مستكشف الأسهم', icon: '🔎' },
-  { v: 'dividends', label: 'التوزيعات', icon: '💵' },
-  { v: 'financials', label: 'النتائج المالية', icon: '📈' },
-  { v: 'compare', label: 'المقارنة', icon: '⚖️' },
-  { v: 'portfolio', label: 'حاسبة المحفظة', icon: '💼' },
-]
+export type { View } from './nav'
 
 export default function Sidebar({
   view,
@@ -16,6 +11,11 @@ export default function Sidebar({
   view: View
   setView: (v: View) => void
 }) {
+  const { lastUpdated } = useStocks()
+  const dataDate = lastUpdated
+    ? new Date(lastUpdated).toLocaleDateString('ar-AE', { day: 'numeric', month: 'long', year: 'numeric' })
+    : null
+
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -32,15 +32,18 @@ export default function Sidebar({
             key={n.v}
             className={'navitem' + (view === n.v ? ' active' : '')}
             onClick={() => setView(n.v)}
+            aria-current={view === n.v ? 'page' : undefined}
           >
-            <span className="navicon">{n.icon}</span>
+            <span className="navicon"><n.icon size={18} strokeWidth={2} aria-hidden /></span>
             {n.label}
           </button>
         ))}
       </nav>
 
       <div className="sidebar-foot">
-        <div className="sidebar-note">بيانات 28 مايو 2026 — للمعلومات فقط</div>
+        <div className="sidebar-note">
+          {dataDate ? `بيانات ${dataDate}` : 'البيانات المُضمّنة'} — للمعلومات فقط
+        </div>
       </div>
     </aside>
   )

@@ -1,3 +1,4 @@
+import { Search } from 'lucide-react'
 import { useState, useMemo } from 'react'
 import type { Stock } from '@/data'
 import Avatar from '@/components/Avatar'
@@ -29,7 +30,7 @@ export default function AddStockControls({
       <div className="p-controls-row">
         <div className="p-search-container">
           <div className="search p-search-full">
-            <span>🔍</span>
+            <Search size={16} className="ico" aria-hidden />
             <input
               placeholder="ابحث عن سهم لإضافته للمحفظة..."
               value={searchQuery}

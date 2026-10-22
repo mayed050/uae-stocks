@@ -9,7 +9,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { num, TV_COLS, parseTvRow, applyQuote } from './lib.mjs'
+import { num, TV_COLS, parseTvRow, applyQuote, INDEX_TICKERS, toIndexQuote } from './lib.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(__dirname, '..')
@@ -131,6 +131,24 @@ async function main() {
       stale.push(s.sym)
       console.warn(`✗ ${s.ex} ${s.sym.padEnd(12)} تعذّر الجلب — أبقيت القيمة السابقة`)
     }
+  }
+
+  // 5) المؤشران العامّان (DFMGI / FADGI) — غير حاسم: عند الفشل تبقى آخر قيمة محفوظة بتاريخها
+  try {
+    const codes = Object.keys(INDEX_TICKERS)
+    const map = await fetchTvBatch(codes.map((c) => INDEX_TICKERS[c].tv.replace(':', '-')))
+    data.indices = data.indices ?? {}
+    for (const c of codes) {
+      const iq = toIndexQuote(c, map[INDEX_TICKERS[c].tv.replace(':', '-')], new Date())
+      if (iq) {
+        data.indices[c] = iq
+        console.log(`✓ مؤشر ${c.padEnd(6)} ${iq.value}  (${iq.changePct ?? '—'}%)`)
+      } else {
+        console.warn(`✗ مؤشر ${c} تعذّر الجلب — أبقيت القيمة السابقة`)
+      }
+    }
+  } catch (e) {
+    console.warn(`… جلب المؤشرات فشل: ${e.message}`)
   }
 
   data.lastUpdated = new Date().toISOString()

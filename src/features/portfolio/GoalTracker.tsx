@@ -1,3 +1,5 @@
+import { Target, Lightbulb, CircleCheck } from 'lucide-react'
+
 /** قسم تتبع الهدف المالي الشهري للمستثمر مع شريط التقدم وتلميح سد الفجوة. */
 export default function GoalTracker({
   goal,
@@ -15,7 +17,7 @@ export default function GoalTracker({
 
   return (
     <div className="panel p-panel-mb">
-      <h3 className="panel-h">🎯 مستهدف التوزيعات الشهري</h3>
+      <h3 className="panel-h"><Target size={16} className="ico" aria-hidden /> مستهدف التوزيعات الشهري</h3>
       <div className="p-goal-row">
         <div className="p-goal-col">
           <p className="p-goal-label">
@@ -42,11 +44,11 @@ export default function GoalTracker({
       </div>
       {progressPercent < 100 ? (
         <div className="p-goal-hint">
-          💡 لسد الفجوة وتحقيق هدفك ({goal - Math.round(monthlyAverage)} درهم إضافي شهرياً)، تحتاج إلى استثمار ما يقارب <b>{Math.round(((goal - monthlyAverage) * 12) / (weightedYield > 0 ? weightedYield / 100 : 0.05)).toLocaleString('en-US')} درهم</b> في أسهم ذات عائد متوسط {weightedYield > 0 ? weightedYield.toFixed(1) : '5'}%.
+          <Lightbulb size={14} className="ico" aria-hidden /> لسد الفجوة وتحقيق هدفك ({goal - Math.round(monthlyAverage)} درهم إضافي شهرياً)، تحتاج إلى استثمار ما يقارب <b>{Math.round(((goal - monthlyAverage) * 12) / (weightedYield > 0 ? weightedYield / 100 : 0.05)).toLocaleString('en-US')} درهم</b> في أسهم ذات عائد متوسط {weightedYield > 0 ? weightedYield.toFixed(1) : '5'}%.
         </div>
       ) : (
         <div className="p-goal-hint done">
-          🎉 تهانينا! لقد تجاوزت أرباح محفظتك الشهرية مستهدفك المالي المخطط له!
+          <CircleCheck size={14} className="ico" aria-hidden /> تهانينا! لقد تجاوزت أرباح محفظتك الشهرية مستهدفك المالي المخطط له!
         </div>
       )}
     </div>
