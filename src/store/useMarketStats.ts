@@ -3,7 +3,7 @@ import type { Stock } from '@/data'
 import { parseYield, parseAmount, MONTHS_AR } from '@/format'
 import { upcoming, isAlert, parseISO } from '@/lib'
 import type { Upcoming } from '@/lib'
-import { useStocks } from './StocksProvider'
+import { useStocks } from './useStocks'
 
 /** خطاف مخصص لاستخراج وحساب إحصائيات لوحة تحليلات السوق الإجمالية */
 export function useMarketStats() {

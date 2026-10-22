@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { parseDataset } from '@/data/schema'
+import { parseDataset, HistorySchema } from '@/data/schema'
+import historyData from '../../public/history.json'
 import publicData from '../../public/data.json'
 import seedData from '../data/seed.json'
 import { makeStock } from './factory'
@@ -16,6 +17,11 @@ describe('ملفات البيانات المُلتزَمة', () => {
       expect(r.data.stocks.length).toBeGreaterThan(0)
     })
   }
+  it('public/history.json يطابق شكل السجل التاريخي', () => {
+    const r = HistorySchema.safeParse(historyData)
+    if (!r.success) throw new Error(r.error.message)
+    expect(Object.keys(r.data.history).length).toBeGreaterThan(0)
+  })
 })
 
 describe('parseDataset', () => {

@@ -82,3 +82,19 @@ export function parseDataset(json: unknown): { ok: true; data: z.infer<typeof Da
   const r = DatasetSchema.safeParse(json)
   return r.success ? { ok: true, data: r.data } : { ok: false, error: z.prettifyError(r.error) }
 }
+
+/** سجل الأسعار التاريخية (history.json): الرمز → نقاط [تاريخ، إغلاق]. */
+export const HistorySchema = z.object({
+  updated: z.iso.datetime().optional(),
+  history: z.record(z.string(), z.array(z.tuple([isoDate, price]))),
+})
+
+/** حيازات المحفظة المحفوظة في المتصفح (حماية من بيانات تالفة أو قديمة الشكل). */
+export const HoldingsSchema = z.array(
+  z.object({
+    sym: z.string(),
+    amount: z.number().nonnegative(),
+    shares: z.number().nonnegative(),
+    cost: z.number().nonnegative().optional(), // الحيازات القديمة بلا تكلفة تُرحَّل: التكلفة = المبلغ
+  }),
+)
