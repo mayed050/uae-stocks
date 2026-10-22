@@ -9,7 +9,7 @@ export default function FinancialDataTabs({ stock }: { stock: Stock }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
         <div style={{ background: 'var(--chip)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)', textAlign: 'center' }}>
           <div style={{ fontSize: '11.5px', color: 'var(--muted)', fontWeight: 700, marginBottom: '6px' }}>مكرر الربحية (P/E)</div>
-          <b style={{ fontSize: '20px', color: '#ff6b00' }}>{stock.pe?.toFixed(2) ?? 'يلزم تحقق'}</b>
+          <b style={{ fontSize: '20px', color: 'var(--brand)' }}>{stock.pe?.toFixed(2) ?? 'يلزم تحقق'}</b>
           <div style={{ fontSize: '9.5px', color: 'var(--muted)', marginTop: '4px' }}>المعدل الفعلي لتقييم سعر السهم</div>
         </div>
         <div style={{ background: 'var(--chip)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)', textAlign: 'center' }}>

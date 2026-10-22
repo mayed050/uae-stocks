@@ -97,8 +97,8 @@
   background: var(--panel-solid);
 }
 .stock-list-row.active {
-  border-color: #ff6b00;
-  background: rgba(255, 107, 0, 0.05);
+  border-color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 5%, transparent);
 }
 .detail-header-price-badge {
   display: inline-flex;
@@ -148,7 +148,7 @@
   background: var(--chip);
 }
 .financial-tab-btn.active {
-  color: #ff6b00;
+  color: var(--brand);
   font-weight: 800;
 }
 .financial-tab-btn.active::after {
@@ -158,7 +158,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: #ff6b00;
+  background: var(--brand);
   border-radius: 4px;
 }
 .metrics-quad-grid {
@@ -281,7 +281,7 @@
   border-bottom: 0;
 }
 .summary-table tr:hover td {
-  background: rgba(255, 107, 0, 0.02);
+  background: color-mix(in srgb, var(--brand) 2%, transparent);
 }
 .change-badge-table {
   display: inline-flex;

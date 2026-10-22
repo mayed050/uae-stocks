@@ -26,7 +26,7 @@ export default function StockDetailHeader({
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 900, color: 'var(--txt)' }}>{stock.name.split('—')[0]}</h2>
-            <span style={{ fontSize: '10px', fontWeight: 800, padding: '2px 8px', borderRadius: '6px', background: 'rgba(255, 107, 0, 0.1)', color: '#ff6b00', border: '1px solid rgba(255, 107, 0, 0.2)' }}>
+            <span style={{ fontSize: '10px', fontWeight: 800, padding: '2px 8px', borderRadius: '6px', background: 'color-mix(in srgb, var(--brand) 10%, transparent)', color: 'var(--brand)', border: '1px solid color-mix(in srgb, var(--brand) 20%, transparent)' }}>
               {stock.sym}
             </span>
             {inPortfolio && <span title="في محفظتك" style={{ display: 'inline-flex', color: 'var(--brand)' }}><BriefcaseBusiness size={15} className="ico" aria-hidden /></span>}

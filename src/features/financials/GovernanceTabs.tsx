@@ -8,7 +8,7 @@ export default function GovernanceTabs({ stock }: { stock: Stock }) {
       {/* 4. تبويب الإفصاحات */}
       <div>
         <div className="disclosure-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#ff6b00', fontWeight: 800 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--brand)', fontWeight: 800 }}>
             <span><Megaphone size={13} className="ico" aria-hidden /> إفصاح مالي رسمي</span>
             <span>25 مايو 2026</span>
           </div>
@@ -53,7 +53,7 @@ export default function GovernanceTabs({ stock }: { stock: Stock }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginTop: '14px' }}>
         <div style={{ background: 'var(--chip)', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--line)' }}>
           <span style={{ fontSize: '11px', color: 'var(--muted)', display: 'block', fontWeight: 700 }}>تاريخ الاستحقاق (Ex-Date)</span>
-          <b style={{ fontSize: '14px', color: '#ff6b00', display: 'block', marginTop: '4px' }}>{stock.div.exd ?? 'يلزم تحقق'}</b>
+          <b style={{ fontSize: '14px', color: 'var(--brand)', display: 'block', marginTop: '4px' }}>{stock.div.exd ?? 'يلزم تحقق'}</b>
         </div>
         <div style={{ background: 'var(--chip)', padding: '12px 14px', borderRadius: '10px', border: '1px solid var(--line)' }}>
           <span style={{ fontSize: '11px', color: 'var(--muted)', display: 'block', fontWeight: 700 }}>تاريخ التوزيع والدفع (Pay)</span>

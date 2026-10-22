@@ -1,8 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import {
-  symbolSeed, seededRand, getDailyData,
-  generateHistoricalData, generateSparklineData,
-} from '@/market'
+import { symbolSeed, seededRand, getDailyData, periodSeries } from '@/market'
+import type { HistPoint } from '@/store/useHistory'
 import { makeStock } from './factory'
 
 describe('symbolSeed', () => {
@@ -47,21 +45,24 @@ describe('getDailyData', () => {
   })
 })
 
-describe('generateHistoricalData', () => {
-  it('عدد النقاط حسب الإطار الزمني وآخر سعر = السعر الحالي', () => {
-    const h = generateHistoricalData('DEWA', '1W', 2.61)
-    expect(h.data).toHaveLength(7)
-    expect(h.data[h.data.length - 1]!.price).toBeCloseTo(2.61)
+describe('periodSeries', () => {
+  const hist: HistPoint[] = [
+    ['2026-01-05', 10], ['2026-09-30', 11], ['2026-10-14', 12], ['2026-10-20', 13], ['2026-10-21', 12.5],
+  ]
+  it('يقطع بالتاريخ التقويمي ويحسب التغيّر من أول الفترة', () => {
+    const w = periodSeries(hist, '1W')!
+    expect(w.points.map((p) => p[0])).toEqual(['2026-10-14', '2026-10-20', '2026-10-21'])
+    expect(w.start).toBe(12)
+    expect(w.changePct).toBeCloseTo(4.1667, 3)
+    expect(w.high).toBe(13)
   })
-  it('الإطار غير المعروف يرجع 365 نقطة', () => {
-    expect(generateHistoricalData('DEWA', 'ALL', 2.61).data).toHaveLength(365)
+  it('يُلحق السعر الحالي الأحدث ويستبدل نقطة اليوم نفسه', () => {
+    expect(periodSeries(hist, 'ALL', { price: 14, asof: '2026-10-22' })!.points.at(-1)).toEqual(['2026-10-22', 14])
+    const same = periodSeries(hist, 'ALL', { price: 12.6, asof: '2026-10-21' })!
+    expect(same.points.at(-1)).toEqual(['2026-10-21', 12.6])
+    expect(same.points).toHaveLength(5)
   })
-})
-
-describe('generateSparklineData', () => {
-  it('عشر نقاط وحتمية', () => {
-    const a = generateSparklineData('EMAAR', 11.78)
-    expect(a).toHaveLength(10)
-    expect(a).toEqual(generateSparklineData('EMAAR', 11.78))
+  it('null عند غياب سجل كافٍ (لا توليد بيانات)', () => {
+    expect(periodSeries([], '3M', { price: 5, asof: '2026-10-22' })).toBeNull()
   })
 })

@@ -1,12 +1,15 @@
 import { X, RefreshCw, PenLine, BriefcaseBusiness, ChartCandlestick, AlarmClock, Info } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Stock } from '../data'
 import { CAT_LABEL } from '../data'
 import { upcoming, isAlert } from '../lib'
 import { parseGrowth, symColor } from '../format'
 import Avatar from './Avatar'
 import Snowflake from './Snowflake'
-import { usePortfolio } from '../store'
+import { usePortfolio, useHistory } from '../store'
+import { periodSeries } from '@/market'
+import type { Timeframe } from '@/market'
+import PriceChart from './PriceChart'
 import { NA } from '@/constants/ui'
 import { cell as v } from '@/components/ui/cell'
 
@@ -23,9 +26,18 @@ function readTheme(): 'dark' | 'light' {
   return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
 }
 
+const TF_LABEL: Record<'1M' | '3M' | '6M' | '1Y', string> = { '1M': 'شهر', '3M': '3 أشهر', '6M': '6 أشهر', '1Y': 'سنة' }
+
 export default function StockDetail({ item, onClose }: { item: Stock; onClose: () => void }) {
   const { isInPortfolio, togglePortfolioStock } = usePortfolio()
   const added = isInPortfolio(item.sym)
+  const histMap = useHistory()
+  const [tfSel, setTfSel] = useState<Extract<Timeframe, '1M' | '3M' | '6M' | '1Y'>>('1Y')
+  const [showTv, setShowTv] = useState(false)
+  const series = useMemo(
+    () => periodSeries(histMap[item.sym] ?? [], tfSel, { price: item.price, asof: item.asof }),
+    [histMap, item, tfSel],
+  )
   const closeRef = useRef<HTMLButtonElement>(null)
 
   // تتبّع السمة لحظياً ليُحدَّث مخطّط TradingView عند التبديل بين الفاتح والداكن
@@ -144,12 +156,40 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
             {item.div.note && <div className="modal-tag"><Info size={13} className="ico" aria-hidden /> {item.div.note}</div>}
           </section>
           <section className="modal-card wide chart">
-            <h3 className="modal-chart-h"><ChartCandlestick size={16} className="ico" aria-hidden /> المخطط البياني الفني التفاعلي (TradingView)</h3>
-            <iframe
-              src={`https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${(item.tradingview ?? `${item.ex}-${item.sym}`).replace('-', ':')}&interval=D&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=f1f3f6&theme=${theme}&style=1&timezone=Exchange&locale=ar`}
-              className="modal-chart-frame"
-              title={`مخطط أسعار ${item.name}`}
-            />
+            <div className="modal-chart-head">
+              <h3 className="modal-chart-h"><ChartCandlestick size={16} className="ico" aria-hidden /> سعر الإغلاق</h3>
+              <div className="o-tf-group">
+                {(['1M', '3M', '6M', '1Y'] as const).map((tf) => (
+                  <button key={tf} className={'chart-timeframe-btn' + (tf === tfSel ? ' active' : '')} aria-pressed={tf === tfSel} onClick={() => setTfSel(tf)}>
+                    {TF_LABEL[tf]}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {series ? (
+              <>
+                <PriceChart points={series.points} up={series.up} height={240} label={`سعر إغلاق ${item.sym} — ${TF_LABEL[tfSel]}`} />
+                <div className={'modal-chart-sum ' + (series.up ? 'up' : 'down')}>
+                  {series.up ? '▲' : '▼'} {series.changePct.toFixed(2)}% خلال {TF_LABEL[tfSel]} · الأعلى {series.high.toFixed(2)} · الأدنى {series.low.toFixed(2)}
+                </div>
+              </>
+            ) : (
+              <div className="chart-empty" style={{ height: 160 }}>
+                <b>لا يتوفر سجل أسعار تاريخي لهذا السهم بعد</b>
+                <span>يمكن فتح مخطط TradingView المتقدم أدناه.</span>
+              </div>
+            )}
+            {showTv ? (
+              <iframe
+                src={`https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${(item.tradingview ?? `${item.ex}-${item.sym}`).replace('-', ':')}&interval=D&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=f1f3f6&theme=${theme}&style=1&timezone=Exchange&locale=ar`}
+                className="modal-chart-frame"
+                title={`مخطط TradingView المتقدم — ${item.name}`}
+              />
+            ) : (
+              <button className="chip tv-load" onClick={() => setShowTv(true)}>
+                فتح المخطط الفني المتقدم (TradingView) — يُحمَّل من موقع خارجي
+              </button>
+            )}
           </section>
         </div>
 

@@ -115,8 +115,8 @@
           background: var(--panel-solid);
         }
         .chart-stock-item.active {
-          border-color: #ff6b00;
-          background: rgba(255, 107, 0, 0.04);
+          border-color: var(--brand);
+          background: color-mix(in srgb, var(--brand) 6%, var(--panel-solid));
         }
         .chart-timeframe-btn {
           border: 0;
@@ -131,7 +131,7 @@
           font-family: inherit;
         }
         .chart-timeframe-btn.active {
-          background: #ff6b00;
+          background: var(--brand);
           color: #fff;
         }
         @media (max-width: 768px) {
@@ -166,7 +166,7 @@
           transition: all 0.15s ease;
         }
         .movement-row:hover {
-          background: rgba(255, 107, 0, 0.04) !important;
+          background: color-mix(in srgb, var(--brand) 4%, transparent) !important;
           transform: scale(1.002);
         }
         
@@ -347,8 +347,8 @@
   box-shadow: 0 0 0 1px var(--good);
 }
 .timeline-dot.active {
-  background: #ff6b00;
-  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.18);
+  background: var(--brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 18%, transparent);
   animation: timeline-glow 1.6s infinite;
 }
 .timeline-content {
@@ -363,9 +363,9 @@
 }
 
 @keyframes timeline-glow {
-  0%   { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0.45); }
-  70%  { box-shadow: 0 0 0 6px rgba(255, 107, 0, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0); }
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 45%, transparent); }
+  70%  { box-shadow: 0 0 0 6px color-mix(in srgb, var(--brand) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 0%, transparent); }
 }
 
 @keyframes fade-in-toast {
@@ -422,14 +422,14 @@
 /* لوحة حركة السوق */
 .o-movement-panel { margin-bottom: 28px; padding: 24px; border-radius: 16px; }
 .o-mv-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 16px; }
-.o-mv-title { margin: 0; font-size: 18px; font-weight: 900; color: #ff6b00; display: flex; align-items: center; gap: 8px; }
+.o-mv-title { margin: 0; font-size: 18px; font-weight: 900; color: var(--brand); display: flex; align-items: center; gap: 8px; }
 .o-mv-sub { margin: 4px 0 0; font-size: 12px; color: var(--muted); font-weight: 600; }
 .o-mv-tabs { display: flex; flex-wrap: wrap; gap: 6px; background: var(--chip); padding: 4px; border-radius: 12px; border: 1px solid var(--line); }
 .o-mv-tab { border: 0; background: transparent; color: var(--muted); font-size: 12px; font-weight: 800; padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-family: inherit; }
 .o-mv-tab.active { background: linear-gradient(135deg, #ff7b00, #ff4500); color: #fff; }
 .o-mv-tablewrap { overflow-x: auto; width: 100%; }
 .o-mv-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 750px; }
-.o-mv-table thead tr { border-bottom: 1px solid var(--line); background: rgba(255,107,0,0.02); }
+.o-mv-table thead tr { border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--brand) 2%, transparent); }
 .o-mv-table th { padding: 12px 10px; color: var(--muted); font-weight: 800; }
 .o-mv-table td { padding: 12px 10px; }
 .o-mv-company { text-align: right; display: flex; align-items: center; gap: 10px; }
@@ -492,14 +492,14 @@
 .o-div-timeline { display: flex; flex-direction: column; gap: 4px; border-top: 1px dashed var(--line); padding-top: 8px; }
 .o-tl-sub { font-size: 9.5px; color: var(--muted2); }
 .o-tl-row { display: flex; justify-content: space-between; }
-.o-tl-ex { color: #ff6b00; }
-.o-remind-btn { width: 100%; border: 1px solid rgba(255,107,0,0.25); background: rgba(255,107,0,0.05); color: #ff6b00; padding: 6px 0; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s ease; }
-.o-remind-btn:hover { background: rgba(255,107,0,0.1); }
+.o-tl-ex { color: var(--brand); }
+.o-remind-btn { width: 100%; border: 1px solid color-mix(in srgb, var(--brand) 25%, transparent); background: color-mix(in srgb, var(--brand) 5%, transparent); color: var(--brand); padding: 6px 0; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s ease; }
+.o-remind-btn:hover { background: color-mix(in srgb, var(--brand) 10%, transparent); }
 .o-remind-btn:disabled { opacity: .5; cursor: not-allowed; }
 .o-viewall-btn { width: 100%; margin-top: 10px; border: 1px solid var(--line); background: var(--chip); color: var(--brand); padding: 8px 0; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; font-family: inherit; }
 
 /* إشعار منبثق (toast) */
-.o-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: #fff; padding: 10px 20px; border-radius: 20px; z-index: 10000; font-size: 12.5px; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid rgba(255,107,0,0.3); backdrop-filter: blur(8px); display: flex; align-items: center; gap: 8px; animation: fade-in-toast 0.25s ease-out; }
+.o-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: #fff; padding: 10px 20px; border-radius: 20px; z-index: 10000; font-size: 12.5px; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid color-mix(in srgb, var(--brand) 30%, transparent); backdrop-filter: blur(8px); display: flex; align-items: center; gap: 8px; animation: fade-in-toast 0.25s ease-out; }
 
 /* ===== مؤشرا السوقين ونشاط الأسهم المغطّاة ===== */
 .idx-panel { margin-bottom: 20px; padding: 20px; }
@@ -525,3 +525,15 @@
 .breadth-legend { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); font-weight: 600; }
 .breadth-legend .up { color: var(--good); }
 .breadth-legend .down { color: var(--bad); }
+
+/* ===== مخطط الأسعار (Lightweight Charts) ===== */
+button.chart-stock-item { width: 100%; font: inherit; color: inherit; }
+.price-chart { position: relative; margin: 10px 0 0; width: 100%; }
+.pc-canvas { position: absolute; inset: 0; }
+.pc-legend { position: absolute; z-index: 2; top: 4px; left: 8px; /* بعيدًا عن سلّم الأسعار يمينًا */ font-size: 12px; color: var(--muted);
+  background: color-mix(in srgb, var(--panel-solid) 80%, transparent); border-radius: 8px; padding: 2px 8px; pointer-events: none; }
+.pc-legend b { color: var(--txt); font-size: 13px; margin-inline-end: 4px; }
+.chart-empty { height: 260px; margin-top: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 14px; padding: 16px; }
+.chart-empty b { color: var(--txt); }
+.chart-empty span { font-size: 12.5px; max-width: 420px; }
