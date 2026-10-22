@@ -9,12 +9,14 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { num, TV_COLS, parseTvRow, applyQuote, INDEX_TICKERS, toIndexQuote } from './lib.mjs'
+import { num, isoDate, TV_COLS, parseTvRow, applyQuote, INDEX_TICKERS, toIndexQuote, mergeDividend, staleStocks } from './lib.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(__dirname, '..')
 const OUT = resolve(ROOT, 'public/data.json')
 const SEED = resolve(ROOT, 'src/data/seed.json')
+// تقرير المراجعة البشرية (غير مُلتزَم): يُنشر في Issue من سير العمل على main
+const REVIEW = resolve(ROOT, 'review.md')
 
 const UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36'
@@ -77,10 +79,8 @@ async function main() {
   const autos = data.stocks.filter((s) => s.priceAuto)
   const results = new Map() // sym -> { ...quote, src }
 
-  // 1) دفعة TradingView الغنية لكل الأسهم (DFM:<sym> أو الرمز المُهيّأ لـ ADX)
-  const batch = autos
-    .map((s) => ({ sym: s.sym, key: s.ex === 'ADX' ? s.tradingview : `DFM-${s.sym}` }))
-    .filter((b) => b.key)
+  // 1) دفعة TradingView الغنية لكل الأسهم (الرمز المُهيّأ في tradingview، وإلا <السوق>-<الرمز>)
+  const batch = autos.map((s) => ({ sym: s.sym, key: s.tradingview ?? `${s.ex}-${s.sym}` }))
   try {
     const map = await fetchTvBatch(batch.map((b) => b.key))
     for (const b of batch) if (map[b.key]) results.set(b.sym, { ...map[b.key], time: new Date() })
@@ -117,12 +117,22 @@ async function main() {
   }
 
   // 4) التطبيق + التقرير
+  const today = isoDate(new Date())
   let ok = 0
   const stale = []
+  const divChanges = []
+  const divConflicts = []
   for (const s of autos) {
     const r = results.get(s.sym)
     if (r) {
       applyQuote(s, r, r.time)
+      // التوزيعات: دمج محافظ (اليدوي الموثّق يبقى، والأحدث يُضاف معلَّمًا «يلزم التحقق»)
+      if (r.div) {
+        const m = mergeDividend(s.div, r.div, today)
+        s.div = m.div
+        m.changes.forEach((c) => divChanges.push({ s, ...c }))
+        m.conflicts.forEach((c) => divConflicts.push({ s, ...c }))
+      }
       ok++
       const chg = typeof s.change === 'number' ? `${s.change > 0 ? '+' : ''}${s.change}%` : '—'
       const vol = typeof s.volume === 'number' ? s.volume.toLocaleString('en-US') : '—'
@@ -151,6 +161,8 @@ async function main() {
     console.warn(`… جلب المؤشرات فشل: ${e.message}`)
   }
 
+  writeReview(staleStocks(data.stocks), divChanges, divConflicts)
+
   data.lastUpdated = new Date().toISOString()
   data.source = ok > 0 ? 'tradingview+yahoo' : 'manual'
 
@@ -161,6 +173,29 @@ async function main() {
 
   console.log(`\nاكتمل: ${ok}/${autos.length} نجاح${stale.length ? ` — متقادمة: ${stale.join(', ')}` : ''}`)
   if (ok === 0) process.exit(1)
+}
+
+/** يكتب تقرير المراجعة البشرية (Markdown) — فارغ إن لم يكن هناك ما يُراجع. */
+function writeReview(staleList, changes, conflicts) {
+  const name = (s) => `${s.name.split('—')[0].trim()} (${s.sym})`
+  const out = []
+  if (changes.length) {
+    out.push('### توزيعات أُضيفت آليًا — تظهر في الموقع بعلامة «يلزم التحقق»', '',
+      '| السهم | النوع | الاستبعاد | الدفع | المبلغ |', '|---|---|---|---|---|',
+      ...changes.map((c) => `| ${name(c.s)} | ${c.kind === 'upcoming' ? 'قادم' : 'أحدث من اليدوي'} | ${c.ex} | ${c.pay ?? '—'} | ${c.ps ?? '—'} |`), '')
+  }
+  if (conflicts.length) {
+    out.push('### تعارضات: أُبقيت القيمة اليدوية — يُرجى التحقق من الإفصاح الرسمي', '',
+      '| السهم | الحقل | اليدوي (معروض) | TradingView |', '|---|---|---|---|',
+      ...conflicts.map((c) => `| ${name(c.s)} | ${c.field} | ${c.manual} | ${c.auto} |`), '')
+  }
+  if (staleList.length) {
+    out.push('### أسعار متقادمة — تعذّر جلبها من كل المصادر', '',
+      '| السهم | آخر سعر بتاريخ | منذ (يوم) |', '|---|---|---|',
+      ...staleList.map((x) => `| ${x.sym} | ${x.asof ?? '—'} | ${x.days ?? '—'} |`), '')
+  }
+  writeFileSync(REVIEW, out.length ? out.join('\n') : '', 'utf8')
+  console.log(`\nالمراجعة: ${changes.length} توزيع آلي، ${conflicts.length} تعارض، ${staleList.length} سعر متقادم`)
 }
 
 main().catch((e) => {

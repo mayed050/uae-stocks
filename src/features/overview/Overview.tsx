@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import type { Stock } from '@/data'
 import type { View } from '@/components/nav'
 import { useStocks, useMarketStats } from '@/store'
+import { sessionDate as lastSession } from '@/lib'
 import PageHeader from '@/components/ui/PageHeader'
 import MarketKpiStrip from './MarketKpiStrip'
 import MarketIndexCards from './MarketIndexCards'
@@ -38,7 +39,7 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
   // نشاط آخر جلسة للأسهم المغطّاة — من الحقول الحقيقية فقط (حجم + نسبة تغيّر) ولأحدث تاريخ تداول،
   // فلا تدخل أسهم متقادمة السعر أو أحجام مولّدة في المجاميع.
   const marketActivity = useMemo(() => {
-    const sessionDate = DATA.reduce<string | null>((m, s) => (s.asof && (!m || s.asof > m) ? s.asof : m), null)
+    const sessionDate = lastSession(DATA)
     const session = DATA.filter((s) => s.asof === sessionDate && typeof s.volume === 'number' && typeof s.price === 'number')
     let dfmVolume = 0
     let adxVolume = 0

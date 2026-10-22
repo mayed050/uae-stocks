@@ -31,7 +31,8 @@ export function dividendEvents(s: Stock, today: Date = new Date()): CalEvent[] {
   for (const step of STEPS) {
     const d = parseISO(s.div[step.key] ?? null)
     if (!d || d < start) continue
-    const details = [s.div.ps && `التوزيع: ${s.div.ps}`, `السوق: ${s.ex}`, 'تحقّق دائمًا من إفصاح الشركة الرسمي.']
+    const ps = step.key.startsWith('next') ? (s.div.nextPs ?? s.div.ps) : s.div.ps
+    const details = [ps && `التوزيع: ${ps}`, `السوق: ${s.ex}`, 'تحقّق دائمًا من إفصاح الشركة الرسمي.']
     events.push({
       uid: `${s.sym}-${step.key}-${ymd(d)}@uae-stocks`,
       date: d,

@@ -1,12 +1,12 @@
-import { X, RefreshCw, PenLine, BriefcaseBusiness, ChartCandlestick, AlarmClock, Info } from 'lucide-react'
+import { X, RefreshCw, PenLine, BriefcaseBusiness, ChartCandlestick, AlarmClock, Info, TriangleAlert } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Stock } from '../data'
 import { CAT_LABEL } from '../data'
-import { upcoming, isAlert } from '../lib'
+import { upcoming, isAlert, isStale, sessionDate } from '../lib'
 import { parseGrowth, symColor } from '../format'
 import Avatar from './Avatar'
 import Snowflake from './Snowflake'
-import { usePortfolio, useHistory, useUiStore } from '../store'
+import { usePortfolio, useHistory, useUiStore, useStocks } from '../store'
 import { periodSeries } from '@/market'
 import type { Timeframe } from '@/market'
 import PriceChart from './PriceChart'
@@ -22,6 +22,15 @@ function Row({ k, val }: { k: string; val: React.ReactNode }) {
   )
 }
 
+/** علامة «آلي — يلزم التحقق» بجانب قيمة ملأها خط البيانات من TradingView ولم تُراجَع بعد. */
+function AutoMark({ asof }: { asof: string }) {
+  return (
+    <span className="auto-mark" title={`أضيفت آليًا من TradingView بتاريخ ${asof} — تحقّق من الإفصاح الرسمي للشركة`}>
+      آلي · يلزم التحقق
+    </span>
+  )
+}
+
 function readTheme(): 'dark' | 'light' {
   return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
 }
@@ -31,6 +40,16 @@ const TF_LABEL: Record<'1M' | '3M' | '6M' | '1Y', string> = { '1M': 'شهر', '3
 export default function StockDetail({ item, onClose }: { item: Stock; onClose: () => void }) {
   const { isInPortfolio, togglePortfolioStock } = usePortfolio()
   const added = isInPortfolio(item.sym)
+  const { stocks } = useStocks()
+  const session = sessionDate(stocks)
+  const stale = isStale(item, session)
+  const auto = item.div.auto
+  const dv = (key: keyof typeof item.div, x: string | null | undefined) => (
+    <>
+      {v(x)}
+      {auto?.fields.includes(key) && <AutoMark asof={auto.asof} />}
+    </>
+  )
   const { history: histMap, pending: histPending } = useHistory()
   const [tfSel, setTfSel] = useState<Extract<Timeframe, '1M' | '3M' | '6M' | '1Y'>>('1Y')
   const [showTv, setShowTv] = useState(false)
@@ -126,6 +145,11 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
                 {Math.abs(item.change).toFixed(2)}% اليوم
               </div>
             )}
+            {stale && (
+              <div className="stale-badge" role="note">
+                <TriangleAlert size={12} className="ico" aria-hidden /> آخر سعر متاح بتاريخ {item.asof} — تعذّر تحديثه
+              </div>
+            )}
             <div className="c">
               درهم · {item.asof ?? NA}
               <span className={'src-badge ' + (item.priceAuto ? 'auto' : 'manual')}>
@@ -162,6 +186,9 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
             <Row k="صافي الربح" val={v(item.net)} />
             <Row k="الإيرادات" val={v(item.rev)} />
             <Row k="نمو صافي الربح" val={g === null ? v(null) : `${g > 0 ? '+' : ''}${g}%`} />
+            {item.low52 != null && item.high52 != null && (
+              <Row k="المدى خلال 52 أسبوعًا" val={<span dir="ltr">{item.low52.toFixed(2)} – {item.high52.toFixed(2)}</span>} />
+            )}
           </section>
 
           <section className="modal-card">
@@ -173,16 +200,17 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
           <section className="modal-card wide">
             <h3>التوزيعات</h3>
             <div className="modal-divgrid">
-              <Row k="لكل سهم" val={v(item.div.ps)} />
-              <Row k="العائد النقدي" val={v(item.div.yld)} />
+              <Row k="لكل سهم" val={dv('ps', item.div.ps)} />
+              <Row k="العائد النقدي" val={dv('yld', item.div.yld)} />
               <Row k="التكرار" val={v(item.div.freq)} />
               <Row k="آخر يوم شراء" val={v(item.div.lastEnt)} />
-              <Row k="تاريخ الاستبعاد" val={v(item.div.exd)} />
+              <Row k="تاريخ الاستبعاد" val={dv('exd', item.div.exd)} />
               <Row k="إغلاق السجل" val={v(item.div.rec)} />
-              <Row k="تاريخ الدفع" val={v(item.div.pay)} />
+              <Row k="تاريخ الدفع" val={dv('pay', item.div.pay)} />
               <Row k="الجمعية العمومية" val={v(item.div.agm)} />
-              {item.div.nextExd && <Row k="استبعاد الشريحة القادمة" val={v(item.div.nextExd)} />}
-              {item.div.nextPay && <Row k="دفع الشريحة القادمة" val={v(item.div.nextPay)} />}
+              {item.div.nextExd && <Row k="استبعاد الشريحة القادمة" val={dv('nextExd', item.div.nextExd)} />}
+              {item.div.nextPay && <Row k="دفع الشريحة القادمة" val={dv('nextPay', item.div.nextPay)} />}
+              {item.div.nextPs && <Row k="مبلغ الشريحة القادمة" val={dv('nextPs', item.div.nextPs)} />}
             </div>
             {item.div.note && <div className="modal-tag"><Info size={13} className="ico" aria-hidden /> {item.div.note}</div>}
           </section>

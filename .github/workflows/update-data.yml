@@ -53,9 +53,35 @@ jobs:
             git push
           fi
 
+      # مراجعة بشرية: توزيعات أُضيفت آليًا، وتعارضات بين المصادر، وأسعار متقادمة — في Issue واحد يُحدَّث
+      # يوميًا ويُغلق تلقائيًا حين لا يبقى ما يُراجع. على main فقط (التشغيل التجريبي على فرع لا يمسّ Issues).
+      - name: Publish review issue
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="🔎 مراجعة البيانات الآلية"
+          existing=$(gh issue list --state open --search "$title in:title" --json number --jq '.[0].number' 2>/dev/null || echo "")
+          if [ -s review.md ]; then
+            { echo "آخر تحديث: $(date -u +%F) — القيم الآلية تظهر في الموقع بعلامة «يلزم التحقق»."; echo; cat review.md; } > review-body.md
+            if [ -n "$existing" ]; then gh issue edit "$existing" --body-file review-body.md || true
+            else gh issue create --title "$title" --body-file review-body.md || true; fi
+          elif [ -n "$existing" ]; then
+            gh issue close "$existing" --comment "لا بنود للمراجعة في تحديث $(date -u +%F)." || true
+          fi
+
+      - name: Show review (non-main runs)
+        if: github.ref != 'refs/heads/main'
+        run: |
+          [ -s review.md ] || { echo "لا بنود للمراجعة"; exit 0; }
+          split -l 30 review.md review_part_
+          for f in review_part_*; do
+            echo "::notice title=review-$f::$(sed -e 's/%/%25/g' "$f" | awk 'BEGIN{ORS="%0A"} {print}')"
+          done
+
       # تنبيه عند فشل الجلب: يفتح Issue واحدًا (أو يعلّق على القائم) بدل التجاهل الصامت.
       - name: Alert on failure
-        if: failure()
+        if: failure() && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

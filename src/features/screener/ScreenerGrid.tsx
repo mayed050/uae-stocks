@@ -20,7 +20,8 @@ import type { Stock } from '@/data'
 import { parseAmount, parseYield } from '@/format'
 import Avatar from '@/components/Avatar'
 import { cell } from '@/components/ui/cell'
-import { usePortfolio } from '@/store'
+import { usePortfolio, useStocks } from '@/store'
+import { isStale, sessionDate } from '@/lib'
 import type { SortKey } from '@/search'
 
 // الترتيب يتم مسبقًا في المستكشف (يشترك فيه العرض القطاعي)، فالجدول يعرض الترتيب ويتحكّم به فقط.
@@ -28,6 +29,18 @@ const features = tableFeatures({ rowSortingFeature, columnVisibilityFeature })
 const helper = createColumnHelper<typeof features, Stock>()
 
 const SORTABLE: readonly string[] = ['name', 'price', 'change', 'pe', 'mcap', 'yield'] satisfies SortKey[]
+
+/** السعر مع نقطة تنبيه إن كان أقدم من آخر جلسة (تعذّر تحديثه). */
+function PriceCell({ s }: { s: Stock }) {
+  const { stocks } = useStocks()
+  const stale = isStale(s, sessionDate(stocks))
+  return (
+    <>
+      {cell(s.price?.toFixed(2) ?? null)}
+      {stale && <span className="stale-dot" role="img" aria-label={`سعر متقادم بتاريخ ${s.asof}`} title={`آخر سعر متاح بتاريخ ${s.asof} — تعذّر تحديثه`} />}
+    </>
+  )
+}
 
 function PortfolioToggle({ sym }: { sym: string }) {
   const { isInPortfolio, togglePortfolioStock } = usePortfolio()
@@ -64,7 +77,7 @@ const columns = helper.columns([
     },
   }),
   helper.accessor('ex', { header: 'السوق', enableSorting: false, cell: (c) => <span className={'exch ex-' + c.getValue()}>{c.getValue()}</span> }),
-  helper.accessor('price', { header: 'السعر', cell: (c) => cell(c.getValue()?.toFixed(2) ?? null) }),
+  helper.accessor('price', { header: 'السعر', cell: (c) => <PriceCell s={c.row.original} /> }),
   helper.accessor('change', {
     header: 'التغيّر اليومي',
     cell: (c) => {

@@ -23,7 +23,10 @@ export const DividendSchema = z.object({
   note: z.optional(z.string()),
   nextExd: z.optional(isoDate),
   nextPay: z.optional(isoDate),
+  nextPs: z.optional(z.string()),
   watch: z.optional(z.boolean()),
+  // مصدر الحقول المملوءة آليًا (غير المتحقق منها بعد) — تُعرض بعلامة «يلزم التحقق»
+  auto: z.optional(z.object({ src: z.string(), asof: isoDate, fields: z.array(z.string()) })),
 })
 
 export const StockSchema = z.object({
@@ -42,6 +45,8 @@ export const StockSchema = z.object({
   high: optNullable(price),
   low: optNullable(price),
   volume: optNullable(z.int().check(z.nonnegative())),
+  high52: optNullable(price),
+  low52: optNullable(price),
   asof: nullable(isoDate),
   mcap: nullable(z.string()),
   pe: nullable(z.number()),

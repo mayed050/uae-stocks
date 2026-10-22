@@ -26,7 +26,7 @@ export function daysUntil(d: Date | null): number | null {
 export function upcoming(item: Stock): Upcoming | null {
   const cands: { d: Date; label: string; ps?: string | null }[] = []
   const e1 = parseISO(item.div.exd); if (e1) cands.push({ d: e1, label: 'تاريخ الاستبعاد', ps: item.div.ps })
-  const e2 = parseISO(item.div.nextExd); if (e2) cands.push({ d: e2, label: 'الشريحة القادمة', ps: item.div.note ?? item.div.ps })
+  const e2 = parseISO(item.div.nextExd); if (e2) cands.push({ d: e2, label: 'الشريحة القادمة', ps: item.div.nextPs ?? item.div.note ?? item.div.ps })
   const le = parseISO(item.div.lastEnt); if (le) cands.push({ d: le, label: 'آخر يوم شراء', ps: item.div.ps })
 
   const withDays = cands.map((c) => ({ ...c, n: daysUntil(c.d) }))
@@ -62,4 +62,15 @@ export function isAlert(u: Upcoming | null): boolean {
   // فقط التوزيعات القادمة خلال 30 يوماً، أو العناصر المراقبة (watch) بدون تاريخ
   // التواريخ الماضية (n < 0) لا تُشعل تنبيهاً — تُعرض فقط في جدول التقويم
   return Boolean(u.watch) || (u.n !== null && u.n >= 0 && u.n <= 30)
+}
+
+/** تاريخ آخر جلسة تداول في البيانات (أحدث asof). */
+export function sessionDate(stocks: Stock[]): string | null {
+  return stocks.reduce<string | null>((m, s) => (s.asof && (!m || s.asof > m) ? s.asof : m), null)
+}
+
+/** هل سعر السهم أقدم من آخر جلسة بأكثر من يومين تقويميين (تعذّر جلبه من كل المصادر)؟ */
+export function isStale(s: Stock, session: string | null): boolean {
+  if (!s.priceAuto || !s.asof || !session) return false
+  return (Date.parse(session) - Date.parse(s.asof)) / 86400000 > 2
 }

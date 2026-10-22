@@ -452,7 +452,8 @@
       "open": 302,
       "high": 305,
       "low": 302,
-      "volume": 27
+      "volume": 27,
+      "tradingview": "DFM-MASQ"
     },
     {
       "sym": "DIC",
@@ -612,7 +613,8 @@
       "open": 5.8,
       "high": 5.97,
       "low": 5.71,
-      "volume": 3575516
+      "volume": 3575516,
+      "tradingview": "DFM-PARKIN"
     },
     {
       "sym": "AMANAT",
@@ -786,7 +788,7 @@
       "cat": "income",
       "yahoo": null,
       "priceAuto": true,
-      "tradingview": "ADX-EAND",
+      "tradingview": "ADX-ETISALAT",
       "price": 20.88,
       "asof": "2026-10-13",
       "mcap": "180 مليار",

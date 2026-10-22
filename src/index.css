@@ -554,3 +554,9 @@ th.sortable:hover{color:var(--txt)}
   background:var(--brand-fill); color:#fff; border:0; border-radius:10px; padding:10px 16px; font:inherit; font-weight:700; cursor:pointer}
 .skip-link:focus{transform:none}
 .main:focus{outline:none}
+
+/* ===== مصدر البيانات: قيم آلية غير متحقق منها، وأسعار متقادمة ===== */
+.auto-mark{display:inline-block; margin-inline-start:6px; font-size:10.5px; font-weight:700; color:var(--warn);
+  border:1px dashed currentColor; border-radius:999px; padding:0 7px; vertical-align:1px; white-space:nowrap; cursor:help}
+.stale-badge{display:inline-flex; align-items:center; gap:4px; margin:4px 0; font-size:11.5px; font-weight:700; color:var(--warn)}
+.stale-dot{display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--warn); margin-inline-start:6px; vertical-align:middle}

@@ -45,7 +45,11 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
   // البيانات اليومية الفنية للسهم المختار
   const tech = useMemo(() => {
     if (!currentStock) return null
-    return getTechnicalData(currentStock)
+    const t = getTechnicalData(currentStock)
+    // المدى السنوي حقيقي من TradingView متى توفّر (بدل القيمة التوضيحية)
+    return currentStock.high52 != null && currentStock.low52 != null
+      ? { ...t, yearHigh: currentStock.high52, yearLow: currentStock.low52 }
+      : t
   }, [currentStock])
 
   // البيانات التاريخية لتبويب ملخص يومي

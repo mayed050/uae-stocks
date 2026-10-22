@@ -101,6 +101,9 @@ export default function DividendTrackerWidget({
                     </div>
                   </div>
                   {countdownBadge}
+                  {s.div.auto?.fields.some((f) => f === 'exd' || f === 'nextExd') && (
+                    <span className="auto-mark" title={`تاريخ أُضيف آليًا من TradingView (${s.div.auto.asof}) — تحقّق من الإفصاح الرسمي`}>يلزم التحقق</span>
+                  )}
                 </div>
 
                 {/* قيمة التوزيع والعائد */}
