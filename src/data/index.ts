@@ -14,6 +14,7 @@ export const CAT_LABEL: Record<Category, string> = {
   income: 'دخل مستقر',
   growth: 'نمو',
   risk: 'مخاطر أعلى',
+  unrated: 'غير مصنّف',
 }
 
 /** البيانات المُضمَّنة كنسخة احتياطية (fallback) إن تعذّر جلب data.json وقت التشغيل. */

@@ -64,7 +64,7 @@ export function scores(s: Stock): Scores {
     yield: y === null ? 0 : clamp((y / 8) * 100),
     value: s.pe === null ? 50 : clamp(((40 - s.pe) / 35) * 100),
     growth: g === null ? 45 : clamp((g / 35) * 100),
-    stability: s.cat === 'income' ? 85 : s.cat === 'growth' ? 60 : 32,
+    stability: s.cat === 'income' ? 85 : s.cat === 'growth' ? 60 : s.cat === 'risk' ? 32 : 50, // غير مصنّف: محايد
     size: mc === null ? 40 : clamp((mc / 130e9) * 100),
   }
 }
@@ -113,6 +113,8 @@ export function getAnnualPs(s: Stock): number {
   if (freq === 'سنوي') return val
   // fallback: بعض السجلات القديمة قد تضمّن التكرار في ps
   if (s.div.ps?.includes('ربع')) return val * 4
+  // تكرار غير معروف (الأسهم المكتشفة آليًا): التوزيع الفعلي لآخر 12 شهرًا أدق من آخر شريحة
+  if (s.div.ttmPs != null) return s.div.ttmPs
   return val
 }
 

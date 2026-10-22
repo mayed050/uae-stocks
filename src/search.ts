@@ -22,6 +22,7 @@ export interface ScreenerSearch {
   sort?: SortKey
   dir?: 'asc' | 'desc'
   view?: DisplayMode
+  cov?: 'curated'
 }
 
 function oneOf<T extends string>(v: unknown, allowed: readonly T[]): T | undefined {
@@ -43,6 +44,7 @@ export function validateScreenerSearch(raw: Record<string, unknown>): ScreenerSe
     sort: oneOf(raw.sort, ['name', 'price', 'change', 'pe', 'yield', 'mcap'] as const),
     dir: oneOf(raw.dir, ['asc', 'desc'] as const),
     view: oneOf(raw.view, ['list', 'sectors'] as const),
+    cov: oneOf(raw.cov, ['curated'] as const),
   }
   // حذف المفاتيح الفارغة كي لا تظهر في الرابط
   return Object.fromEntries(Object.entries(out).filter(([, v]) => v !== undefined))

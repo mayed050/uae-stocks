@@ -25,8 +25,6 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
     stats,
     alertRows,
     sectorData,
-    maxYield,
-    maxMcap,
     yieldLeaders,
     marketGiants,
     valuationOpportunities,
@@ -88,7 +86,7 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
           <MarketMovementPanel stocks={DATA} onOpen={onOpen} />
 
           {/* خريطة السوق الحرارية التفاعلية */}
-          <HeatmapSection stocks={DATA} maxYield={maxYield} maxMcap={maxMcap} onOpen={onOpen} />
+          <HeatmapSection stocks={DATA} onOpen={onOpen} />
         </div>
 
         {/* العمود الأيسر الجانبي (المعلومات الرديفة 30%) */}

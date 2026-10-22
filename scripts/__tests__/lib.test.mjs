@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { num, round, fmtMcap, parseTvRow, applyQuote, USD_AED, toIndexQuote, tvDate, fmtDps, mergeDividend, staleStocks, mergeHistory, TV_DIV_FX } from '../lib.mjs'
+import { num, round, fmtMcap, parseTvRow, applyQuote, toIndexQuote, tvDate, fmtDps, mergeDividend, staleStocks, mergeHistory, arName, arSector, fundamentalsText, discoverStocks, stockKey, TV_COLS } from '../lib.mjs'
 
 describe('num', () => {
   it('يقبل الأرقام الصحيحة', () => {
@@ -41,8 +41,8 @@ describe('fmtMcap', () => {
 })
 
 describe('parseTvRow', () => {
-  it('يحوّل صفًا صحيحًا ويحوّل القيمة السوقية من الدولار إلى الدرهم', () => {
-    // [close, change, open, high, low, volume, market_cap_basic(USD), pe]
+  it('يحوّل صفًا صحيحًا (قيم uae/scan بالدرهم مباشرة)', () => {
+    // [close, change, open, high, low, volume, market_cap_basic(AED), pe]
     const q = parseTvRow([2.61, 1.5564, 2.58, 2.61, 2.56, 14466114, 1e9, 14.9])
     expect(q.price).toBe(2.61)
     expect(q.changePct).toBeCloseTo(1.5564, 4)
@@ -50,7 +50,7 @@ describe('parseTvRow', () => {
     expect(q.high).toBe(2.61)
     expect(q.low).toBe(2.56)
     expect(q.volume).toBe(14466114)
-    expect(q.mcapAed).toBeCloseTo(1e9 * USD_AED, 5)
+    expect(q.mcapAed).toBe(1e9)
     expect(q.pe).toBe(14.9)
     expect(q.src).toBe('tradingview')
   })
@@ -125,18 +125,19 @@ describe('tvDate / fmtDps', () => {
     expect(tvDate(null)).toBeNull()
   })
   it('صيغة المبلغ: فلس دون الدرهم، ودرهم بمنزلتين', () => {
-    // معايرة TV_DIV_FX على توزيعات رسمية: ديوا 6.2 فلس، إعمار 1.00 درهم و50 فلسًا، الأول 0.80 درهم
-    expect(fmtDps(0.016854079728160002 * TV_DIV_FX)).toBe('6.2 فلس')
-    expect(fmtDps(0.27183 * TV_DIV_FX)).toBe('1.00 درهم')
-    expect(fmtDps(0.135915 * TV_DIV_FX)).toBe('50 فلس')
-    expect(fmtDps(0.217472 * TV_DIV_FX)).toBe('80 فلس')
+    // مبالغ uae/scan بالدرهم كما أُعلنت (ديوا 0.061999999، الأول 0.800000012، أدنوك للغاز 0.0450000018)
+    expect(fmtDps(0.061999999)).toBe('6.2 فلس')
+    expect(fmtDps(1)).toBe('1.00 درهم')
+    expect(fmtDps(0.5)).toBe('50 فلس')
+    expect(fmtDps(0.800000012)).toBe('80 فلس')
+    expect(fmtDps(0.0450000018)).toBe('4.5 فلس')
     expect(fmtDps(0)).toBeNull()
   })
 })
 
 describe('parseTvRow — التوزيعات و52 أسبوعًا', () => {
   it('يقرأ الحقول الجديدة ويحوّل المبالغ إلى الدرهم', () => {
-    const q = parseTvRow([11.38, -1.2, 11.5, 11.6, 11.3, 1e6, 1e10, 9, 17.25, 10.15, 8.68, 1775217540, 1776859140, 0.27183, 1794571140, 1795780740, 0.135915])
+    const q = parseTvRow([11.38, -1.2, 11.5, 11.6, 11.3, 1e6, 101822179046, 9, 17.25, 10.15, 8.68, 1775217540, 1776859140, 1, 1794571140, 1795780740, 0.5])
     expect(q.high52).toBe(17.25)
     expect(q.low52).toBe(10.15)
     expect(q.div).toMatchObject({ yieldPct: 8.68, exRecent: '2026-04-03', payRecent: '2026-04-22', exNext: '2026-11-13', payNext: '2026-11-27' })
@@ -148,7 +149,7 @@ describe('mergeDividend', () => {
   it('حدث أحدث (ديوا: مرحلي أكتوبر) يُعتمد ويُعلَّم آليًا، وتُفرَّغ الحقول المرتبطة بالحدث القديم', () => {
     const { div, changes, conflicts } = mergeDividend(
       manual({ exd: '2026-04-10', pay: '2026-04-20', ps: '6.2 فلس (شريحة)' }),
-      { exRecent: '2026-10-15', payRecent: '2026-10-28', amountRecent: 0.016854 * TV_DIV_FX },
+      { exRecent: '2026-10-15', payRecent: '2026-10-28', amountRecent: 0.061999999 },
       TODAY,
     )
     expect(div).toMatchObject({ exd: '2026-10-15', pay: '2026-10-28', ps: '6.2 فلس', lastEnt: null, rec: null, agm: null })
@@ -235,5 +236,58 @@ describe('mergeHistory', () => {
     expect(mergeHistory(once, {}, stocks).FAB).toEqual([['2026-10-22', 18.62]])
     const long = { FAB: Array.from({ length: 500 }, (_, i) => [`2025-01-${String(i).padStart(3, '0')}`, 1]) }
     expect(mergeHistory(long, {}, [{ sym: 'FAB', priceAuto: false }], 400).FAB).toHaveLength(400)
+  })
+})
+
+describe('التغطية الكاملة', () => {
+  it('arName: يوحّد أشكال العرض ويحذف الصيغ القانونية، ويُبقي الإنجليزي إن خلا من العربية', () => {
+    expect(arName('بنك أبوظبي اﻷول')).toBe('بنك أبوظبي الأول')
+    expect(arName('إعمار العقارية (ش.م.ع)')).toBe('إعمار العقارية')
+    expect(arName('شعاع كابيتال ش.م.ع.')).toBe('شعاع كابيتال')
+    expect(arName('شركة مجموعة اﻻمارات لﻼتصاﻻت(مجموعةاتصاﻻت)ش م ع')).toBe('شركة مجموعة الامارات للاتصالات(مجموعةاتصالات)')
+    expect(arName('Dubai Electricity & Water Authority PJSC')).toBe('Dubai Electricity & Water Authority')
+    expect(arName(null)).toBeNull()
+  })
+  it('arSector: الصناعة أولًا ثم القطاع ثم «أخرى»', () => {
+    expect(arSector('Finance', 'Major Banks')).toBe('بنوك')
+    expect(arSector('Finance', 'Real Estate Development')).toBe('عقار')
+    expect(arSector('Producer Manufacturing', 'Building Products')).toBe('صناعة')
+    expect(arSector('Unknown', 'Unknown')).toBe('أخرى')
+  })
+  it('fundamentalsText: الخسارة والنمو بصيغة العرض', () => {
+    expect(fundamentalsText({ eps: 2.171, roe: 21.649, revenue: 54861695000, netIncome: 19189256000, netGrowth: 25.8032 }))
+      .toEqual({ eps: '2.17', roe: '21.6%', rev: '54.9 مليار', net: '19.2 مليار (+25.8%)' })
+    expect(fundamentalsText({ netIncome: -48941000, netGrowth: -202.1 }).net).toBe('خسارة 49 مليون (-202.1%)')
+  })
+  it('discoverStocks: يضيف الأسهم العادية غير المغطّاة فقط', () => {
+    const q = (meta) => ({ meta: { type: 'stock', subtype: 'common', exchange: 'DFM', ...meta } })
+    const existing = [{ sym: 'EAND', ex: 'ADX', tradingview: 'ADX-ETISALAT' }, { sym: 'EMAAR', ex: 'DFM' }]
+    const rows = [
+      { key: 'DFM-EMAAR', q: q({ name: 'EMAAR' }) },
+      { key: 'ADX-ETISALAT', q: q({ name: 'ETISALAT', exchange: 'ADX' }) },
+      { key: 'DFM-SHUAA', q: q({ name: 'SHUAA', description: 'شعاع كابيتال ش.م.ع.', sector: 'Finance', industry: 'Investment Managers' }) },
+      { key: 'ADX-SOMEETF', q: q({ name: 'SOMEETF', type: 'fund', subtype: 'etf', exchange: 'ADX' }) },
+      { key: 'NASDAQDUBAI-DPW', q: q({ name: 'DPW', exchange: 'NASDAQDUBAI' }) },
+    ]
+    const out = discoverStocks(rows, existing)
+    expect(out).toHaveLength(1)
+    expect(out[0]).toMatchObject({ sym: 'SHUAA', name: 'شعاع كابيتال', ex: 'DFM', sector: 'خدمات مالية', cat: 'unrated', auto: true, priceAuto: true })
+    expect(stockKey(out[0])).toBe('DFM-SHUAA')
+  })
+  it('applyQuote: يملأ الأساسيات للأسهم الآلية فقط، ويضيف الشعار والتوزيع السنوي الفعلي', () => {
+    const row = (vals) => TV_COLS.map((c) => vals[c] ?? null)
+    const q = parseTvRow(row({ close: 11.38, dividends_yield_current: 8.787, earnings_per_share_basic_ttm: 2.171, logoid: 'emaar-properties' }))
+    const auto = { auto: true, div: {} }
+    applyQuote(auto, q, new Date('2026-10-22T12:00:00Z'))
+    expect(auto.eps).toBe('2.17')
+    expect(auto.logo).toBe('https://s3-symbol-logo.tradingview.com/emaar-properties--big.svg')
+    expect(auto.div.ttmPs).toBeCloseTo(1.0, 2)
+    const curated = { eps: '2.20', div: {} }
+    applyQuote(curated, q, new Date('2026-10-22T12:00:00Z'))
+    expect(curated.eps).toBe('2.20')
+  })
+  it('mergeHistory: لا تراكم يومي للأسهم الآلية', () => {
+    const h = mergeHistory({}, {}, [{ sym: 'SHUAA', auto: true, priceAuto: true, price: 0.3, asof: '2026-10-22' }])
+    expect(h.SHUAA).toBeUndefined()
   })
 })

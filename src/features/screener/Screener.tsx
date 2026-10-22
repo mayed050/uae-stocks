@@ -65,6 +65,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
     const list = DATA.filter((s) => {
       if (ex !== 'all' && s.ex !== ex) return false
       if (cat !== 'all' && s.cat !== cat) return false
+      if (search.cov === 'curated' && s.auto) return false
       if (sector !== 'all') {
         const allowedSectors = mapDFMSectorToDb(sector)
         if (!allowedSectors.includes(s.sector)) return false
@@ -88,7 +89,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
         return String(av).localeCompare(String(bv), 'ar') * dir
       return (av - bv) * dir
     })
-  }, [DATA, q, ex, cat, sector, sort, dir])
+  }, [DATA, q, ex, cat, sector, sort, dir, search.cov])
 
   const sectorGroups = useMemo(() => {
     const groups: { title: string; stocks: Stock[] }[] = []
@@ -146,6 +147,12 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
             <div className="chips">
               {([['all', 'كل الأسواق'], ['DFM', 'دبي'], ['ADX', 'أبوظبي']] as const).map(([v, l]) => (
                 <button key={v} className="chip" aria-pressed={ex === v} onClick={() => update({ ex: v === 'all' ? undefined : v })}>{l}</button>
+              ))}
+            </div>
+            <div className="chips">
+              {([['all', 'كل الأسهم'], ['curated', 'المُراجَعة يدويًا']] as const).map(([v, l]) => (
+                <button key={v} className="chip" aria-pressed={(search.cov ?? 'all') === v} onClick={() => update({ cov: v === 'all' ? undefined : v })}
+                  title={v === 'curated' ? 'الأسهم ذات البيانات المنسّقة يدويًا (التوزيعات والأساسيات)' : 'كامل أسهم السوقين، ومنها المضافة آليًا'}>{l}</button>
               ))}
             </div>
             <div className="chips">

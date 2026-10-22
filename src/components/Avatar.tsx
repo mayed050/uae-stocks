@@ -1,10 +1,24 @@
 import { useState } from 'react'
 import { symColor } from '../format'
 import { TRADINGVIEW_LOGO_MAP } from '@/data/logos'
+import type { Stock } from '@/data'
+import { useStocks } from '@/store'
+
+// خريطة الرمز → الشعار مبنية مرة لكل نسخة بيانات (لا بحث خطّي لكل أفاتار)
+const logoCache = new WeakMap<Stock[], Map<string, string>>()
+function logoFor(stocks: Stock[], sym: string): string | undefined {
+  let m = logoCache.get(stocks)
+  if (!m) {
+    m = new Map(stocks.filter((s) => s.logo).map((s) => [s.sym, s.logo as string]))
+    logoCache.set(stocks, m)
+  }
+  return m.get(sym)
+}
 
 export default function Avatar({ sym, size = 40 }: { sym: string; size?: number }) {
+  const { stocks } = useStocks()
   const cleanSym = sym.replace(/\d+$/, '').toUpperCase()
-  const logoUrl = TRADINGVIEW_LOGO_MAP[cleanSym]
+  const logoUrl = TRADINGVIEW_LOGO_MAP[cleanSym] ?? logoFor(stocks, sym)
   
   const [imgFailed, setImgFailed] = useState(false)
 

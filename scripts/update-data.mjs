@@ -1,15 +1,15 @@
-// يجلب بيانات السوق الحقيقية يوميًا (السعر، التغيّر، الافتتاح/الأعلى/الأدنى، الحجم)
-// ويحدّث public/data.json و src/data/seed.json.
+// يجلب بيانات السوق الحقيقية يوميًا ويحدّث public/data.json و src/data/seed.json.
 //
-// المصدر الأساسي: TradingView Scanner (يغطّي DFM و ADX بأعمدة OHLCV كاملة).
-// مصادر احتياطية متدرّجة: Yahoo لأسهم دبي، والرمز المجرّد ADX:<sym> لأبوظبي.
-// الأساسيات المنسّقة يدويًا (mcap, pe, eps, net, التوزيعات) تبقى كما هي.
+// المصدر الأساسي: TradingView Scanner للسوق الإماراتي (uae/scan) — طلب واحد يُرجع كل أسهم السوقين
+// بالدرهم والأسماء العربية: الأسعار، الحجم، الأساسيات، والتوزيعات. تُكتشف منه الأسهم غير المغطّاة
+// فتُضاف آليًا (auto: true). مصادر احتياطية: Yahoo لأسهم دبي، وطلب منفرد لما غاب من القائمة.
+// الأساسيات والتوزيعات المنسّقة يدويًا لا تُستبدل (انظر mergeDividend).
 // التشغيل: node scripts/update-data.mjs   (يتطلب Node 18+)
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { num, isoDate, TV_COLS, parseTvRow, applyQuote, INDEX_TICKERS, toIndexQuote, mergeDividend, staleStocks } from './lib.mjs'
+import { num, isoDate, TV_COLS, TV_SCAN_URL, parseTvRow, applyQuote, INDEX_TICKERS, toIndexQuote, mergeDividend, staleStocks, stockKey, discoverStocks } from './lib.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(__dirname, '..')
@@ -23,27 +23,27 @@ const UA =
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
-// ───────────── TradingView Scanner (أساسي — OHLCV لكل الأسهم دفعة واحدة) ─────────────
-async function fetchTvBatch(dashTickers) {
-  if (!dashTickers.length) return {}
-  const tickers = dashTickers.map((s) => s.replace('-', ':'))
-  const res = await fetch('https://scanner.tradingview.com/global/scan', {
+// ───────────── TradingView Scanner ─────────────
+// body: { symbols } لرموز محددة، أو { range } لكامل السوق. المفتاح الناتج «السوق-الرمز».
+async function tvScan(body, url = TV_SCAN_URL) {
+  const res = await fetch(url, {
     method: 'POST',
     headers: { 'User-Agent': UA, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ symbols: { tickers }, columns: TV_COLS }),
+    body: JSON.stringify({ columns: TV_COLS, options: { lang: 'ar' }, ...body }),
   })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   const json = await res.json()
   const map = {}
-  if (Array.isArray(json?.data)) {
-    for (const item of json.data) {
-      if (!item.s) continue
-      const q = parseTvRow(item.d)
-      if (q) map[item.s.replace(':', '-')] = q
-    }
+  for (const item of Array.isArray(json?.data) ? json.data : []) {
+    if (!item.s) continue
+    const q = parseTvRow(item.d)
+    if (q) map[item.s.replace(':', '-')] = q
   }
   return map
 }
+const fetchTvBatch = (dashTickers, url) =>
+  dashTickers.length ? tvScan({ symbols: { tickers: dashTickers.map((s) => s.replace('-', ':')) } }, url) : Promise.resolve({})
+const fetchMarket = () => tvScan({ range: [0, 2000] })
 
 // ───────────── Yahoo Finance (احتياطي لأسهم دبي) ─────────────
 async function fetchYahoo(symbol) {
@@ -76,18 +76,38 @@ async function fetchYahoo(symbol) {
 async function main() {
   const basePath = existsSync(OUT) ? OUT : SEED
   const data = JSON.parse(readFileSync(basePath, 'utf8'))
-  const autos = data.stocks.filter((s) => s.priceAuto)
   const results = new Map() // sym -> { ...quote, src }
 
-  // 1) دفعة TradingView الغنية لكل الأسهم (الرمز المُهيّأ في tradingview، وإلا <السوق>-<الرمز>)
-  const batch = autos.map((s) => ({ sym: s.sym, key: s.tradingview ?? `${s.ex}-${s.sym}` }))
+  // 1) السوق كاملًا بطلب واحد (بالدرهم والأسماء العربية)، ثم اكتشاف الأسهم غير المغطّاة
+  let market = {}
   try {
-    const map = await fetchTvBatch(batch.map((b) => b.key))
-    for (const b of batch) if (map[b.key]) results.set(b.sym, { ...map[b.key], time: new Date() })
-    console.log(`✓ TradingView: ${results.size}/${batch.length} سهم`)
+    market = await fetchMarket()
+    console.log(`✓ TradingView (uae/scan): ${Object.keys(market).length} رمزًا`)
   } catch (e) {
-    console.warn(`… دفعة TradingView فشلت: ${e.message} — سيُجرّب الاحتياطي`)
+    console.warn(`… جلب السوق فشل: ${e.message} — سيُجرّب الطلب المنفرد والاحتياطي`)
   }
+  const discovered = discoverStocks(
+    Object.entries(market).map(([key, q]) => ({ key, q })),
+    data.stocks,
+  )
+  if (discovered.length) {
+    data.stocks.push(...discovered)
+    console.log(`＋ أُضيف ${discovered.length} سهمًا مكتشفًا: ${discovered.map((s) => s.sym).join(', ')}`)
+  }
+  const autos = data.stocks.filter((s) => s.priceAuto)
+  for (const s of autos) if (market[stockKey(s)]) results.set(s.sym, { ...market[stockKey(s)], time: new Date() })
+
+  // ما غاب عن قائمة السوق يُطلب منفردًا (رمز مُعاد تسميته أو خارج القائمة)
+  const missing = autos.filter((s) => !results.has(s.sym))
+  if (missing.length) {
+    try {
+      const map = await fetchTvBatch(missing.map(stockKey))
+      for (const s of missing) if (map[stockKey(s)]) results.set(s.sym, { ...map[stockKey(s)], time: new Date() })
+    } catch (e) {
+      console.warn(`… الطلب المنفرد فشل: ${e.message}`)
+    }
+  }
+  console.log(`✓ TradingView: ${results.size}/${autos.length} سهم`)
 
   // 2) احتياطي Yahoo لأسهم دبي التي لم تُجلب
   for (const s of autos.filter((s) => s.ex === 'DFM' && s.yahoo && !results.has(s.sym))) {
@@ -146,7 +166,7 @@ async function main() {
   // 5) المؤشران العامّان (DFMGI / FADGI) — غير حاسم: عند الفشل تبقى آخر قيمة محفوظة بتاريخها
   try {
     const codes = Object.keys(INDEX_TICKERS)
-    const map = await fetchTvBatch(codes.map((c) => INDEX_TICKERS[c].tv.replace(':', '-')))
+    const map = await fetchTvBatch(codes.map((c) => INDEX_TICKERS[c].tv.replace(':', '-')), 'https://scanner.tradingview.com/global/scan')
     data.indices = data.indices ?? {}
     for (const c of codes) {
       const iq = toIndexQuote(c, map[INDEX_TICKERS[c].tv.replace(':', '-')], new Date())
@@ -161,7 +181,7 @@ async function main() {
     console.warn(`… جلب المؤشرات فشل: ${e.message}`)
   }
 
-  writeReview(staleStocks(data.stocks), divChanges, divConflicts)
+  writeReview(staleStocks(data.stocks), divChanges, divConflicts, discovered)
 
   data.lastUpdated = new Date().toISOString()
   data.source = ok > 0 ? 'tradingview+yahoo' : 'manual'
@@ -176,9 +196,12 @@ async function main() {
 }
 
 /** يكتب تقرير المراجعة البشرية (Markdown) — فارغ إن لم يكن هناك ما يُراجع. */
-function writeReview(staleList, changes, conflicts) {
+function writeReview(staleList, changes, conflicts, discovered = []) {
   const name = (s) => `${s.name.split('—')[0].trim()} (${s.sym})`
   const out = []
+  const autoCount = changes.filter((c) => c.s.auto).length
+  changes = changes.filter((c) => !c.s.auto)
+  if (autoCount) out.push(`> إضافة إلى ذلك، مُلئت توزيعات ${autoCount} سهمًا مكتشفًا آليًا (لا بيانات يدوية لها).`, '')
   if (changes.length) {
     out.push('### توزيعات أُضيفت آليًا — تظهر في الموقع بعلامة «يلزم التحقق»', '',
       '| السهم | النوع | الاستبعاد | الدفع | المبلغ |', '|---|---|---|---|---|',
@@ -188,6 +211,10 @@ function writeReview(staleList, changes, conflicts) {
     out.push('### تعارضات: أُبقيت القيمة اليدوية — يُرجى التحقق من الإفصاح الرسمي', '',
       '| السهم | الحقل | اليدوي (معروض) | TradingView |', '|---|---|---|---|',
       ...conflicts.map((c) => `| ${name(c.s)} | ${c.field} | ${c.manual} | ${c.auto} |`), '')
+  }
+  if (discovered.length) {
+    out.push(`### أسهم أُضيفت آليًا إلى التغطية (${discovered.length}) — «غير مصنّفة» وبياناتها آلية بالكامل`, '',
+      discovered.map((s) => `${name(s)} · ${s.ex} · ${s.sector}`).join('، '), '')
   }
   if (staleList.length) {
     out.push('### أسعار متقادمة — تعذّر جلبها من كل المصادر', '',

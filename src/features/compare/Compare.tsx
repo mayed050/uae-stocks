@@ -1,9 +1,9 @@
-import { Trophy, Star } from 'lucide-react'
-import { useState, useMemo } from 'react'
+import { Trophy, Star, Search } from 'lucide-react'
+import { useState } from 'react'
 import { CAT_LABEL } from '@/data'
 import type { Stock } from '@/data'
 import { useStocks } from '@/store'
-import { symColor, parseYield, parseAmount } from '@/format'
+import { symColor, parseYield, parseAmount, normalizeAr } from '@/format'
 import Snowflake from '@/components/Snowflake'
 import Avatar from '@/components/Avatar'
 import { cell as v } from '@/components/ui/cell'
@@ -48,6 +48,14 @@ export default function Compare() {
   const [syms, setSyms] = useState<string[]>(['EMAAR', 'FAB', 'ADNOCGAS', 'DEWA'])
   const picked = syms.map((sy) => DATA.find((d) => d.sym === sy)!).filter(Boolean)
 
+  // قبل البحث: الأسهم المُراجَعة يدويًا؛ ومع البحث: أول 24 نتيجة من كامل السوق — والمختارة ظاهرة دائمًا
+  const [pq, setPq] = useState('')
+  const term = normalizeAr(pq)
+  const matches = term
+    ? DATA.filter((s) => normalizeAr(`${s.name} ${s.sym} ${s.sector}`).includes(term)).slice(0, 24)
+    : DATA.filter((s) => !s.auto)
+  const pickList = [...picked, ...matches.filter((s) => !syms.includes(s.sym))]
+
   function toggle(sym: string) {
     setSyms((cur) =>
       cur.includes(sym) ? cur.filter((s) => s !== sym) : cur.length >= MAX ? cur : [...cur, sym],
@@ -55,7 +63,8 @@ export default function Compare() {
   }
 
   // من يتصدّر أكثر الفئات القابلة للمقارنة (للمقاييس ذات «الأفضل»)
-  const leaderboard = useMemo(() => {
+  // بلا useMemo يدوي: React Compiler يحفظ النتيجة تلقائيًا
+  const leaderboard = (() => {
     const wins = new Map<string, number>()
     picked.forEach((s) => wins.set(s.sym, 0))
     let scored = 0
@@ -73,7 +82,7 @@ export default function Compare() {
     })
     const ranked = [...wins.entries()].map(([sym, count]) => ({ sym, count })).sort((a, b) => b.count - a.count)
     return { ranked, scored }
-  }, [picked])
+  })()
 
   return (
     <div className="view">
@@ -81,9 +90,13 @@ export default function Compare() {
         اختر حتى {MAX} أسهم لمقارنتها جنبًا إلى جنب وبأدق التفاصيل المالية والتنظيمية ({picked.length}/{MAX})
       </PageHeader>
 
-      {/* قائمة اختيار الأسهم */}
+      {/* اختيار الأسهم: المختارة + نتائج البحث (أو الأسهم المُراجَعة يدويًا قبل البحث) */}
+      <div className="search pick-search">
+        <Search size={16} className="ico" aria-hidden />
+        <input aria-label="ابحث عن سهم لإضافته إلى المقارنة" placeholder={`ابحث بين ${DATA.length} سهمًا بالاسم أو الرمز…`} value={pq} onChange={(e) => setPq(e.target.value)} />
+      </div>
       <div className="pick-grid">
-        {DATA.map((s) => (
+        {pickList.map((s) => (
           <button
             key={s.sym}
             className={'pick' + (syms.includes(s.sym) ? ' on' : '')}

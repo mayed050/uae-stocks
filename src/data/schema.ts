@@ -24,6 +24,8 @@ export const DividendSchema = z.object({
   nextExd: z.optional(isoDate),
   nextPay: z.optional(isoDate),
   nextPs: z.optional(z.string()),
+  // التوزيع الفعلي لآخر 12 شهرًا بالدرهم (من العائد الجاري) — يُستخدم حين يغيب التكرار
+  ttmPs: z.optional(z.number().check(z.nonnegative())),
   watch: z.optional(z.boolean()),
   // مصدر الحقول المملوءة آليًا (غير المتحقق منها بعد) — تُعرض بعلامة «يلزم التحقق»
   auto: z.optional(z.object({ src: z.string(), asof: isoDate, fields: z.array(z.string()) })),
@@ -34,7 +36,10 @@ export const StockSchema = z.object({
   name: z.string().check(z.minLength(1)),
   ex: z.enum(['DFM', 'ADX']),
   sector: z.string().check(z.minLength(1)),
-  cat: z.enum(['income', 'growth', 'risk']),
+  cat: z.enum(['income', 'growth', 'risk', 'unrated']),
+  // سهم مكتشف آليًا من قائمة السوق: كل بياناته آلية ولم تُراجَع يدويًا
+  auto: z.optional(z.boolean()),
+  logo: optNullable(z.string()),
   yahoo: optNullable(z.string()),
   tradingview: optNullable(z.string()),
   priceAuto: z.optional(z.boolean()),

@@ -4,20 +4,18 @@ export const round = (n, p = 2) => Math.round(n * 10 ** p) / 10 ** p
 export const num = (x) => (typeof x === 'number' && isFinite(x) ? x : null)
 export const isoDate = (d) => d.toISOString().slice(0, 10)
 
-// TradingView يُرجع القيمة السوقية بالدولار لهذه الأسواق؛ نحوّلها إلى الدرهم.
-export const USD_AED = 3.6725
+// نقطة TradingView الخاصة بالسوق الإماراتي (uae/scan) تُرجع كل القيم بالدرهم مباشرة (تحقّق فحصٌ من خوادم
+// GitHub: توزيع إعمار 1 و0.5، ديوا 0.062، الأول 0.80 — مطابقة للإعلانات الرسمية)، فلا تحويل عملات.
+export const TV_SCAN_URL = 'https://scanner.tradingview.com/uae/scan'
 
-// مبالغ التوزيعات في TradingView محوّلة إلى الدولار بمعامل ≈ 3.6788 لا بسعر الربط (3.6725):
-// معايَر على توزيعات معلنة رسميًا (ديوا 6.2 فلس، إعمار 1.00 و0.50 درهم، الأول 0.80، دبي الإسلامي 0.35)
-// فيعيد كل مبلغ إلى قيمته الرسمية بدقة الفلس. القيمة السوقية تبقى بسعر الربط.
-export const TV_DIV_FX = 3.6788
-
-// ترتيب الأعمدة المطلوبة من TradingView Scanner (الحقول المالية والتوزيعات بالدولار لهذه الأسواق).
+// الأعمدة المطلوبة من TradingView Scanner — يُقرأ كل صف بأسماء الأعمدة لا بمواضعها.
 export const TV_COLS = [
   'close', 'change', 'open', 'high', 'low', 'volume', 'market_cap_basic', 'price_earnings_ttm',
   'price_52_week_high', 'price_52_week_low', 'dividends_yield_current',
   'dividend_ex_date_recent', 'dividend_payment_date_recent', 'dividend_amount_recent',
   'dividend_ex_date_upcoming', 'dividend_payment_date_upcoming', 'dividend_amount_upcoming',
+  'earnings_per_share_basic_ttm', 'return_on_equity', 'total_revenue_ttm', 'net_income_ttm', 'net_income_yoy_growth_ttm',
+  'name', 'description', 'type', 'subtype', 'sector', 'industry', 'exchange', 'logoid',
 ]
 
 /** صيغة مختصرة للقيمة السوقية بالدرهم. */
@@ -27,32 +25,48 @@ export function fmtMcap(n) {
   return String(Math.round(n))
 }
 
-/** يحوّل صف TradingView (مصفوفة d بترتيب TV_COLS) إلى كائن اقتباس، أو null إن غاب السعر. */
+/** يحوّل صف TradingView (مصفوفة d بترتيب TV_COLS، القيم بالدرهم) إلى كائن اقتباس، أو null إن غاب السعر. */
 export function parseTvRow(d) {
   if (!Array.isArray(d)) return null
-  const [close, change, open, high, low, volume, mcap, pe, high52, low52, yld, exR, payR, amtR, exN, payN, amtN] = d
-  if (num(close) === null) return null
-  const mcapUsd = num(mcap)
-  const usdToAed = (x) => (num(x) != null ? x * TV_DIV_FX : null)
+  const v = Object.fromEntries(TV_COLS.map((c, i) => [c, d[i]]))
+  if (num(v.close) === null) return null
+  const str = (x) => (typeof x === 'string' && x.trim() ? x.trim() : null)
   return {
-    price: close,
-    changePct: num(change),
-    open: num(open),
-    high: num(high),
-    low: num(low),
-    volume: num(volume),
-    mcapAed: mcapUsd != null ? mcapUsd * USD_AED : null,
-    pe: num(pe),
-    high52: num(high52),
-    low52: num(low52),
+    price: v.close,
+    changePct: num(v.change),
+    open: num(v.open),
+    high: num(v.high),
+    low: num(v.low),
+    volume: num(v.volume),
+    mcapAed: num(v.market_cap_basic),
+    pe: num(v.price_earnings_ttm),
+    high52: num(v.price_52_week_high),
+    low52: num(v.price_52_week_low),
     div: {
-      yieldPct: num(yld),
-      exRecent: tvDate(exR),
-      payRecent: tvDate(payR),
-      amountRecent: usdToAed(amtR),
-      exNext: tvDate(exN),
-      payNext: tvDate(payN),
-      amountNext: usdToAed(amtN),
+      yieldPct: num(v.dividends_yield_current),
+      exRecent: tvDate(v.dividend_ex_date_recent),
+      payRecent: tvDate(v.dividend_payment_date_recent),
+      amountRecent: num(v.dividend_amount_recent),
+      exNext: tvDate(v.dividend_ex_date_upcoming),
+      payNext: tvDate(v.dividend_payment_date_upcoming),
+      amountNext: num(v.dividend_amount_upcoming),
+    },
+    fundamentals: {
+      eps: num(v.earnings_per_share_basic_ttm),
+      roe: num(v.return_on_equity),
+      revenue: num(v.total_revenue_ttm),
+      netIncome: num(v.net_income_ttm),
+      netGrowth: num(v.net_income_yoy_growth_ttm),
+    },
+    meta: {
+      name: str(v.name),
+      description: str(v.description),
+      type: str(v.type),
+      subtype: str(v.subtype),
+      sector: str(v.sector),
+      industry: str(v.industry),
+      exchange: str(v.exchange),
+      logoid: str(v.logoid),
     },
     src: 'tradingview',
   }
@@ -93,6 +107,11 @@ export function applyQuote(s, r, time) {
     s.high52 = round(r.high52, 3)
     s.low52 = round(r.low52, 3)
   }
+  if (r.meta?.logoid) s.logo = logoUrl(r.meta.logoid)
+  // التوزيع السنوي الفعلي (آخر 12 شهرًا) من العائد الجاري — يُستخدم حين يغيب تكرار التوزيع
+  if (r.div?.yieldPct != null && r.div.yieldPct > 0) s.div.ttmPs = round((r.div.yieldPct / 100) * r.price, 4)
+  // الأساسيات تُملأ آليًا للأسهم الآلية فقط؛ المنسّقة يدويًا تبقى كما أُدخلت
+  if (s.auto && r.fundamentals) Object.assign(s, fundamentalsText(r.fundamentals))
   s.asof = isoDate(time ?? r.time ?? new Date())
   return s
 }
@@ -201,12 +220,116 @@ export function mergeHistory(existing, fetched, stocks, maxPoints = 400) {
   const out = {}
   for (const s of stocks) {
     let pts = fetched[s.sym] ?? existing[s.sym] ?? []
-    if (!fetched[s.sym] && s.priceAuto && num(s.price) != null && s.asof) {
+    // التراكم اليومي للأسهم المنسّقة فقط (الأسهم المكتشفة آليًا كثيرة وتُضخّم الملف)
+    if (!fetched[s.sym] && !s.auto && s.priceAuto && num(s.price) != null && s.asof) {
       const last = pts[pts.length - 1]
       if (!last || s.asof > last[0]) pts = [...pts, [s.asof, round(s.price, 3)]]
       else if (s.asof === last[0]) pts = [...pts.slice(0, -1), [s.asof, round(s.price, 3)]]
     }
     if (pts.length) out[s.sym] = pts.slice(-maxPoints)
+  }
+  return out
+}
+
+// ───────────── التغطية الكاملة: اكتشاف أسهم السوقين آليًا ─────────────
+
+/** رابط شعار الشركة لدى TradingView. */
+export const logoUrl = (logoid) => `https://s3-symbol-logo.tradingview.com/${logoid}--big.svg`
+
+/** مفتاح السهم في TradingView بصيغة «السوق-الرمز» (يطابق حقل tradingview في data.json). */
+export const stockKey = (s) => s.tradingview ?? `${s.ex}-${s.sym}`
+
+/**
+ * اسم عربي نظيف من وصف TradingView: توحيد أشكال العرض الطباعية (ﻷ ← لأ) بـ NFKC، وحذف الصيغ القانونية
+ * (ش.م.ع، PJSC…). إن خلا الوصف من حروف عربية يبقى الاسم الإنجليزي منظّفًا.
+ */
+export function arName(desc) {
+  if (!desc) return null
+  let n = desc.normalize('NFKC')
+  n = n.replace(/\(\s*(ش\.?\s*م\.?\s*[عخ]\.?|P\.?J\.?S\.?C\.?|P\.?S\.?C\.?)\s*\)/gi, ' ')
+  n = n.replace(/(?<=^|[\s()])(ش\.?\s?م\.?\s?[عخ]\.?|P\.?J\.?S\.?C\.?|P\.?S\.?C\.?|PLC|Ltd\.?)(?=$|[\s),])/gi, ' ')
+  n = n.replace(/\s*\(\s*\)\s*/g, ' ').replace(/\s{2,}/g, ' ').replace(/[\s،,.-]+$/u, '').trim()
+  return n || null
+}
+
+// القطاع العربي: من الصناعة أولًا (أدق)، ثم من القطاع العام. المفردات تطابق data.json وفلاتر المستكشف.
+const INDUSTRY_AR = {
+  'Major Banks': 'بنوك', 'Regional Banks': 'بنوك', 'Savings Banks': 'بنوك',
+  'Property/Casualty Insurance': 'تأمين', 'Life/Health Insurance': 'تأمين', 'Multi-Line Insurance': 'تأمين', 'Specialty Insurance': 'تأمين', 'Insurance Brokers/Services': 'تأمين',
+  'Real Estate Development': 'عقار', 'Real Estate Investment Trusts': 'عقار',
+  'Investment Managers': 'خدمات مالية', 'Investment Banks/Brokers': 'خدمات مالية', 'Finance/Rental/Leasing': 'خدمات مالية',
+  'Financial Conglomerates': 'استثمار / متنوع', 'Investment Trusts/Mutual Funds': 'استثمار / متنوع', 'Industrial Conglomerates': 'استثمار / متنوع',
+  'Electric Utilities': 'مرافق', 'Water Utilities': 'مرافق', 'Gas Distributors': 'مرافق', 'Alternative Power Generation': 'مرافق',
+  'Airlines': 'طيران / نقل',
+  'Oil & Gas Production': 'طاقة', 'Integrated Oil': 'طاقة', 'Oil Refining/Marketing': 'طاقة', 'Contract Drilling': 'طاقة', 'Oilfield Services/Equipment': 'طاقة', 'Oil & Gas Pipelines': 'طاقة',
+  'Chemicals: Major Diversified': 'بتروكيماويات', 'Chemicals: Specialty': 'بتروكيماويات', 'Chemicals: Agricultural': 'بتروكيماويات',
+  'Engineering & Construction': 'إنشاءات وهندسة',
+  'Hospital/Nursing Management': 'رعاية صحية', 'Medical/Nursing Services': 'رعاية صحية', 'Pharmaceuticals: Major': 'رعاية صحية', 'Pharmaceuticals: Other': 'رعاية صحية',
+}
+const SECTOR_AR = {
+  'Finance': 'خدمات مالية', 'Utilities': 'مرافق', 'Communications': 'اتصالات', 'Transportation': 'نقل / خدمات',
+  'Energy Minerals': 'طاقة', 'Process Industries': 'صناعة', 'Non-Energy Minerals': 'صناعة', 'Producer Manufacturing': 'صناعة',
+  'Industrial Services': 'إنشاءات وهندسة', 'Technology Services': 'تكنولوجيا', 'Electronic Technology': 'تكنولوجيا',
+  'Consumer Non-Durables': 'أغذية ومشروبات', 'Consumer Services': 'خدمات استهلاكية', 'Consumer Durables': 'تجزئة / استهلاك',
+  'Retail Trade': 'تجزئة / استهلاك', 'Distribution Services': 'تجزئة / استهلاك', 'Commercial Services': 'خدمات تجارية',
+  'Health Technology': 'رعاية صحية', 'Health Services': 'رعاية صحية', 'Miscellaneous': 'استثمار / متنوع',
+}
+export function arSector(sector, industry) {
+  return INDUSTRY_AR[industry] ?? SECTOR_AR[sector] ?? 'أخرى'
+}
+
+/** الأساسيات (آخر 12 شهرًا) بصيغة النصوص المعروضة في الموقع. */
+export function fundamentalsText(f) {
+  const out = {}
+  if (f.eps != null) out.eps = String(round(f.eps, 2))
+  if (f.roe != null) out.roe = `${round(f.roe, 1)}%`
+  if (f.revenue != null && f.revenue > 0) out.rev = fmtMcap(f.revenue)
+  if (f.netIncome != null) {
+    const abs = fmtMcap(Math.abs(f.netIncome))
+    const growth = f.netGrowth != null && Math.abs(f.netGrowth) < 1000 ? ` (${f.netGrowth >= 0 ? '+' : ''}${round(f.netGrowth, 1)}%)` : ''
+    out.net = `${f.netIncome < 0 ? 'خسارة ' : ''}${abs}${growth}`
+  }
+  return out
+}
+
+/** رمز آمن لعقد البيانات (أحرف لاتينية كبيرة وأرقام). */
+const safeSym = (name) => (name ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '')
+
+/**
+ * يكتشف الأسهم العادية في سوقَي دبي وأبوظبي غير المغطّاة بعد، ويبني لكل منها سجلًا آليًا (auto: true)
+ * بتصنيف «غير مصنّف» وتوزيعات فارغة تُملأ لاحقًا بـ mergeDividend. rows: [{ key, q }] من parseTvRow.
+ */
+export function discoverStocks(rows, stocks) {
+  const covered = new Set(stocks.map(stockKey))
+  const syms = new Set(stocks.map((s) => s.sym))
+  const out = []
+  for (const { key, q } of rows) {
+    const m = q?.meta
+    if (!m || m.type !== 'stock' || m.subtype !== 'common') continue
+    if (m.exchange !== 'DFM' && m.exchange !== 'ADX') continue
+    if (covered.has(key)) continue
+    const sym = safeSym(m.name)
+    if (!sym || syms.has(sym)) continue
+    syms.add(sym)
+    out.push({
+      sym,
+      name: arName(m.description) ?? sym,
+      ex: m.exchange,
+      sector: arSector(m.sector, m.industry),
+      cat: 'unrated',
+      auto: true,
+      tradingview: key === `${m.exchange}-${sym}` ? undefined : key,
+      priceAuto: true,
+      price: null,
+      asof: null,
+      mcap: null,
+      pe: null,
+      eps: null,
+      roe: null,
+      net: null,
+      rev: null,
+      div: { ps: null, yld: null, lastEnt: null, exd: null, rec: null, pay: null, agm: null, freq: null },
+    })
   }
   return out
 }

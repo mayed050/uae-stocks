@@ -25,10 +25,13 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
 
   // تصفية وفرز قائمة حركة السوق بناء على التبويب المختار
   const movementStocks = useMemo(() => {
-    const stocksWithData = stocks.map(s => {
-      const d = getDailyData(s)
-      return { s, d, pctNum: parseFloat(d.pct.replace('%', '')) }
-    })
+    // أسهم ذات تغيّر/حجم حقيقيين فقط — getDailyData يولّد قيمًا توضيحية لما غاب، فتُستبعد هنا
+    const stocksWithData = stocks
+      .filter((s) => typeof s.change === 'number' && typeof s.volume === 'number')
+      .map(s => {
+        const d = getDailyData(s)
+        return { s, d, pctNum: parseFloat(d.pct.replace('%', '')) }
+      })
 
     if (movementTab === 'gainers') {
       return stocksWithData

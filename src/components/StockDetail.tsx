@@ -168,6 +168,12 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
           </button>
         </div>
 
+        {item.auto && (
+          <div className="auto-notice" role="note">
+            <Info size={14} className="ico" aria-hidden /> بيانات هذا السهم آلية بالكامل من TradingView (الأسعار والأساسيات لآخر 12 شهرًا والتوزيعات) ولم تُراجَع يدويًا — تحقّق من إفصاحات الشركة الرسمية.
+          </div>
+        )}
+
         {u && isAlert(u) && (
           <div className="modal-alert">
             <AlarmClock size={14} className="ico" aria-hidden /> {u.label}{' '}

@@ -45,21 +45,23 @@ export function useMarketStats() {
   }, [DATA])
 
   // 4. فرص التقييم المغرية (مكرر ربحية منخفض)
+  // المتصدّرون من الشركات ≥ مليار درهم فقط: عوائد ومكررات الأسهم الصغيرة غير السائلة شاذة غالبًا
+  const sizable = useMemo(() => DATA.filter((s) => (parseAmount(s.mcap) ?? 0) >= 1e9), [DATA])
   const valuationOpportunities = useMemo(() => {
-    return [...DATA]
+    return [...sizable]
       .filter(s => s.pe !== null && s.pe > 0)
       .sort((a, b) => (a.pe ?? 999) - (b.pe ?? 999))
       .slice(0, 5)
-  }, [DATA])
+  }, [sizable])
 
   // 5. رواد عوائد التوزيعات
   const yieldLeaders = useMemo(() => {
-    return [...DATA]
+    return [...sizable]
       .map(s => ({ s, yld: parseYield(s.div.yld) ?? 0 }))
       .filter(x => x.yld > 0)
       .sort((a, b) => b.yld - a.yld)
       .slice(0, 5)
-  }, [DATA])
+  }, [sizable])
 
   // 6. توزيع قطاعات الشركات
   const sectorData = useMemo(() => {
@@ -80,8 +82,6 @@ export function useMarketStats() {
     return MONTHS_AR.map((m, i) => ({ m, count: counts[i] ?? 0 }))
   }, [DATA])
 
-  const maxYield = useMemo(() => Math.max(...DATA.map(s => parseYield(s.div.yld) ?? 0)), [DATA])
-  const maxMcap = useMemo(() => Math.max(...DATA.map(s => parseAmount(s.mcap) ?? 0)), [DATA])
 
   return {
     stats,
@@ -91,7 +91,5 @@ export function useMarketStats() {
     yieldLeaders,
     sectorData,
     monthData,
-    maxYield,
-    maxMcap
   }
 }
