@@ -24,12 +24,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
+
+      # الاعتماديات لازمة لحارس البيانات (Zod + Vitest) أدناه
+      - name: Install dependencies
+        run: npm ci
 
       - name: Fetch latest prices
         run: node scripts/update-data.mjs
 
       - name: Fetch price history (DFM)
         run: node scripts/fetch-history.mjs || echo "history fetch failed (non-fatal)"
+
+      # حارس البيانات: يرفض أي ملف بيانات يخالف العقد (src/data/schema.ts) قبل دفعه؛
+      # عند الفشل لا يُدفع شيء، ويفتح تنبيه الفشل أدناه Issue تلقائيًا.
+      - name: Validate data contract
+        run: npx vitest run src/__tests__/data.test.ts
 
       - name: Commit & push if changed
         run: |
