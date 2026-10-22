@@ -87,7 +87,7 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
       </div>
 
       {/* الجدول التفاعلي لحركة السوق */}
-      <div className="o-mv-tablewrap">
+      <div className="o-mv-tablewrap" tabIndex={0} aria-label="جدول حركة السوق (قابل للتمرير)">
         <table className="o-mv-table">
           <thead>
             <tr>
