@@ -189,6 +189,16 @@ describe('mergeDividend', () => {
     const past = mergeDividend(manual({ exd: '2026-10-15', nextExd: '2026-10-15', nextPay: '2026-10-28' }), {}, TODAY)
     expect(past.div.nextExd).toBeUndefined()
   })
+  it('قادم يدوي مضى وهو الحدث الآلي نفسه (إي آند: 10 أغسطس مقابل 7) يُزال ويُرفع تعارضًا', () => {
+    const r = mergeDividend(
+      manual({ exd: '2026-04-08', pay: '2026-04-23', nextExd: '2026-08-10' }),
+      { exRecent: '2026-08-07', payRecent: '2026-08-20', amountRecent: 0.129 },
+      TODAY,
+    )
+    expect(r.div.exd).toBe('2026-08-07')
+    expect(r.div.nextExd).toBeUndefined()
+    expect(r.conflicts).toEqual([{ field: 'exd', manual: '2026-08-10', auto: '2026-08-07' }])
+  })
   it('العائد الجاري يتبع المصدر', () => {
     expect(mergeDividend(manual({ yld: '~5.5%' }), { yieldPct: 4.18848 }, TODAY).div.yld).toBe('~4.2%')
   })

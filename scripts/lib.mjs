@@ -164,11 +164,18 @@ export function mergeDividend(div, tv, today) {
     }
   }
 
-  // توزيع «قادم» صار ماضيًا (أصبح هو الأخير) ← يُزال من خانة القادم
-  if (out.nextExd && out.exd && out.nextExd <= out.exd) {
+  const dropNext = () => {
     delete out.nextExd
     delete out.nextPay
     delete out.nextPs
+    ;['nextExd', 'nextPay', 'nextPs'].forEach((f) => autoFields.delete(f))
+  }
+  // توزيع «قادم» صار ماضيًا (أصبح هو الأخير) ← يُزال من خانة القادم
+  if (out.nextExd && out.exd && out.nextExd <= out.exd) dropNext()
+  // «قادم» يدوي مضى تاريخه ويقع ضمن نافذة توزيع أخير أُضيف آليًا ← هو الحدث نفسه بتاريخ مختلف
+  else if (out.nextExd && out.nextExd < today && out.exd && autoFields.has('exd') && Math.abs(days(out.nextExd, out.exd)) <= SAME_EVENT_DAYS) {
+    conflicts.push({ field: 'exd', manual: out.nextExd, auto: out.exd })
+    dropNext()
   }
 
   if (autoFields.size) out.auto = { src: 'tradingview', asof: today, fields: [...autoFields].sort() }
