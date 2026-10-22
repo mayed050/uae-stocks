@@ -1,11 +1,13 @@
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
+import react, { reactCompilerPreset } from '@vitejs/plugin-react'
+import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  // React Compiler: تحسين تلقائي لإعادة الرسم (memoization) وقت البناء بدل useMemo/useCallback اليدوية
+  plugins: [react(), babel({ presets: [reactCompilerPreset()] }), tailwindcss()],
   base: process.env.GITHUB_ACTIONS ? '/uae-stocks/' : '/',
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
