@@ -17,11 +17,13 @@
 
 ## التقنيات
 
-- **React 19** + **TypeScript** + **Vite 8** (Rolldown)
+- **React 19** + **TypeScript** + **Vite 8** (Rolldown) + **React Compiler 1.0** (تحسين إعادة الرسم تلقائيًا وقت البناء)
+- **TanStack Router** — روابط قابلة للمشاركة لكل صفحة وسهم وفلتر (سجل بالهاش يناسب GitHub Pages)
+- **TanStack Query** لجلب البيانات وتخزينها مؤقتًا، و**Zustand** لحالة المحفظة (بمفاتيح التخزين القديمة نفسها)
+- **Zod 4 Mini** — عقد بيانات واحد يُشتق منه نوع TypeScript ويُتحقق به وقت التشغيل وفي CI
 - **Recharts** للرسوم البيانية
 - **Tailwind CSS 4** + متغيّرات CSS (دعم الوضعين الفاتح والداكن)
 - **Lucide** للأيقونات، وخط **IBM Plex Sans Arabic** مستضاف ذاتيًا (أرقام متساوية العرض تصطف في الجداول)
-- بدون مكتبة توجيه — التنقّل عبر حالة بسيطة في `App.tsx`
 
 ## التشغيل محلياً
 
@@ -29,6 +31,15 @@
 npm install
 npm run dev        # خادم تطوير على http://localhost:5173
 ```
+
+## الروابط
+
+| الرابط | ما يفتحه |
+|--------|----------|
+| `#/screener?ex=ADX&cat=income` | المستكشف مفلترًا (سوق أبوظبي، دخل مستقر) |
+| `#/screener?q=بنك&sort=yield` | بحث مع ترتيب حسب العائد |
+| `#/dividends?stock=EMAAR` | بطاقة إعمار فوق صفحة التوزيعات (`?stock=` يعمل على أي صفحة) |
+| `#/financials?sym=FAB&tab=governance` | نتائج بنك أبوظبي الأول — تبويب الإفصاحات |
 
 ## الأوامر المتاحة
 
@@ -46,7 +57,9 @@ npm run dev        # خادم تطوير على http://localhost:5173
 المؤشرين تبقى آخر قراءة محفوظة بتاريخها، أو تعرض الواجهة حالة «غير متوفر» صريحة بدل أرقام ثابتة.
 
 تُحمّل البيانات وقت التشغيل من `public/data.json`؛ وفي حال تعذّر ذلك يُعتمد على نسخة احتياطية
-مُضمّنة في `src/data/seed.json`. أنواع البيانات معرّفة في `src/data/index.ts`.
+مُضمّنة في `src/data/seed.json`. شكل البيانات معرّف مرة واحدة في `src/data/schema.ts` (عقد البيانات)،
+وتُشتق منه الأنواع في `src/data/index.ts`. يرفض التحديث اليومي دفع أي ملف يخالف العقد، ويفحص
+`ci.yml` كل فرع وطلب دمج (الأنواع، جودة الكود، الاختبارات، البناء).
 
 ## بنية المشروع
 
@@ -54,15 +67,16 @@ npm run dev        # خادم تطوير على http://localhost:5173
 
 ```
 src/
-├── main.tsx · App.tsx · App.css   نقطة الدخول والتخطيط العام
+├── main.tsx · App.tsx · App.css   نقطة الدخول والهيكل العام (Outlet + بطاقة السهم من ?stock=)
+├── router.ts · pages.tsx · search.ts   المسارات، مكوّنات الصفحات، والتحقق من معاملات الرابط
 ├── features/           كل صفحة في مجلدها المستقل مع مكوّناتها
 │   ├── overview/       Overview + MarketIndexCards + LiveActionsFeed + overview.css
 │   ├── screener/ · dividends/ · compare/
 │   ├── financials/     Financials + tradingSim (محاكيات بيانات التداول)
 │   └── portfolio/      Portfolio + PortfolioIntel
 ├── components/         مكوّنات مشتركة: Sidebar · StockDetail · Avatar · Snowflake · ui/
-├── store/              StocksProvider + usePortfolio + useMarketStats (+ barrel)
-├── data/              النماذج والبيانات الثابتة: index · seed.json · movements · logos · sectors
+├── store/              queries (TanStack Query) · portfolioStore (Zustand) · useStocks · usePortfolio · useMarketStats
+├── data/              schema (عقد Zod) · index (الأنواع) · seed.json · movements · logos · sectors
 ├── constants/          ثوابت الواجهة (NA · PALETTE · TIP_STYLE)
 ├── market.ts           أدوات بيانات السوق المحاكاة (مشتركة)
 ├── lib.ts · format.ts  منطق نقي: التواريخ/التنبيهات وتحليل الأرقام العربية

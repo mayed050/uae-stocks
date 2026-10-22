@@ -1,16 +1,10 @@
+import { Link } from '@tanstack/react-router'
 import { NAV } from './nav'
-import type { View } from './nav'
 import { useStocks } from '@/store'
 
 export type { View } from './nav'
 
-export default function Sidebar({
-  view,
-  setView,
-}: {
-  view: View
-  setView: (v: View) => void
-}) {
+export default function Sidebar() {
   const { lastUpdated } = useStocks()
   const dataDate = lastUpdated
     ? new Date(lastUpdated).toLocaleDateString('ar-AE', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -28,15 +22,16 @@ export default function Sidebar({
 
       <nav className="nav">
         {NAV.map((n) => (
-          <button
+          <Link
             key={n.v}
-            className={'navitem' + (view === n.v ? ' active' : '')}
-            onClick={() => setView(n.v)}
-            aria-current={view === n.v ? 'page' : undefined}
+            to={n.to}
+            className="navitem"
+            activeProps={{ className: 'active' }}
+            activeOptions={{ exact: n.to === '/', includeSearch: false }}
           >
             <span className="navicon"><n.icon size={18} strokeWidth={2} aria-hidden /></span>
             {n.label}
-          </button>
+          </Link>
         ))}
       </nav>
 

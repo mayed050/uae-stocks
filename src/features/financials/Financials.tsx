@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import type { Stock } from '@/data'
 import { useStocks, usePortfolio } from '@/store'
 import SimBadge from '@/components/ui/SimBadge'
@@ -10,10 +11,11 @@ import OverviewTabs from './OverviewTabs'
 import FinancialDataTabs from './FinancialDataTabs'
 import GovernanceTabs from './GovernanceTabs'
 import OwnershipTabs from './OwnershipTabs'
+import type { FinancialsTab } from '@/search'
 import './financials.css'
 
 // تجميع التبويبات التسعة في 4 مجموعات لتقليل الحمل الإدراكي
-type TabGroup = 'overview' | 'financial' | 'governance' | 'ownership'
+type TabGroup = FinancialsTab
 const GROUP_LABELS: Record<TabGroup, string> = {
   overview: 'نظرة عامة',
   financial: 'البيانات والتقارير',
@@ -26,14 +28,14 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA } = useStocks()
   const { isInPortfolio } = usePortfolio()
 
-  // السهم النشط المختار للعرض التفصيلي
-  const [selectedSym, setSelectedSym] = useState<string>(() => {
-    const defaultStock = DATA.find(st => st.ex === 'DFM')
-    return defaultStock ? defaultStock.sym : (DATA[0]?.sym ?? '')
-  })
-
-  // المجموعة النشطة (4 مجموعات تضم التبويبات التسعة)
-  const [group, setGroup] = useState<TabGroup>('overview')
+  // السهم المختار والمجموعة النشطة في الرابط (?sym=&tab=) — رابط مباشر لنتائج أي سهم
+  const search = useSearch({ from: '/financials' })
+  const navigate = useNavigate({ from: '/financials' })
+  const selectedSym = search.sym ?? DATA.find(st => st.ex === 'DFM')?.sym ?? DATA[0]?.sym ?? ''
+  const group: TabGroup = search.tab ?? 'overview'
+  const setSelectedSym = (sym: string) => void navigate({ search: (prev) => ({ ...prev, sym }), replace: true })
+  const setGroup = (tab: TabGroup) =>
+    void navigate({ search: (prev) => ({ ...prev, tab: tab === 'overview' ? undefined : tab }), replace: true })
 
   // السهم المختار حالياً
   const currentStock = useMemo(() => {

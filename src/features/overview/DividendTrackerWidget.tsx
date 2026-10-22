@@ -2,7 +2,7 @@ import { CalendarDays, CalendarPlus, BriefcaseBusiness, ArrowUpLeft } from 'luci
 import { useState, useMemo } from 'react'
 import type { Stock } from '@/data'
 import type { Upcoming } from '@/lib'
-import type { View } from '@/components/Sidebar'
+import type { View } from '@/components/nav'
 import { usePortfolio } from '@/store'
 import Avatar from '@/components/Avatar'
 import { dividendEvents, buildIcs } from '@/calendar'

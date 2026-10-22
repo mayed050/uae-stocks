@@ -1,22 +1,40 @@
-import { useState, useEffect } from 'react'
-import type { Stock } from './data'
+import { useState, useEffect, useRef } from 'react'
 import { Sun, Moon, X } from 'lucide-react'
+import { Link, Outlet, useCanGoBack, useLocation, useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import Sidebar from './components/Sidebar'
 import { NAV } from './components/nav'
-import type { View } from './components/nav'
 import StockDetail from './components/StockDetail'
+import { useStocks } from './store'
 
-// الاستيراد المباشر (Static Imports) لضمان موثوقية كاملة بنسبة 100% وتفادي أخطاء تحميل الحزم الديناميكية على منصات Vercel و GitHub Pages
-import Overview from '@/features/overview/Overview'
-import Screener from '@/features/screener/Screener'
-import Dividends from '@/features/dividends/Dividends'
-import Compare from '@/features/compare/Compare'
-import Portfolio from '@/features/portfolio/Portfolio'
-import Financials from '@/features/financials/Financials'
-
+/** الهيكل العام لكل الصفحات: الشريط الجانبي، المحتوى (Outlet)، الشريط السفلي، وبطاقة السهم من ?stock=. */
 export default function App() {
-  const [view, setView] = useState<View>('overview')
-  const [detail, setDetail] = useState<Stock | null>(null)
+  const { stocks } = useStocks()
+  const { stock: stockSym } = useSearch({ from: '__root__' })
+  const detail = stockSym ? (stocks.find((s) => s.sym === stockSym) ?? null) : null
+  const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const router = useRouter()
+  const canGoBack = useCanGoBack()
+  const mainRef = useRef<HTMLElement>(null)
+
+  // الإغلاق يعود خطوة في السجل إن فُتحت البطاقة من داخل التطبيق، وإلا يُزال ?stock= (رابط مباشر)
+  function closeDetail() {
+    if (canGoBack) router.history.back()
+    else void navigate({ to: '.', search: (prev) => ({ ...prev, stock: undefined }), replace: true })
+  }
+
+  // الصعود لأعلى الصفحة عند الانتقال بين الصفحات
+  useEffect(() => {
+    mainRef.current?.scrollTo?.({ top: 0 })
+    window.scrollTo({ top: 0 })
+  }, [pathname])
+
+  // عنوان التبويب يعكس الصفحة والسهم المفتوح (يظهر في السجل والإشارات المرجعية)
+  useEffect(() => {
+    const page = NAV.find((n) => n.to === pathname)?.label
+    const parts = [detail ? `${detail.name.split('—')[0]?.trim()} (${detail.sym})` : null, page, 'منصة الأسهم الإماراتية']
+    document.title = parts.filter(Boolean).join(' — ')
+  }, [pathname, detail])
   
   // الوضع الافتراضي يتبع تفضيل النظام عند أول زيارة، ثم يُحترم اختيار المستخدم المحفوظ
   const [dark, setDark] = useState<boolean>(() => {
@@ -49,7 +67,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <Sidebar view={view} setView={setView} />
+      <Sidebar />
       <button
         className="theme-toggle-floating"
         onClick={toggleTheme}
@@ -58,7 +76,7 @@ export default function App() {
       >
         {dark ? <Sun size={18} aria-hidden /> : <Moon size={18} aria-hidden />}
       </button>
-      <main className="main">
+      <main className="main" ref={mainRef}>
         {!disclaimerHidden && (
           <div className="disclaimer">
             <b>تنويه:</b> منصّة معلوماتية للمتابعة فقط — لا تتضمّن أي توصية بالشراء أو البيع. البنود
@@ -71,30 +89,26 @@ export default function App() {
             ><X size={16} aria-hidden /></button>
           </div>
         )}
-        {view === 'overview' && <Overview onOpen={setDetail} onNavigate={setView} />}
-        {view === 'screener' && <Screener onOpen={setDetail} />}
-        {view === 'dividends' && <Dividends onOpen={setDetail} />}
-        {view === 'financials' && <Financials onOpen={setDetail} />}
-        {view === 'compare' && <Compare />}
-        {view === 'portfolio' && <Portfolio onOpen={setDetail} />}
+        <Outlet />
       </main>
       
       {/* شريط التنقل السفلي المطور لتطبيقات الهواتف الذكية (Bottom Navigation Bar) */}
       <nav className="bottom-nav">
         {NAV.map((n) => (
-          <button
+          <Link
             key={n.v}
-            className={'bottom-navitem' + (view === n.v ? ' active' : '')}
-            onClick={() => setView(n.v)}
-            aria-current={view === n.v ? 'page' : undefined}
+            to={n.to}
+            className="bottom-navitem"
+            activeProps={{ className: 'active' }}
+            activeOptions={{ exact: n.to === '/', includeSearch: false }}
           >
             <span className="bottom-navitem-icon"><n.icon size={20} aria-hidden /></span>
             <span className="bottom-navitem-label">{n.short}</span>
-          </button>
+          </Link>
         ))}
       </nav>
 
-      {detail && <StockDetail item={detail} onClose={() => setDetail(null)} />}
+      {detail && <StockDetail item={detail} onClose={closeDetail} />}
     </div>
   )
 }

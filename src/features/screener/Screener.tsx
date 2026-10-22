@@ -1,7 +1,8 @@
 import { Search, X, Table2, LayoutGrid, BriefcaseBusiness, Plus, ListFilter } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import { CAT_LABEL } from '@/data'
-import type { Stock, Exchange, Category } from '@/data'
+import type { Stock } from '@/data'
 import { useStocks, usePortfolio } from '@/store'
 import { parseYield, parseAmount } from '@/format'
 import Avatar from '@/components/Avatar'
@@ -10,28 +11,51 @@ import { cell } from '@/components/ui/cell'
 import StatCard from '@/components/ui/StatCard'
 import PageHeader from '@/components/ui/PageHeader'
 import { SECTOR_TITLES, mapDFMSectorToDb } from '@/data/sectors'
+import type { DisplayMode, ScreenerSearch, SortKey } from '@/search'
 
-type SortKey = 'name' | 'price' | 'change' | 'pe' | 'yield' | 'mcap'
+const defaultDir = (k: SortKey): 1 | -1 => (k === 'name' ? 1 : -1)
+
+function savedDisplayMode(): DisplayMode {
+  try {
+    const saved = localStorage.getItem('screener_display_mode')
+    return saved === 'sectors' ? 'sectors' : 'list'
+  } catch {
+    return 'list'
+  }
+}
 
 export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA } = useStocks()
   const { isInPortfolio, togglePortfolioStock } = usePortfolio()
-  const [q, setQ] = useState('')
-  const [ex, setEx] = useState<'all' | Exchange>('all')
-  const [cat, setCat] = useState<'all' | Category>('all')
-  const [sort, setSort] = useState<SortKey>('mcap')
-  const [dir, setDir] = useState<1 | -1>(-1)
-  const [sector, setSector] = useState<string>('all')
-  
-  // حفظ وتغيير وضع العرض المفضل للمستثمر
-  const [displayMode, setDisplayMode] = useState<'list' | 'sectors'>(() => {
-    const saved = localStorage.getItem('screener_display_mode')
-    return (saved === 'list' || saved === 'sectors') ? saved : 'list'
+  // الفلاتر والترتيب ووضع العرض محفوظة في الرابط (?q=&ex=&cat=&sector=&sort=&dir=&view=) فتُشارَك كما هي
+  const search = useSearch({ from: '/screener' })
+  const navigate = useNavigate({ from: '/screener' })
+  const update = (patch: ScreenerSearch) =>
+    void navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true })
+
+  const ex = search.ex ?? 'all'
+  const cat = search.cat ?? 'all'
+  const sector = search.sector ?? 'all'
+  const sort = search.sort ?? 'mcap'
+  const dir: 1 | -1 = search.dir ? (search.dir === 'asc' ? 1 : -1) : defaultDir(sort)
+  const displayMode = search.view ?? savedDisplayMode()
+
+  // نص البحث محلي للكتابة السلسة، ويُنسخ إلى الرابط بعد توقّف الكتابة
+  const [q, setQ] = useState(() => search.q ?? '')
+  useEffect(() => {
+    const term = q.trim()
+    if (term === (search.q ?? '')) return
+    const t = setTimeout(() => update({ q: term || undefined }), 300)
+    return () => clearTimeout(t)
   })
 
-  const changeDisplayMode = (mode: 'list' | 'sectors') => {
-    setDisplayMode(mode)
-    localStorage.setItem('screener_display_mode', mode)
+  const changeDisplayMode = (mode: DisplayMode) => {
+    update({ view: mode })
+    try {
+      localStorage.setItem('screener_display_mode', mode)
+    } catch {
+      /* التخزين غير متاح */
+    }
   }
 
 
@@ -87,8 +111,11 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
   }, [rows])
 
   function toggleSort(k: SortKey) {
-    if (sort === k) setDir((d) => (d === 1 ? -1 : 1))
-    else { setSort(k); setDir(k === 'name' ? 1 : -1) }
+    const next: 1 | -1 = sort === k ? (dir === 1 ? -1 : 1) : defaultDir(k)
+    update({
+      sort: k === 'mcap' ? undefined : k,
+      dir: next === defaultDir(k) ? undefined : next === 1 ? 'asc' : 'desc',
+    })
   }
   const arrow = (k: SortKey) => (sort === k ? (dir === 1 ? ' ▲' : ' ▼') : '')
 
@@ -126,16 +153,16 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
             </div>
             <div className="chips">
               {([['all', 'كل الأسواق'], ['DFM', 'دبي'], ['ADX', 'أبوظبي']] as const).map(([v, l]) => (
-                <button key={v} className="chip" aria-pressed={ex === v} onClick={() => setEx(v)}>{l}</button>
+                <button key={v} className="chip" aria-pressed={ex === v} onClick={() => update({ ex: v === 'all' ? undefined : v })}>{l}</button>
               ))}
             </div>
             <div className="chips">
               {([['all', 'كل التصنيفات'], ['income', 'دخل مستقر'], ['growth', 'نمو'], ['risk', 'مخاطر أعلى']] as const).map(([v, l]) => (
-                <button key={v} className="chip" aria-pressed={cat === v} onClick={() => setCat(v)}>{l}</button>
+                <button key={v} className="chip" aria-pressed={cat === v} onClick={() => update({ cat: v === 'all' ? undefined : v })}>{l}</button>
               ))}
             </div>
             {sector !== 'all' && (
-              <button className="chip" style={{ background: 'var(--bad)', color: '#fff', border: 0 }} onClick={() => setSector('all')}>
+              <button className="chip" style={{ background: 'var(--bad)', color: '#fff', border: 0 }} onClick={() => update({ sector: undefined })}>
                 إلغاء فلتر القطاع: {sector} <X size={13} className="ico" aria-hidden />
               </button>
             )}

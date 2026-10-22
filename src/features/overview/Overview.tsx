@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import type { Stock } from '@/data'
-import type { View } from '@/components/Sidebar'
+import type { View } from '@/components/nav'
 import { useStocks, useMarketStats } from '@/store'
 import PageHeader from '@/components/ui/PageHeader'
 import MarketKpiStrip from './MarketKpiStrip'
