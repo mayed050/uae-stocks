@@ -36,6 +36,7 @@ export default function GoalTracker({
           <input
             type="number"
             className="p-input"
+            aria-label="الهدف الشهري من التوزيعات بالدرهم"
             value={goal || ''}
             onChange={(e) => setGoal(Math.max(0, parseFloat(e.target.value) || 0))}
           />

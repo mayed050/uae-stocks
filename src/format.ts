@@ -81,7 +81,7 @@ export const AXIS_LABEL: Record<keyof Scores, string> = {
 export function symColor(sym: string): string {
   let h = 0
   for (let i = 0; i < sym.length; i++) h = (h * 31 + sym.charCodeAt(i)) % 360
-  return `hsl(${h} 65% 45%)`
+  return `hsl(${h} 60% 30%)` // داكن بما يكفي لنص أبيض بتباين ≥ 4.5:1 لكل الألوان
 }
 
 /** اسم الشهر العربي من رقم 0–11. */

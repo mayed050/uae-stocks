@@ -23,7 +23,7 @@ function sparkPath(pts: HistPoint[] | undefined): string | null {
 
 /** لوحة الرسم البياني لأسعار الأسهم القيادية — أسعار إغلاق حقيقية فقط (Lightweight Charts). */
 export default function InteractiveChartPanel({ stocks }: { stocks: Stock[] }) {
-  const histMap = useHistory()
+  const { history: histMap, pending } = useHistory()
   const [selectedChartSym, setSelectedChartSym] = useState<string>('DEWA')
   const [chartTimeframe, setChartTimeframe] = useState<Timeframe>('3M')
 
@@ -79,6 +79,8 @@ export default function InteractiveChartPanel({ stocks }: { stocks: Stock[] }) {
 
           {series ? (
             <PriceChart points={series.points} up={series.up} label={`سعر إغلاق ${stock.sym} — ${TF_LABEL[chartTimeframe]}`} />
+          ) : pending ? (
+            <div className="chart-skeleton" role="status" aria-label="جارٍ تحميل الأسعار التاريخية" style={{ height: 260 }} />
           ) : (
             <div className="chart-empty">
               <LineChart size={28} aria-hidden />

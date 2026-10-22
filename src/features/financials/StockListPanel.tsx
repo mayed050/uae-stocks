@@ -63,7 +63,7 @@ export default function StockListPanel({
       />
 
       {/* قائمة الأسهم القابلة للتمرير */}
-      <div className="stock-scroll-list">
+      <div className="stock-scroll-list" tabIndex={0} aria-label="قائمة الأسهم (قابلة للتمرير)">
         {filteredStocks.map((stock) => {
           const isActive = stock.sym.toUpperCase() === selectedSym.toUpperCase()
           const stockDaily = getTechnicalData(stock)

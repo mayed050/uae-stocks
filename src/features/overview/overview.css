@@ -131,7 +131,7 @@
           font-family: inherit;
         }
         .chart-timeframe-btn.active {
-          background: var(--brand);
+          background: var(--brand-fill);
           color: #fff;
         }
         @media (max-width: 768px) {
@@ -310,7 +310,7 @@
           transition: 0.15s;
         }
         .o-toggle-btn.active {
-          background: linear-gradient(120deg, var(--brand), var(--brand2));
+          background: linear-gradient(120deg, var(--brand-fill), var(--brand2-fill));
           color: #fff;
         }
         @media (max-width: 1100px) {
@@ -347,7 +347,7 @@
   box-shadow: 0 0 0 1px var(--good);
 }
 .timeline-dot.active {
-  background: var(--brand);
+  background: var(--brand-fill);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 18%, transparent);
   animation: timeline-glow 1.6s infinite;
 }
@@ -458,7 +458,7 @@
 .o-widget-head .o-widget-h { margin: 0; border: 0; padding: 0; }
 .o-mkt-tabs { display: flex; gap: 4px; background: var(--chip); padding: 2.5px; border-radius: 8px; border: 1px solid var(--line); }
 .o-mkt-tab { border: 0; background: transparent; color: var(--muted); font-size: 11px; padding: 3px 9px; border-radius: 5px; cursor: pointer; font-weight: 700; font-family: inherit; transition: all 0.15s ease; }
-.o-mkt-tab.active { background: linear-gradient(120deg, var(--brand), var(--brand2)); color: #fff; }
+.o-mkt-tab.active { background: linear-gradient(120deg, var(--brand-fill), var(--brand2-fill)); color: #fff; }
 .o-prices-scroll { max-height: 440px; overflow-y: auto; padding-right: 2px; }
 .o-mini-table { min-width: 100%; background: transparent; font-size: 12px; border-collapse: collapse; }
 .o-mini-table thead tr { border-bottom: 1px solid var(--line); }

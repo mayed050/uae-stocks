@@ -50,6 +50,7 @@ export default function DripSimulator({ totalInvested, weightedYield }: { totalI
             <span className="drip-val brand">{dripYears} سنة</span>
           </div>
           <input
+            aria-label="أفق الاستثمار"
             type="range"
             min="3"
             max="30"
@@ -65,6 +66,7 @@ export default function DripSimulator({ totalInvested, weightedYield }: { totalI
             <span className="drip-val good">{dripMonthly.toLocaleString('en-US')} د.إ</span>
           </div>
           <input
+            aria-label="مساهمة شهرية إضافية"
             type="range"
             min="0"
             max="15000"
@@ -81,6 +83,7 @@ export default function DripSimulator({ totalInvested, weightedYield }: { totalI
             <span className="drip-val warn">{dripPriceGrowth}%</span>
           </div>
           <input
+            aria-label="نمو سعر الأسهم سنويًا"
             type="range"
             min="0"
             max="12"
@@ -97,6 +100,7 @@ export default function DripSimulator({ totalInvested, weightedYield }: { totalI
             <span className="drip-val brand2">{dripDivGrowth}%</span>
           </div>
           <input
+            aria-label="نمو التوزيعات سنويًا"
             type="range"
             min="0"
             max="10"

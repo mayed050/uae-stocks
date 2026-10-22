@@ -141,7 +141,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
           <div className="controls">
             <div className="search">
               <Search size={16} className="ico" aria-hidden />
-              <input placeholder="ابحث بالاسم أو الرمز أو القطاع…" value={q} onChange={(e) => setQ(e.target.value)} />
+              <input aria-label="ابحث في الأسهم بالاسم أو الرمز أو القطاع" placeholder="ابحث بالاسم أو الرمز أو القطاع…" value={q} onChange={(e) => setQ(e.target.value)} />
             </div>
             <div className="chips">
               {([['all', 'كل الأسواق'], ['DFM', 'دبي'], ['ADX', 'أبوظبي']] as const).map(([v, l]) => (
@@ -166,7 +166,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                 onClick={() => changeDisplayMode('list')}
                 style={{
                   border: 0,
-                  background: displayMode === 'list' ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'transparent',
+                  background: displayMode === 'list' ? 'linear-gradient(120deg, var(--brand-fill), var(--brand2-fill))' : 'transparent',
                   color: displayMode === 'list' ? '#fff' : 'var(--muted)',
                   fontSize: '12px',
                   padding: '6px 12px',
@@ -184,7 +184,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                 onClick={() => changeDisplayMode('sectors')}
                 style={{
                   border: 0,
-                  background: displayMode === 'sectors' ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'transparent',
+                  background: displayMode === 'sectors' ? 'linear-gradient(120deg, var(--brand-fill), var(--brand2-fill))' : 'transparent',
                   color: displayMode === 'sectors' ? '#fff' : 'var(--muted)',
                   fontSize: '12px',
                   padding: '6px 12px',

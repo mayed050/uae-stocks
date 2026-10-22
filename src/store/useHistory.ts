@@ -7,7 +7,8 @@ export type HistoryMap = Record<string, HistPoint[]>
 
 const EMPTY: HistoryMap = {}
 
-/** يحمّل أسعار دبي التاريخية مرّة واحدة (مخزّنة في عميل الاستعلامات)، ويُرجع خريطة الرمز → نقاط. */
-export function useHistory(): HistoryMap {
-  return useQuery(historyQuery).data ?? EMPTY
+/** يحمّل أسعار دبي التاريخية مرّة واحدة (مخزّنة في عميل الاستعلامات): خريطة الرمز → نقاط، وحالة التحميل. */
+export function useHistory(): { history: HistoryMap; pending: boolean } {
+  const q = useQuery(historyQuery)
+  return { history: q.data ?? EMPTY, pending: q.isPending }
 }

@@ -6,7 +6,7 @@ import { upcoming, isAlert } from '../lib'
 import { parseGrowth, symColor } from '../format'
 import Avatar from './Avatar'
 import Snowflake from './Snowflake'
-import { usePortfolio, useHistory } from '../store'
+import { usePortfolio, useHistory, useUiStore } from '../store'
 import { periodSeries } from '@/market'
 import type { Timeframe } from '@/market'
 import PriceChart from './PriceChart'
@@ -31,7 +31,7 @@ const TF_LABEL: Record<'1M' | '3M' | '6M' | '1Y', string> = { '1M': 'شهر', '3
 export default function StockDetail({ item, onClose }: { item: Stock; onClose: () => void }) {
   const { isInPortfolio, togglePortfolioStock } = usePortfolio()
   const added = isInPortfolio(item.sym)
-  const histMap = useHistory()
+  const { history: histMap, pending: histPending } = useHistory()
   const [tfSel, setTfSel] = useState<Extract<Timeframe, '1M' | '3M' | '6M' | '1Y'>>('1Y')
   const [showTv, setShowTv] = useState(false)
   const series = useMemo(
@@ -39,6 +39,7 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
     [histMap, item, tfSel],
   )
   const closeRef = useRef<HTMLButtonElement>(null)
+  const modalRef = useRef<HTMLDivElement>(null)
 
   // تتبّع السمة لحظياً ليُحدَّث مخطّط TradingView عند التبديل بين الفاتح والداكن
   const [theme, setTheme] = useState<'dark' | 'light'>(() => readTheme())
@@ -49,18 +50,47 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
     return () => obs.disconnect()
   }, [])
 
-  // إغلاق بمفتاح Escape + قفل تمرير الخلفية + تركيز مبدئي على زر الإغلاق
+  // أحدث دالة إغلاق دون إعادة تشغيل التأثير (فلا يقفز التركيز عند كل رسم)
+  const closeLatest = useRef(onClose)
   useEffect(() => {
-    const h = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
-    window.addEventListener('keydown', h)
+    closeLatest.current = onClose
+  })
+
+  // Escape للإغلاق، حبس التركيز داخل النافذة (Tab/Shift+Tab)، قفل تمرير الخلفية،
+  // تركيز مبدئي على زر الإغلاق، وإعادة التركيز لعنصر الفتح عند الإغلاق
+  useEffect(() => {
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const onKey = (e: KeyboardEvent) => {
+      if (useUiStore.getState().paletteOpen) return // لوحة البحث فوق النافذة تعالج مفاتيحها
+      if (e.key === 'Escape') {
+        closeLatest.current()
+        return
+      }
+      if (e.key !== 'Tab' || !modalRef.current) return
+      const focusables = [
+        ...modalRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input, select, textarea, iframe, [tabindex]:not([tabindex="-1"])'),
+      ].filter((el) => el.offsetParent !== null)
+      const first = focusables[0]
+      const last = focusables[focusables.length - 1]
+      if (!first || !last) return
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+    window.addEventListener('keydown', onKey)
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     closeRef.current?.focus()
     return () => {
-      window.removeEventListener('keydown', h)
+      window.removeEventListener('keydown', onKey)
       document.body.style.overflow = prevOverflow
+      opener?.focus()
     }
-  }, [onClose])
+  }, [])
 
   const u = upcoming(item)
   const g = parseGrowth(item.net)
@@ -69,6 +99,7 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
     <div className="modal-backdrop" onClick={onClose}>
       <div
         className="modal"
+        ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -173,6 +204,8 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
                   {series.up ? '▲' : '▼'} {series.changePct.toFixed(2)}% خلال {TF_LABEL[tfSel]} · الأعلى {series.high.toFixed(2)} · الأدنى {series.low.toFixed(2)}
                 </div>
               </>
+            ) : histPending ? (
+              <div className="chart-skeleton" role="status" aria-label="جارٍ تحميل الأسعار التاريخية" style={{ height: 240 }} />
             ) : (
               <div className="chart-empty" style={{ height: 160 }}>
                 <b>لا يتوفر سجل أسعار تاريخي لهذا السهم بعد</b>

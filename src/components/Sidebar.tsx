@@ -22,10 +22,10 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <button className="palette-trigger" onClick={() => openPalette(true)} aria-label="بحث سريع عن سهم أو صفحة" aria-keyshortcuts="Control+K Meta+K /">
+      <button className="palette-trigger" onClick={() => openPalette(true)} aria-keyshortcuts="Control+K Meta+K /">
         <Search size={16} aria-hidden />
         <span className="pt-label">بحث سريع…</span>
-        <kbd className="pt-kbd" dir="ltr">Ctrl K</kbd>
+        <kbd className="pt-kbd" dir="ltr" aria-hidden>Ctrl K</kbd>
       </button>
 
       <nav className="nav">

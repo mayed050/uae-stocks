@@ -14,7 +14,7 @@ function useMountTime(): number {
  * توحّد مقاسات العناوين وتُظهر حداثة البيانات في كل الصفحات.
  */
 export default function PageHeader({ title, children }: { title: ReactNode; children?: ReactNode }) {
-  const { lastUpdated } = useStocks()
+  const { lastUpdated, loading } = useStocks()
   // لقطة زمنية تُؤخذ مرة واحدة عند التركيب (Date.now دالة غير نقية لا تُستدعى أثناء الـ render).
   const mountNow = useMountTime()
   const days = lastUpdated ? Math.floor((mountNow - new Date(lastUpdated).getTime()) / 86400000) : null
@@ -27,6 +27,9 @@ export default function PageHeader({ title, children }: { title: ReactNode; chil
           {children}
           {lastUpdated && (
             <span className="updated"> · آخر تحديث: {new Date(lastUpdated).toLocaleDateString('ar-AE', { dateStyle: 'medium' })}</span>
+          )}
+          {loading && (
+            <span className="refreshing" role="status"> · جارٍ جلب أحدث البيانات…</span>
           )}
           {stale && (
             <span

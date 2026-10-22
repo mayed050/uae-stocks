@@ -117,7 +117,8 @@ export default function PriceChart({ points, up, height = 260, label }: { points
           <span>{label}</span>
         ) : null}
       </figcaption>
-      <div ref={box} className="pc-canvas" role="img" aria-label={`${label}: ${points.length} نقطة إغلاق${last ? `، آخرها ${last[1].toFixed(2)} درهم بتاريخ ${last[0]}` : ''}`} />
+      <span className="sr-only">{`${label}: ${points.length} نقطة إغلاق${last ? `، آخرها ${last[1].toFixed(2)} درهم بتاريخ ${last[0]}` : ''}`}</span>
+      <div ref={box} className="pc-canvas" />
     </figure>
   )
 }

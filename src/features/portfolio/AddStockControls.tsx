@@ -32,6 +32,7 @@ export default function AddStockControls({
           <div className="search p-search-full">
             <Search size={16} className="ico" aria-hidden />
             <input
+              aria-label="ابحث عن سهم لإضافته للمحفظة"
               placeholder="ابحث عن سهم لإضافته للمحفظة..."
               value={searchQuery}
               onFocus={() => setShowDropdown(true)}
@@ -62,7 +63,7 @@ export default function AddStockControls({
           )}
         </div>
         {searchQuery === '' && availableStocks.length > 0 && (
-          <select className="p-quick-add" onChange={(e) => { if(e.target.value !== '') { addStock(e.target.value); }; e.target.value = '' }}>
+          <select className="p-quick-add" aria-label="إضافة سريعة لسهم إلى المحفظة" onChange={(e) => { if(e.target.value !== '') { addStock(e.target.value); }; e.target.value = '' }}>
             <option value="">أضف سهماً سريعا من القائمة...</option>
             {availableStocks.map(s => (
               <option key={s.sym} value={s.sym}>{s.sym} — {s.name.split('—')[0]}</option>

@@ -68,6 +68,7 @@ export default function App() {
 
   return (
     <div className="app">
+      <button className="skip-link" onClick={() => mainRef.current?.focus()}>تخطَّ إلى المحتوى الرئيسي</button>
       <Sidebar />
       <button
         className="theme-toggle-floating"
@@ -77,7 +78,7 @@ export default function App() {
       >
         {dark ? <Sun size={18} aria-hidden /> : <Moon size={18} aria-hidden />}
       </button>
-      <main className="main" ref={mainRef}>
+      <main className="main" ref={mainRef} tabIndex={-1} aria-label="المحتوى الرئيسي">
         {!disclaimerHidden && (
           <div className="disclaimer">
             <b>تنويه:</b> منصّة معلوماتية للمتابعة فقط — لا تتضمّن أي توصية بالشراء أو البيع. البنود

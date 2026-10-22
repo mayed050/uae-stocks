@@ -30,7 +30,7 @@ export default function CompanyPricesWidget({ stocks, onOpen }: { stocks: Stock[
       </div>
 
       {marketTab === 'dubai' ? (
-        <div className="o-prices-scroll">
+        <div className="o-prices-scroll" tabIndex={0} aria-label="قائمة أسعار الشركات (قابلة للتمرير)">
           <table className="o-mini-table">
             <thead>
               <tr>

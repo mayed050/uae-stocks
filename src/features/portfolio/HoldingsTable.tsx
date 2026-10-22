@@ -110,6 +110,7 @@ export default function HoldingsTable({
                     <input
                       type="number"
                       className="p-input"
+                      aria-label={`المبلغ المستثمر في ${item.sym} بالدرهم`}
                       value={Math.round(item.amount) || ''}
                       onChange={(e) => updateAmount(item.sym, Math.max(0, parseFloat(e.target.value) || 0))}
                     />
@@ -118,6 +119,7 @@ export default function HoldingsTable({
                     <input
                       type="number"
                       className="p-input"
+                      aria-label={`عدد أسهم ${item.sym}`}
                       value={Math.round(item.shares) || ''}
                       onChange={(e) => updateShares(item.sym, Math.max(0, parseFloat(e.target.value) || 0))}
                     />
@@ -126,6 +128,7 @@ export default function HoldingsTable({
                     <input
                       type="number"
                       className="p-input"
+                      aria-label={`إجمالي تكلفة شراء ${item.sym} بالدرهم`}
                       value={Math.round(item.cost) || ''}
                       onChange={(e) => updateCost(item.sym, Math.max(0, parseFloat(e.target.value) || 0))}
                       title="إجمالي ما دفعته لشراء هذه الحيازة"

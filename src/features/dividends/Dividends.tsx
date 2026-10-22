@@ -154,6 +154,7 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
             <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '800', marginBottom: '8px', color: 'var(--muted)' }}>الدخل الشهري المستهدف (د.إ):</label>
             <input 
               type="number" 
+              aria-label="الدخل الشهري المستهدف بالدرهم"
               value={targetMonthly || ''}
               onChange={(e) => {
                 const val = e.target.value === '' ? 0 : parseInt(e.target.value)
@@ -166,6 +167,7 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
             <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '800', marginBottom: '8px', color: 'var(--muted)' }}>متوسط العائد المستهدف للفائدة (%):</label>
             <input 
               type="number" 
+              aria-label="متوسط العائد المستهدف بالنسبة المئوية"
               step="0.1"
               value={customAvgYield || ''}
               onChange={(e) => {
