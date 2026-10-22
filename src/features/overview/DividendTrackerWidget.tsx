@@ -82,7 +82,12 @@ export default function DividendTrackerWidget({
               countdownBadge = <span className="o-cd future">بعد {daysLeft} يوم</span>
             }
 
-            const divValueStr = s.div.ps ?? 'غير معلن'
+            // الحدث المعروض هو الذي يُعدّ له العدّ التنازلي: الشريحة القادمة إن كانت هي الأقرب
+            const isNext = u.label === 'الشريحة القادمة'
+            const ex = isNext ? s.div.nextExd : s.div.exd
+            const pay = isNext ? s.div.nextPay : s.div.pay
+            const divValueStr = u.ps ?? s.div.ps ?? 'غير معلن'
+            const autoEvent = s.div.auto?.fields.includes(isNext ? 'nextExd' : 'exd') ?? false
             const calEvents = dividendEvents(s)
 
             return (
@@ -101,8 +106,8 @@ export default function DividendTrackerWidget({
                     </div>
                   </div>
                   {countdownBadge}
-                  {s.div.auto?.fields.some((f) => f === 'exd' || f === 'nextExd') && (
-                    <span className="auto-mark" title={`تاريخ أُضيف آليًا من TradingView (${s.div.auto.asof}) — تحقّق من الإفصاح الرسمي`}>يلزم التحقق</span>
+                  {autoEvent && (
+                    <span className="auto-mark" title={`تاريخ أُضيف آليًا من TradingView (${s.div.auto?.asof}) — تحقّق من الإفصاح الرسمي`}>يلزم التحقق</span>
                   )}
                 </div>
 
@@ -114,12 +119,12 @@ export default function DividendTrackerWidget({
 
                 {/* متتبع المراحل الرأسي المصغر */}
                 <div className="o-div-timeline">
-                  {/* خطوة 1: توصية الأرباح */}
+                  {/* خطوة 1: مصدر الإعلان (لا يُدّعى اعتماد رسمي لبيانات آلية لم يُتحقق منها) */}
                   <div className="timeline-step">
-                    <div className="timeline-dot completed" />
+                    <div className={'timeline-dot' + (autoEvent ? '' : ' completed')} />
                     <div className="timeline-content">
-                      <span>توصية مجلس الإدارة</span>
-                      <div className="o-tl-sub">موافقة رسمية معلنة</div>
+                      <span>{isNext ? 'شريحة توزيع قادمة' : 'إعلان التوزيع'}</span>
+                      <div className="o-tl-sub">{autoEvent ? 'من TradingView — تحقّق من إفصاح الشركة' : 'مُدخل يدويًا في بيانات المنصة'}</div>
                     </div>
                   </div>
 
@@ -129,7 +134,7 @@ export default function DividendTrackerWidget({
                     <div className={`timeline-content ${daysLeft !== null && daysLeft >= 0 ? 'active' : ''}`}>
                       <span className="o-tl-row">
                         <span>تاريخ الاستحقاق (Ex-Date)</span>
-                        <b className="o-tl-ex">{s.div.exd ?? 'قريباً'}</b>
+                        <b className="o-tl-ex">{ex ?? 'قريباً'}</b>
                       </span>
                     </div>
                   </div>
@@ -140,7 +145,7 @@ export default function DividendTrackerWidget({
                     <div className="timeline-content">
                       <span className="o-tl-row">
                         <span>تاريخ توزيع الأرباح (Pay)</span>
-                        <span>{s.div.pay ?? 'منتظر'}</span>
+                        <span>{pay ?? 'منتظر'}</span>
                       </span>
                     </div>
                   </div>
