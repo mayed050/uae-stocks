@@ -4,6 +4,7 @@ import { Link, Outlet, useCanGoBack, useLocation, useNavigate, useRouter, useSea
 import Sidebar from './components/Sidebar'
 import { NAV } from './components/nav'
 import StockDetail from './components/StockDetail'
+import CommandPalette from './components/CommandPalette'
 import { useStocks } from './store'
 
 /** الهيكل العام لكل الصفحات: الشريط الجانبي، المحتوى (Outlet)، الشريط السفلي، وبطاقة السهم من ?stock=. */
@@ -109,6 +110,7 @@ export default function App() {
       </nav>
 
       {detail && <StockDetail item={detail} onClose={closeDetail} />}
+      <CommandPalette />
     </div>
   )
 }

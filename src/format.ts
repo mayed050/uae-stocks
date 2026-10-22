@@ -115,3 +115,19 @@ export function getAnnualPs(s: Stock): number {
   if (s.div.ps?.includes('ربع')) return val * 4
   return val
 }
+
+/**
+ * تطبيع النص العربي للبحث: توحيد الهمزات والألف والتاء المربوطة والياء، وحذف التشكيل والتطويل،
+ * فيجد «اعمار» «إعمار» و«الاماراتية» «الإماراتية».
+ */
+export function normalizeAr(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[ً-ٰٟـ]/g, '') // تشكيل + تطويل
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/ؤ/g, 'و')
+    .replace(/ئ/g, 'ي')
+    .trim()
+}

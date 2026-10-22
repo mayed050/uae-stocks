@@ -91,3 +91,13 @@ describe('symColor', () => {
     expect(symColor('DEWA')).toMatch(/^hsl\(/)
   })
 })
+
+describe('normalizeAr', () => {
+  it('يوحّد الهمزات والتاء المربوطة والياء ويحذف التشكيل', async () => {
+    const { normalizeAr } = await import('@/format')
+    expect(normalizeAr('إعمار')).toBe(normalizeAr('اعمار'))
+    expect(normalizeAr('الإماراتيّة')).toBe('الاماراتيه')
+    expect(normalizeAr('مستشفى')).toBe('مستشفي')
+    expect(normalizeAr('  DEWA ')).toBe('dewa')
+  })
+})

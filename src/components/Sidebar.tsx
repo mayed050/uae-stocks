@@ -1,11 +1,13 @@
 import { Link } from '@tanstack/react-router'
+import { Search } from 'lucide-react'
 import { NAV } from './nav'
-import { useStocks } from '@/store'
+import { useStocks, useUiStore } from '@/store'
 
 export type { View } from './nav'
 
 export default function Sidebar() {
   const { lastUpdated } = useStocks()
+  const openPalette = useUiStore((s) => s.setPaletteOpen)
   const dataDate = lastUpdated
     ? new Date(lastUpdated).toLocaleDateString('ar-AE', { day: 'numeric', month: 'long', year: 'numeric' })
     : null
@@ -19,6 +21,12 @@ export default function Sidebar() {
           <div className="brand-sub">دبي · أبوظبي</div>
         </div>
       </div>
+
+      <button className="palette-trigger" onClick={() => openPalette(true)} aria-label="بحث سريع عن سهم أو صفحة" aria-keyshortcuts="Control+K Meta+K /">
+        <Search size={16} aria-hidden />
+        <span className="pt-label">بحث سريع…</span>
+        <kbd className="pt-kbd" dir="ltr">Ctrl K</kbd>
+      </button>
 
       <nav className="nav">
         {NAV.map((n) => (

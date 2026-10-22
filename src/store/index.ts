@@ -2,6 +2,7 @@
 export { default as AppProviders } from './AppProviders'
 export { useStocks } from './useStocks'
 export { usePortfolioStore } from './portfolioStore'
+export { useUiStore } from './uiStore'
 export type { Holding } from './portfolioStore'
 export { usePortfolio } from './usePortfolio'
 export type { PortfolioItem } from './usePortfolio'

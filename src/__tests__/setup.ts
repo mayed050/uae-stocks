@@ -12,3 +12,13 @@ z.config(z.locales.en())
 
 // jsdom لا ينفّذ التمرير — بديل صامت لتفادي ضوضاء «Not implemented» في اختبارات التوجيه.
 window.scrollTo = () => {}
+
+// jsdom لا ينفّذ scrollIntoView (تستخدمه cmdk عند التنقّل بين النتائج)
+Element.prototype.scrollIntoView = function () {}
+
+// jsdom لا يوفّر ResizeObserver (تستخدمه قائمة cmdk لقياس ارتفاعها)
+globalThis.ResizeObserver ??= class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}

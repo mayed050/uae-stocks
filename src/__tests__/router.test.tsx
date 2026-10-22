@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { QueryClient } from '@tanstack/react-query'
 import { RouterProvider, createMemoryHistory } from '@tanstack/react-router'
 import { AppProviders } from '@/store'
@@ -62,5 +62,18 @@ describe('التوجيه', () => {
     expect(links.some((l) => l.classList.contains('active'))).toBe(true)
     const overview = screen.getAllByRole('link', { name: /نظرة عامة/ })
     expect(overview.every((l) => !l.classList.contains('active'))).toBe(true)
+  })
+
+  it('لوحة البحث (Ctrl+K) تجد السهم رغم اختلاف الهمزة وتفتح بطاقته', async () => {
+    const router = renderAt('/dividends')
+    await screen.findByRole('heading', { level: 1, name: /التوزيعات/ })
+    fireEvent.keyDown(window, { key: 'k', ctrlKey: true })
+    const input = await screen.findByPlaceholderText(/ابحث باسم الشركة/)
+    fireEvent.change(input, { target: { value: 'اعمار للتطوير' } })
+    const option = await screen.findByRole('option', { name: /إعمار للتطوير/ })
+    fireEvent.click(option)
+    await waitFor(() => expect(router.state.location.search).toEqual({ stock: 'EMAARDEV' }))
+    expect(router.state.location.pathname).toBe('/dividends')
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
   })
 })
