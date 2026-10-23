@@ -12,32 +12,37 @@ try {
   const r = await fetch('https://scanner.tradingview.com/uae/scan', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'User-Agent': UA },
-    body: JSON.stringify({ symbols: { tickers: Object.values(KEYS) }, columns: COLS }),
+    body: JSON.stringify({ symbols: { tickers: Object.values(KEYS).map((k) => k.replace('-', ':')) }, columns: COLS }),
   })
   const j = await r.json()
-  const bySym = Object.fromEntries(Object.entries(KEYS).map(([k, v]) => [v, k]))
+  const bySym = Object.fromEntries(Object.entries(KEYS).map(([k, v]) => [v.replace('-', ':'), k]))
+  console.log('rows', j.totalCount, (j.data ?? []).length, j.error ?? '')
   for (const row of j.data ?? []) {
     const [ex, pay, amt, exN, amtN] = row.d
-    console.log(`${bySym[row.s.replace(':', '-')] ?? row.s} ex=${d(ex)} pay=${d(pay)} amt=${amt} | next ex=${d(exN)} amt=${amtN}`)
+    console.log(`${bySym[row.s] ?? row.s} ex=${d(ex)} pay=${d(pay)} amt=${amt} | next ex=${d(exN)} amt=${amtN}`)
   }
 } catch (e) {
   console.log('TV ERR', e.message)
 }
 
 const DOCS = [
-  ['DEWA-circular', 'https://feeds.dfm.ae/documents/2026/Feb/10/9cdbefb4-21ee-4278-a0c5-edbf3d4f0d72/DEWA.DFM.Circular.Feb.10.2026.vFinal2.pdf'],
-  ['DIC-PR', 'https://feeds.dfm.ae/documents/2026/Apr/24/71f8a401-06a0-46dc-bdca-166b40b1bb6e/DIC%20PR%20E%2024%2004%202026..pdf'],
   ['MASHREQ-AGM', 'https://www.mashreq.com/-/jssmedia/pdfs/aboutus/investors/2026/AGM-Results-2026.ashx'],
   ['FAB-AGM', 'https://www.bankfab.com/en-ae/about-fab/group/in-the-media/fab-shareholders-approve-record-dividend-agm'],
   ['ADNIC-AGM', 'https://adnic.ae/-/adnic-shareholders-approve-cash-dividends-of-47-at-the-annual-general-meeting'],
   ['DANA-table', 'https://www.danagas.com/?p=6424'],
-  ['DANA-PR', 'https://www.danagas.com/wp-content/uploads/2026/04/20260420_PR-2025-Dividen-En.pdf'],
-  ['ANSARI-WAM', 'https://www.wam.ae/en/article/bzecjwf-ansari-financial-services%E2%80%99-shareholders-approve'],
-  ['ADX-5552276', 'https://apigateway.adx.ae/adx/cdn/1.0/content/download/5552276'],
-  ['ADX-5239176', 'https://apigateway.adx.ae/adx/cdn/1.0/content/download/5239176'],
-  ['ADX-4912349', 'https://apigateway.adx.ae/adx/cdn/1.0/content/download/4912349'],
-  ['ADX-5256798', 'https://apigateway.adx.ae/adx/cdn/1.0/content/download/5256798'],
-  ['ADX-5223526', 'https://apigateway.adx.ae/adx/cdn/1.0/content/download/5223526'],
+  ['GFH-BHB', 'https://bahrainbourse.com/NewAttachments/26032026080747/26032026080747_File1.pdf'],
+  ['AIRARABIA-PR', 'https://press.airarabia.com/air-arabia-shareholders-approve-30-dividend-distribution-at-annual-general-meeting/'],
+  ['EMAARDEV-div', 'https://properties.emaar.com/en/investor-relations/emaar-development-pjsc/dividends/'],
+  ['EMAARDEV-PR', 'https://www.emaar.com/en/press-release-listing/emaar-development-announces-100-dividend-payout-of-aed-4-billion-us-1-1-billion'],
+  ['ADIB-AGM', 'https://www.adib.ae/en/news/2026/mar/annual-general-assembly'],
+  ['NMDCENR-div', 'https://www.nmdc-energy.com/en/investor-relations/share-information/dividends/'],
+  ['BURJEEL-AGMnotice', 'https://burjeelholdings.com/wp-content/uploads/2026/03/Invitation-to-Attend-AGM.pdf'],
+  ['DTC-PR', 'https://www.dubaitaxi.ae/en/post/dtc-shareholders-approve-fy-2025-final-dividend-at-annual-general-meeting'],
+  ['DTC-div', 'https://www.dubaitaxi.ae/en/investor-relations/dividends'],
+  ['DTC-AGMres', 'https://feeds.dfm.ae/documents/2026/Apr/7/549fb1c3-510f-437d-bb45-18e1ae969ae8/DTC%20BODRES%2008%2004%20202.pdf'],
+  ['DFM-AGMad', 'https://feeds.dfm.ae/documents/2026/Mar/03/f46fe01e-87a3-473f-a4f4-cf4e38297300/AGM_PressAd_EN2026_web.pdf'],
+  ['ALDAR-Q1', 'https://www.aldar.com/en/news-and-media/aldar-q1-fy-2026-financial-results'],
+  ['WAHA-facts', 'http://wahacapital.ae/investor-relations/fact-sheet'],
 ]
 const KW = /(ex-?\s?dividend|record date|entitlement|registry|closing|payment date|distribution date|last day|last date|general assembly|annual general|AGM|fils|per share|dividend|استحقاق|الأحقية|توزيع|سجل|بدون)/i
 const DATE = /(\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}|\d{4}-\d{2}-\d{2}|\d{1,2}(st|nd|rd|th)?\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}|(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},?\s+\d{4})/i
@@ -54,10 +59,12 @@ for (const [name, url] of DOCS) {
     } else {
       text = buf.toString('utf8').replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, '\n').replace(/&nbsp;|&#160;/g, ' ').replace(/&amp;/g, '&')
     }
-    const lines = text.split('\n').map((l) => l.replace(/\s+/g, ' ').trim()).filter((l) => l && (DATE.test(l) || KW.test(l)) && (DATE.test(l) || /fils|per share|%/.test(l)))
+    const all = text.split('\n').map((l) => l.replace(/\s+/g, ' ').trim()).filter(Boolean)
+    const HOT = /(record|entitlement|ex-?\s?div|regist|closing|payment|paid|distribut|last (day|date)|eligib|on or before|cum|الاستحقاق|لالستحقاق|بدون|سجل)/i
+    const lines = [...all.filter((l) => HOT.test(l) && (/2026|\/26\b|\/2026/.test(l) || DATE.test(l))), ...all.filter((l) => HOT.test(l) && !DATE.test(l)).slice(0, 6), ...all.filter((l) => /fils|per share/i.test(l)).slice(0, 4)]
     const title = text.split('\n').map((l) => l.trim()).find((l) => l.length > 20)?.slice(0, 140) ?? ''
     console.log(`\n== ${name} [${r.status} ${ct.split(';')[0]} ${buf.length}B] ${title}`)
-    for (const l of [...new Set(lines)].slice(0, 22)) console.log('  ' + l.slice(0, 230))
+    for (const l of [...new Set(lines)].slice(0, 26)) console.log('  ' + l.slice(0, 260))
   } catch (e) {
     console.log(`\n== ${name} ERR ${e.message}`)
   }
