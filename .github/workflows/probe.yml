@@ -17,7 +17,7 @@ jobs:
           command -v pdftotext || (sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils >/dev/null)
           node scripts/probe-sources.mjs > probe.txt 2>&1 || true
           # النتيجة كملاحظات (annotations) مقسّمة لقراءتها عبر واجهة GitHub البرمجية
-          split -l 40 probe.txt part_
+          split -l 45 probe.txt part_
           i=0
           for f in part_*; do
             body=$(sed -e 's/%/%25/g' "$f" | awk 'BEGIN{ORS="%0A"} {print}')
