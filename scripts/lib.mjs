@@ -131,6 +131,19 @@ const validPay = (ex, pay) => (pay && ex && pay > ex ? pay : null)
 // نافذة «الحدث نفسه»: فرق أقل من 60 يومًا بين المصدرين يعني التوزيع ذاته (تعارض لا حدث جديد)
 const SAME_EVENT_DAYS = 60
 
+/** مبلغ التوزيع بالدرهم من النص اليدوي («30 فلس (30%)»، «10.20 درهم») — مطابق لـ parseDivPs في الواجهة. */
+export function psAed(ps) {
+  const m = typeof ps === 'string' ? ps.replace(/~/g, '').match(/(\d+(?:\.\d+)?)/) : null
+  if (!m) return null
+  const v = parseFloat(m[1])
+  return ps.includes('فلس') ? v / 100 : v
+}
+
+/** فرق جوهري بين مبلغين: أكثر من 3% وأكثر من عُشر فلس (يستوعب تقريب TradingView العشري). */
+export function amountsDiffer(a, b) {
+  return Math.abs(a - b) > Math.max(0.001, 0.03 * Math.max(a, b))
+}
+
 /**
  * يدمج توزيعات TradingView في سجل التوزيع اليدوي دون أن يطغى عليه:
  * - حدث أحدث (بفارق > 60 يومًا) أو سجل يدوي فارغ ← يُعتمد ويُعلَّم «آلي — يلزم التحقق».
@@ -167,6 +180,9 @@ export function mergeDividend(div, tv, today) {
       // الحدث المراجَع على إفصاح رسمي (out.src) لا يُبلَّغ عن فروقه مع TradingView
       if (tv.exRecent !== out.exd) conflicts.push({ field: 'exd', manual: out.exd, auto: tv.exRecent })
       else if (pay && out.pay && pay !== out.pay) conflicts.push({ field: 'pay', manual: out.pay, auto: pay })
+      // المبلغ يُقارن مستقلًا عن التاريخ: تطابق التاريخ لا يعني صحة المبلغ (مبالغ منقولة من سنوات سابقة)
+      const manualAed = psAed(out.ps)
+      if (ps && manualAed !== null && amountsDiffer(manualAed, tv.amountRecent)) conflicts.push({ field: 'ps', manual: out.ps, auto: ps })
     }
   }
 
