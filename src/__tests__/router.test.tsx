@@ -1,13 +1,17 @@
-import { describe, it, expect } from 'vitest'
+import { beforeAll, describe, it, expect } from 'vitest'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { QueryClient } from '@tanstack/react-query'
 import { RouterProvider, createMemoryHistory } from '@tanstack/react-router'
 import { AppProviders } from '@/store'
 import { createAppRouter } from '@/router'
+import { LazyStockDetail } from '@/components/lazy'
 import { validateRootSearch, validateScreenerSearch, validateFinancialsSearch } from '@/search'
 
-// بطاقة السهم حزمة تُجلب عند الطلب: أول تحميل لها في بيئة الاختبار يحوّل مكتبتي الرسم فيتجاوز المهلة الافتراضية
-const LAZY = { timeout: 8000 }
+// بطاقة السهم والصفحات حِزم تُجلب عند الطلب، وتحويلها أول مرة في بيئة الاختبار بطيء (مكتبتا الرسم)؛
+// فتُحمَّل مرة واحدة مسبقًا كي تقيس الاختبارات سلوك التوجيه لا زمن التحويل.
+beforeAll(async () => {
+  await Promise.all([LazyStockDetail.preload?.(), import('@/routes/screener'), import('@/routes/dividends')])
+}, 60_000)
 
 function renderAt(url: string) {
   const router = createAppRouter(createMemoryHistory({ initialEntries: [url] }))
@@ -37,7 +41,7 @@ describe('معاملات الرابط', () => {
 describe('التوجيه', () => {
   it('رابط ?stock= يفتح بطاقة السهم فوق الصفحة', async () => {
     renderAt('/screener?stock=DEWA')
-    const dialog = await screen.findByRole('dialog', {}, LAZY)
+    const dialog = await screen.findByRole('dialog')
     expect(within(dialog).getAllByText(/DEWA/).length).toBeGreaterThan(0)
     expect(document.title).toContain('DEWA')
   })
@@ -77,6 +81,6 @@ describe('التوجيه', () => {
     fireEvent.click(option)
     await waitFor(() => expect(router.state.location.search).toEqual({ stock: 'EMAARDEV' }))
     expect(router.state.location.pathname).toBe('/dividends')
-    expect(await screen.findByRole('dialog', {}, LAZY)).toBeInTheDocument()
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
   })
 })
