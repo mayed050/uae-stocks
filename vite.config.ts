@@ -17,26 +17,32 @@ export default defineConfig({
     setupFiles: ['./src/__tests__/setup.ts'],
   },
   build: {
-    // فصل مكتبات الطرف الثالث إلى حِزم منفصلة (vendor chunks) لتحسين التخزين المؤقت في المتصفح
-    // — مع الإبقاء على الاستيراد الساكن. التحديث اليومي يغيّر seed-data وحزمة التطبيق فقط.
+    // فصل مكتبات الطرف الثالث إلى حِزم منفصلة (vendor chunks) لتحسين التخزين المؤقت في المتصفح.
+    // التحديث اليومي يغيّر seed-data وحزمة التطبيق فقط. الأولوية (priority) لازمة: كل مجموعة تضمّ
+    // تبعيات وحداتها أيضًا، فلو سبقت مجموعةُ الرسوم مجموعةَ React لابتلعت React (تبعية recharts)
+    // وصارت كل صفحة تستورد React منها، فتُجلب مكتبة الرسوم كاملة مع الصفحة الأولى.
     rolldownOptions: {
       output: {
         codeSplitting: {
           groups: [
             {
               name: 'charts',
+              priority: 1,
               test: /[\\/]node_modules[\\/](recharts|recharts-scale|victory-vendor|d3-[^\\/]+|internmap|decimal\.js-light)[\\/]/,
             },
             {
               name: 'react-vendor',
+              priority: 3,
               test: /[\\/]node_modules[\\/](react|react-dom|scheduler|react-is)[\\/]/,
             },
             {
               name: 'price-chart',
+              priority: 1,
               test: /[\\/]node_modules[\\/](lightweight-charts|fancy-canvas)[\\/]/,
             },
             {
               name: 'app-vendor',
+              priority: 2,
               test: /[\\/]node_modules[\\/](@tanstack|zod|zustand|cmdk|@radix-ui|lucide-react|use-sync-external-store)[\\/]/,
             },
             // البيانات المضمّنة تتغيّر يوميًا: فصلها يُبقي بقية الحزم محفوظة في متصفح الزائر العائد

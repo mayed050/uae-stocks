@@ -1,6 +1,7 @@
 import { ChartPie } from 'lucide-react'
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
-import { PALETTE, TIP_STYLE as tipStyle } from '@/constants/ui'
+import { PALETTE } from '@/constants/ui'
+import { ChartSlot } from '@/components/LazySlot'
+import { LazySectorPie } from '@/components/lazy'
 
 /** لوحة توزيع هيكل السوق حسب القطاعات (مخطط دائري + مفتاح ألوان). */
 export default function SectorDistribution({ sectorData }: { sectorData: { name: string; value: number }[] }) {
@@ -11,16 +12,9 @@ export default function SectorDistribution({ sectorData }: { sectorData: { name:
       </h3>
       <div className="o-sector-wrap">
         <div className="o-sector-chart">
-          <ResponsiveContainer width="100%" height={180}>
-            <PieChart>
-              <Pie data={sectorData} dataKey="value" nameKey="name" innerRadius={45} outerRadius={75} paddingAngle={2}>
-                {sectorData.map((_, i) => (
-                  <Cell key={i} fill={PALETTE[i % PALETTE.length]} stroke="var(--panel-solid)" />
-                ))}
-              </Pie>
-              <Tooltip contentStyle={tipStyle} formatter={(val, name) => [`${String(val)} شركات مدرجة`, name]} />
-            </PieChart>
-          </ResponsiveContainer>
+          <ChartSlot height={180}>
+            <LazySectorPie sectorData={sectorData} />
+          </ChartSlot>
         </div>
         <div className="legend o-sector-legend">
           {sectorData.map((d, i) => (

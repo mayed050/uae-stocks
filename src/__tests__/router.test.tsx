@@ -6,6 +6,9 @@ import { AppProviders } from '@/store'
 import { createAppRouter } from '@/router'
 import { validateRootSearch, validateScreenerSearch, validateFinancialsSearch } from '@/search'
 
+// بطاقة السهم حزمة تُجلب عند الطلب: أول تحميل لها في بيئة الاختبار يحوّل مكتبتي الرسم فيتجاوز المهلة الافتراضية
+const LAZY = { timeout: 8000 }
+
 function renderAt(url: string) {
   const router = createAppRouter(createMemoryHistory({ initialEntries: [url] }))
   render(
@@ -34,7 +37,7 @@ describe('معاملات الرابط', () => {
 describe('التوجيه', () => {
   it('رابط ?stock= يفتح بطاقة السهم فوق الصفحة', async () => {
     renderAt('/screener?stock=DEWA')
-    const dialog = await screen.findByRole('dialog')
+    const dialog = await screen.findByRole('dialog', {}, LAZY)
     expect(within(dialog).getAllByText(/DEWA/).length).toBeGreaterThan(0)
     expect(document.title).toContain('DEWA')
   })
@@ -74,6 +77,6 @@ describe('التوجيه', () => {
     fireEvent.click(option)
     await waitFor(() => expect(router.state.location.search).toEqual({ stock: 'EMAARDEV' }))
     expect(router.state.location.pathname).toBe('/dividends')
-    expect(await screen.findByRole('dialog')).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', {}, LAZY)).toBeInTheDocument()
   })
 })

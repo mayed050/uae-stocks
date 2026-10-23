@@ -3,7 +3,8 @@ import { Sun, Moon, X } from 'lucide-react'
 import { Link, Outlet, useCanGoBack, useLocation, useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import Sidebar from './components/Sidebar'
 import { NAV } from './components/nav'
-import StockDetail from './components/StockDetail'
+import LazySlot from './components/LazySlot'
+import { LazyStockDetail } from './components/lazy'
 import CommandPalette from './components/CommandPalette'
 import { useStocks } from './store'
 
@@ -23,6 +24,13 @@ export default function App() {
     if (canGoBack) router.history.back()
     else void navigate({ to: '.', search: (prev) => ({ ...prev, stock: undefined }), replace: true })
   }
+
+  // تجهيز بطاقة السهم في وقت الفراغ بعد العرض الأول، فتُفتح فورًا عند النقر
+  useEffect(() => {
+    const run = () => void LazyStockDetail.preload?.()
+    if ('requestIdleCallback' in window) window.requestIdleCallback(run, { timeout: 4000 })
+    else setTimeout(run, 1500)
+  }, [])
 
   // الصعود لأعلى الصفحة عند الانتقال بين الصفحات
   useEffect(() => {
@@ -110,7 +118,11 @@ export default function App() {
         ))}
       </nav>
 
-      {detail && <StockDetail item={detail} onClose={closeDetail} />}
+      {detail && (
+        <LazySlot loading={null} failed={null}>
+          <LazyStockDetail item={detail} onClose={closeDetail} />
+        </LazySlot>
+      )}
       <CommandPalette />
     </div>
   )

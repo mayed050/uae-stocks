@@ -52,6 +52,7 @@ npm run dev        # خادم تطوير على http://localhost:5173
 |-------|---------|
 | `npm run dev` | تشغيل خادم التطوير مع إعادة التحميل الساخن |
 | `npm run build` | فحص الأنواع (`tsc -b`) ثم بناء الإنتاج |
+| `npm run check:bundle` | حارس الصفحة الأولى بعد البناء: يفشل إن عادت مكتبات الرسم إلى التحميل الأولي |
 | `npm run preview` | معاينة حزمة الإنتاج محلياً |
 | `npm run lint` | تشغيل ESLint |
 | `npm run update-data` | تحديث ملف البيانات عبر `scripts/update-data.mjs` |
@@ -88,6 +89,16 @@ npm run dev        # خادم تطوير على http://localhost:5173
 وتُشتق منه الأنواع في `src/data/index.ts`. يرفض التحديث اليومي دفع أي ملف يخالف العقد، ويفحص
 `ci.yml` كل فرع وطلب دمج (الأنواع، جودة الكود، الاختبارات، البناء).
 
+## الأداء
+
+الصفحة الأولى تحمّل ≈ 189KB من JavaScript مضغوطًا بدل ≈ 397KB: كل صفحة غير النظرة العامة حزمة مستقلة
+تُجلب عند الطلب (وتُحمَّل مسبقًا عند تمرير المؤشر على رابطها)، ومكتبتا الرسم (recharts وLightweight Charts)
+تُجلبان عند عرض أول مخطط مع هيكل انتظار بارتفاعه نفسه، وبطاقة السهم تُجهَّز في وقت الفراغ.
+
+إن فتح زائرٌ تبويبًا قبل نشرٍ جديد ثم طلب حزمة حذفها النشر، تُعاد الصفحة مرة واحدة تلقائيًا فيحصل على النسخة
+الجديدة بدل صفحة خطأ (`lazyRouteComponent` وحدث `vite:preloadError`). ويمنع `npm run check:bundle` في CI
+عودة مكتبات الرسم إلى التحميل الأولي.
+
 ## بنية المشروع
 
 منظّمة حسب الميزات (feature-based) مع `@/` كاختصار لمجلد `src`:
@@ -95,13 +106,14 @@ npm run dev        # خادم تطوير على http://localhost:5173
 ```
 src/
 ├── main.tsx · App.tsx · App.css   نقطة الدخول والهيكل العام (Outlet + بطاقة السهم من ?stock=)
-├── router.ts · pages.tsx · search.ts   المسارات، مكوّنات الصفحات، والتحقق من معاملات الرابط
+├── router.ts · search.ts   المسارات (الصفحات حِزم عند الطلب) والتحقق من معاملات الرابط
+├── routes/             مكوّن لكل مسار يربط الصفحة بالتوجيه (overview ضمن الحزمة الأولى)
 ├── features/           كل صفحة في مجلدها المستقل مع مكوّناتها
 │   ├── overview/       Overview + MarketIndexCards + LiveActionsFeed + overview.css
 │   ├── screener/ · dividends/ · compare/
 │   ├── financials/     Financials + tradingSim (محاكيات بيانات التداول)
 │   └── portfolio/      Portfolio + PortfolioIntel
-├── components/         مكوّنات مشتركة: Sidebar · StockDetail · Avatar · Snowflake · ui/
+├── components/         مكوّنات مشتركة: Sidebar · StockDetail · Avatar · Snowflake · ui/ · lazy + LazySlot (التحميل عند الطلب)
 ├── store/              queries (TanStack Query) · portfolioStore (Zustand) · useStocks · usePortfolio · useMarketStats
 ├── data/              schema (عقد Zod) · index (الأنواع) · seed.json · movements · logos · sectors
 ├── constants/          ثوابت الواجهة (NA · PALETTE · TIP_STYLE)

@@ -13,6 +13,20 @@ import { AppProviders } from './store'
 
 const router = createAppRouter()
 
+// نشرٌ جديد يحذف حِزم النسخة السابقة؛ فإن طلب تبويبٌ قديم حزمةً (أو ملف أنماطها) لم تعد موجودة،
+// يُعاد تحميل الصفحة مرة واحدة لكل ملف مفقود فيحصل على النسخة الجديدة (نمط Vite الموثّق: vite:preloadError).
+window.addEventListener('vite:preloadError', (e) => {
+  const key = `chunk_reload:${(e as Event & { payload?: Error }).payload?.message ?? ''}`
+  try {
+    if (sessionStorage.getItem(key)) return // أُعيد التحميل من قبل ولم يُجدِ: يُترك الخطأ يظهر
+    sessionStorage.setItem(key, '1')
+  } catch {
+    return
+  }
+  e.preventDefault()
+  window.location.reload()
+})
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AppProviders>

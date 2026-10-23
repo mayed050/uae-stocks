@@ -4,7 +4,8 @@ import type { Stock } from '@/data'
 import { useHistory } from '@/store'
 import type { HistPoint } from '@/store'
 import Avatar from '@/components/Avatar'
-import PriceChart from '@/components/PriceChart'
+import { ChartSlot } from '@/components/LazySlot'
+import { LazyPriceChart } from '@/components/lazy'
 import { getDailyData, periodSeries } from '@/market'
 import type { Timeframe } from '@/market'
 
@@ -78,7 +79,9 @@ export default function InteractiveChartPanel({ stocks }: { stocks: Stock[] }) {
           </div>
 
           {series ? (
-            <PriceChart points={series.points} up={series.up} label={`سعر إغلاق ${stock.sym} — ${TF_LABEL[chartTimeframe]}`} />
+            <ChartSlot height={260}>
+              <LazyPriceChart points={series.points} up={series.up} label={`سعر إغلاق ${stock.sym} — ${TF_LABEL[chartTimeframe]}`} />
+            </ChartSlot>
           ) : pending ? (
             <div className="chart-skeleton" role="status" aria-label="جارٍ تحميل الأسعار التاريخية" style={{ height: 260 }} />
           ) : (
