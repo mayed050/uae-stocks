@@ -8,7 +8,11 @@ const COLS = ['dividend_ex_date_recent', 'dividend_payment_date_recent', 'divide
 const d = (t) => (t ? new Date(t * 1000).toISOString().slice(0, 10) : '-')
 
 const DOCS = [
-  ['DTC-AGMres', 'https://feeds.dfm.ae/documents/2026/Apr/7/549fb1c3-510f-437d-bb45-18e1ae969ae8/DTC%20BODRES%2008%2004%20202.pdf', /2026|entitle|ex-|registry|payment|fils/i],
+  ['WAHA-2026', 'https://wahacapital.com/mediacenter/detail/waha-capital-shareholders-approve-2025-dividend-distribution-at-annual-general-meeting', /2026|record|entitle|ex-|payment|fils|held/i],
+  ['WAHA-media', 'https://wahacapital.com/mediacenter', /2026|dividend/i],
+  ['ADIB-GA', 'https://www.adib.ae/en/investor-relations/shareholders/general-assembly-meetings', /2026|entitle|record|payment|dividend/i],
+  ['ANSARI-IR', 'https://www.alansarifinancial.com/investor-relations', /2026|dividend|entitle|record/i],
+  ['ANSARI-IR2', 'https://alansarifinancial.com/en/investor-relations/dividends', /2026|2025|dividend|entitle|record|ex-/i],
 ]
 const KW = /(ex-?\s?dividend|record date|entitlement|registry|closing|payment date|distribution date|last day|last date|general assembly|annual general|AGM|fils|per share|dividend|استحقاق|الأحقية|توزيع|سجل|بدون)/i
 const DATE = /(\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}|\d{4}-\d{2}-\d{2}|\d{1,2}(st|nd|rd|th)?\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}|(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},?\s+\d{4})/i
@@ -24,6 +28,10 @@ for (const [name, url, pat] of DOCS) {
       text = execFileSync('pdftotext', ['-layout', '/tmp/doc.pdf', '-'], { maxBuffer: 1 << 26 }).toString()
     } else {
       text = buf.toString('utf8').replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, '\n').replace(/&nbsp;|&#160;/g, ' ').replace(/&amp;/g, '&').replace(/&#8211;/g, '-')
+    }
+    if (!(ct.includes('pdf') || buf.subarray(0, 4).toString() === '%PDF')) {
+      const links = [...new Set([...buf.toString('utf8').matchAll(/href="([^"]+)"/g)].map((m) => m[1]).filter((h) => /2026|dividend|agm|general-assembly|assembly|\.pdf/i.test(h)))].slice(0, 25)
+      if (links.length) console.log(`-- links(${name}): ` + links.join(' , '))
     }
     const all = text.split('\n').map((l) => l.replace(/\s+/g, ' ').trim()).filter(Boolean)
     const keep = new Set()
