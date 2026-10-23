@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# تقرير مراجعة خط البيانات (يُنشر في Issue)
+review.md

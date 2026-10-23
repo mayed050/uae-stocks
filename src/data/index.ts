@@ -1,58 +1,20 @@
+import type * as z from 'zod/mini'
+import type { DatasetSchema, DividendSchema, IndexQuoteSchema, StockSchema } from './schema'
 import seed from './seed.json'
 
-export type Exchange = 'DFM' | 'ADX'
-export type Category = 'income' | 'growth' | 'risk'
-
-export interface Dividend {
-  ps: string | null
-  yld: string | null
-  lastEnt: string | null
-  exd: string | null
-  rec: string | null
-  pay: string | null
-  agm: string | null
-  freq: string | null
-  note?: string
-  nextExd?: string
-  nextPay?: string
-  watch?: boolean
-}
-
-export interface Stock {
-  sym: string
-  name: string
-  ex: Exchange
-  sector: string
-  cat: Category
-  yahoo?: string | null
-  tradingview?: string | null
-  priceAuto?: boolean
-  price: number | null
-  change?: number | null
-  open?: number | null
-  high?: number | null
-  low?: number | null
-  volume?: number | null
-  asof: string | null
-  mcap: string | null
-  pe: number | null
-  eps: string | null
-  roe: string | null
-  net: string | null
-  rev: string | null
-  div: Dividend
-}
-
-export interface Dataset {
-  lastUpdated: string | null
-  source: string
-  stocks: Stock[]
-}
+// الأنواع مشتقة من عقد البيانات (schema.ts) — تعريف واحد للشكل والتحقق معًا.
+export type Dividend = z.infer<typeof DividendSchema>
+export type Stock = z.infer<typeof StockSchema>
+export type IndexQuote = z.infer<typeof IndexQuoteSchema>
+export type Dataset = z.infer<typeof DatasetSchema>
+export type Exchange = Stock['ex']
+export type Category = Stock['cat']
 
 export const CAT_LABEL: Record<Category, string> = {
   income: 'دخل مستقر',
   growth: 'نمو',
   risk: 'مخاطر أعلى',
+  unrated: 'غير مصنّف',
 }
 
 /** البيانات المُضمَّنة كنسخة احتياطية (fallback) إن تعذّر جلب data.json وقت التشغيل. */

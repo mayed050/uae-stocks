@@ -1,3 +1,4 @@
+import { Download, Trash2 } from 'lucide-react'
 import type { Stock } from '@/data'
 import type { PortfolioItem } from '@/store/usePortfolio'
 import { exportCsv } from '@/export'
@@ -55,7 +56,7 @@ export default function HoldingsTable({
             )}
             title="تصدير المحفظة إلى ملف Excel/CSV"
           >
-            ⬇️ تصدير CSV
+            <Download size={14} className="ico" aria-hidden /> تصدير CSV
           </button>
         </div>
       )}
@@ -109,6 +110,7 @@ export default function HoldingsTable({
                     <input
                       type="number"
                       className="p-input"
+                      aria-label={`المبلغ المستثمر في ${item.sym} بالدرهم`}
                       value={Math.round(item.amount) || ''}
                       onChange={(e) => updateAmount(item.sym, Math.max(0, parseFloat(e.target.value) || 0))}
                     />
@@ -117,6 +119,7 @@ export default function HoldingsTable({
                     <input
                       type="number"
                       className="p-input"
+                      aria-label={`عدد أسهم ${item.sym}`}
                       value={Math.round(item.shares) || ''}
                       onChange={(e) => updateShares(item.sym, Math.max(0, parseFloat(e.target.value) || 0))}
                     />
@@ -125,6 +128,7 @@ export default function HoldingsTable({
                     <input
                       type="number"
                       className="p-input"
+                      aria-label={`إجمالي تكلفة شراء ${item.sym} بالدرهم`}
                       value={Math.round(item.cost) || ''}
                       onChange={(e) => updateCost(item.sym, Math.max(0, parseFloat(e.target.value) || 0))}
                       title="إجمالي ما دفعته لشراء هذه الحيازة"
@@ -144,7 +148,7 @@ export default function HoldingsTable({
                       title="احذف من المحفظة"
                       aria-label="حذف"
                     >
-                      🗑️
+                      <Trash2 size={15} aria-hidden />
                     </button>
                   </td>
                 </tr>

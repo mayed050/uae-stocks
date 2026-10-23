@@ -1,3 +1,4 @@
+import { Printer, ClipboardList, ChartLine, FolderOpen } from 'lucide-react'
 import { useState, useMemo } from 'react'
 import type { Stock } from '@/data'
 import { usePortfolio } from '@/store'
@@ -62,7 +63,7 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
           className="print-btn"
           title="حفظ طباعة التقرير الاستثماري للمحفظة كملف PDF"
         >
-          <span>🖨️ تصدير التقرير (PDF)</span>
+          <span><Printer size={16} className="ico" aria-hidden /> تصدير التقرير (PDF)</span>
         </button>
       </div>
 
@@ -91,15 +92,15 @@ export default function Portfolio({ onOpen }: { onOpen: (s: Stock) => void }) {
       {/* شريط التبويب الداخلي */}
       {items.length > 0 && (
         <div className="o-toggle-container p-tabs">
-          <button className={'o-toggle-btn' + (tab === 'overview' ? ' active' : '')} onClick={() => setTab('overview')}>📋 نظرة عامة</button>
-          <button className={'o-toggle-btn' + (tab === 'analytics' ? ' active' : '')} onClick={() => setTab('analytics')}>📈 التحليلات والمحاكاة</button>
+          <button className={'o-toggle-btn' + (tab === 'overview' ? ' active' : '')} onClick={() => setTab('overview')}><ClipboardList size={14} className="ico" aria-hidden /> نظرة عامة</button>
+          <button className={'o-toggle-btn' + (tab === 'analytics' ? ' active' : '')} onClick={() => setTab('analytics')}><ChartLine size={14} className="ico" aria-hidden /> التحليلات والمحاكاة</button>
         </div>
       )}
 
       {/* حالة المحفظة الفارغة */}
       {items.length === 0 && (
         <div className="p-empty-state">
-          <div className="p-empty-icon">📂</div>
+          <div className="p-empty-icon"><FolderOpen size={40} strokeWidth={1.5} aria-hidden /></div>
           <div>
             <div className="p-empty-title">محفظتك فارغة</div>
             <div className="p-empty-text">

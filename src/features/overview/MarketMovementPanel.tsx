@@ -1,3 +1,4 @@
+import { Activity, BriefcaseBusiness } from 'lucide-react'
 import { useState, useMemo } from 'react'
 import type { Stock } from '@/data'
 import { usePortfolio } from '@/store'
@@ -24,10 +25,13 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
 
   // تصفية وفرز قائمة حركة السوق بناء على التبويب المختار
   const movementStocks = useMemo(() => {
-    const stocksWithData = stocks.map(s => {
-      const d = getDailyData(s)
-      return { s, d, pctNum: parseFloat(d.pct.replace('%', '')) }
-    })
+    // أسهم ذات تغيّر/حجم حقيقيين فقط — getDailyData يولّد قيمًا توضيحية لما غاب، فتُستبعد هنا
+    const stocksWithData = stocks
+      .filter((s) => typeof s.change === 'number' && typeof s.volume === 'number')
+      .map(s => {
+        const d = getDailyData(s)
+        return { s, d, pctNum: parseFloat(d.pct.replace('%', '')) }
+      })
 
     if (movementTab === 'gainers') {
       return stocksWithData
@@ -55,7 +59,7 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
       <div className="o-mv-head">
         <div>
           <h3 className="o-mv-title">
-            🟠 حركة السوق
+            <Activity size={16} className="ico" aria-hidden /> حركة السوق
             <SimBadge title="الأسعار والتغيّر والحجم وقيمة التداول حقيقية من TradingView/Yahoo؛ «عدد الصفقات» فقط تقديري.">الصفقات تقديرية</SimBadge>
           </h3>
           <p className="o-mv-sub">
@@ -83,7 +87,7 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
       </div>
 
       {/* الجدول التفاعلي لحركة السوق */}
-      <div className="o-mv-tablewrap">
+      <div className="o-mv-tablewrap" tabIndex={0} aria-label="جدول حركة السوق (قابل للتمرير)">
         <table className="o-mv-table">
           <thead>
             <tr>
@@ -117,7 +121,7 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
                       <span className="o-mv-sym">{s.sym}</span>
                       <span className="o-mv-name">{s.name.split('—')[0]}</span>
                     </div>
-                    {isInPortfolio(s.sym) && <span title="في محفظتك" className="o-mv-pf">💼</span>}
+                    {isInPortfolio(s.sym) && <span title="في محفظتك" className="o-mv-pf"><BriefcaseBusiness size={13} className="ico" aria-hidden /></span>}
                   </td>
 
                   {/* عمود السعر */}

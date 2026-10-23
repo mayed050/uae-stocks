@@ -2,26 +2,30 @@ import { useState } from 'react'
 import type { Stock } from '@/data'
 import { parseYield, parseAmount } from '@/format'
 
+const HEAT_MAX = 60
+
 /** خريطة السوق الحرارية التفاعلية: تلوين الخلايا حسب العائد أو مكرر الربحية أو القيمة السوقية. */
 export default function HeatmapSection({
   stocks,
-  maxYield,
-  maxMcap,
   onOpen,
 }: {
   stocks: Stock[]
-  maxYield: number
-  maxMcap: number
   onOpen: (s: Stock) => void
 }) {
   // التحكم بنوع خريطة السوق الحرارية
   const [heatmapMetric, setHeatmapMetric] = useState<'yield' | 'pe' | 'mcap'>('yield')
 
+  // أكبر 60 شركة بالقيمة السوقية — الخريطة تفقد قابليتها للقراءة مع كامل السوق
+  const top = [...stocks].sort((a, b) => (parseAmount(b.mcap) ?? 0) - (parseAmount(a.mcap) ?? 0)).slice(0, HEAT_MAX)
+  // مقياس الألوان من الشركات المعروضة نفسها (لا يطغى عليه سهم صغير بعائد شاذ خارج الخريطة)
+  const topMaxYield = Math.max(0, ...top.map((s) => parseYield(s.div.yld) ?? 0))
+  const topMaxMcap = Math.max(0, ...top.map((s) => parseAmount(s.mcap) ?? 0))
+
   return (
     <>
       <div className="o-heat-head">
         <h2 className="sec flush">
-          <span className="dot brand2" /> خريطة السوق الحرارية التفاعلية
+          <span className="dot brand2" /> خريطة السوق الحرارية — أكبر {HEAT_MAX} شركة
         </h2>
         <div className="o-toggle-container">
           <button
@@ -46,7 +50,7 @@ export default function HeatmapSection({
       </div>
 
       <div className="heatmap o-heat-grid">
-        {stocks.map((s) => {
+        {top.map((s) => {
           let cellBg = 'var(--chip)'
           let labelText = '—'
           let titleText = `${s.name} (${s.sym})`
@@ -55,8 +59,8 @@ export default function HeatmapSection({
             const y = parseYield(s.div.yld)
             labelText = s.div.yld ?? '—'
             titleText += ` — عائد نقدي: ${s.div.yld ?? 'غير معلن'}`
-            if (y !== null && maxYield > 0) {
-              const ratio = y / maxYield
+            if (y !== null && topMaxYield > 0) {
+              const ratio = y / topMaxYield
               cellBg = `rgba(33, 201, 139, ${0.15 + ratio * 0.75})` // تدرج أخضر للتوزيعات
             }
           }
@@ -74,8 +78,8 @@ export default function HeatmapSection({
             const mc = parseAmount(s.mcap)
             labelText = s.mcap ?? '—'
             titleText += ` — القيمة السوقية: ${s.mcap ?? 'غير متوفرة'}`
-            if (mc !== null && maxMcap > 0) {
-              const ratio = mc / maxMcap
+            if (mc !== null && topMaxMcap > 0) {
+              const ratio = mc / topMaxMcap
               cellBg = `rgba(58, 160, 255, ${0.15 + ratio * 0.75})` // تدرج أزرق للقيمة السوقية
             }
           }

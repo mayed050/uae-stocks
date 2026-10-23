@@ -1,3 +1,4 @@
+import { Snowflake } from 'lucide-react'
 import { useState, useMemo } from 'react'
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid
@@ -34,7 +35,7 @@ export default function DripSimulator({ totalInvested, weightedYield }: { totalI
     <div className="panel p-my24">
       <div className="drip-head">
         <h3 className="panel-h">
-          ❄️ محاكي أثر إعادة استثمار الأرباح (DRIP Snowball Simulator)
+          <Snowflake size={16} className="ico" aria-hidden /> محاكي أثر إعادة استثمار الأرباح (DRIP Snowball Simulator)
         </h3>
         <p>
           شاهد كيف تنمو ثروتك ومحفظتك بشكل أسي على المدى الطويل عند إعادة استثمار أرباح الأسهم بدلاً من سحبها
@@ -45,10 +46,11 @@ export default function DripSimulator({ totalInvested, weightedYield }: { totalI
       <div className="drip-ctrl-grid">
         <div className="drip-slider-box">
           <div className="drip-slider-header">
-            <span>⏳ أفق الاستثمار</span>
+            <span>أفق الاستثمار</span>
             <span className="drip-val brand">{dripYears} سنة</span>
           </div>
           <input
+            aria-label="أفق الاستثمار"
             type="range"
             min="3"
             max="30"
@@ -60,10 +62,11 @@ export default function DripSimulator({ totalInvested, weightedYield }: { totalI
 
         <div className="drip-slider-box">
           <div className="drip-slider-header">
-            <span>💵 مساهمة شهرية إضافية</span>
+            <span>مساهمة شهرية إضافية</span>
             <span className="drip-val good">{dripMonthly.toLocaleString('en-US')} د.إ</span>
           </div>
           <input
+            aria-label="مساهمة شهرية إضافية"
             type="range"
             min="0"
             max="15000"
@@ -76,10 +79,11 @@ export default function DripSimulator({ totalInvested, weightedYield }: { totalI
 
         <div className="drip-slider-box">
           <div className="drip-slider-header">
-            <span>📈 نمو سعر الأسهم سنويًا</span>
+            <span>نمو سعر الأسهم سنويًا</span>
             <span className="drip-val warn">{dripPriceGrowth}%</span>
           </div>
           <input
+            aria-label="نمو سعر الأسهم سنويًا"
             type="range"
             min="0"
             max="12"
@@ -92,10 +96,11 @@ export default function DripSimulator({ totalInvested, weightedYield }: { totalI
 
         <div className="drip-slider-box">
           <div className="drip-slider-header">
-            <span>💸 نمو التوزيعات سنويًا</span>
+            <span>نمو التوزيعات سنويًا</span>
             <span className="drip-val brand2">{dripDivGrowth}%</span>
           </div>
           <input
+            aria-label="نمو التوزيعات سنويًا"
             type="range"
             min="0"
             max="10"
@@ -124,7 +129,7 @@ export default function DripSimulator({ totalInvested, weightedYield }: { totalI
         <StatCard
           className="drip-stat-gain"
           value={`+${snowballEffectValue.toLocaleString('en-US')} درهم`}
-          label="🔥 عائد أثر كرة الثلج الإضافي"
+          label="عائد أثر كرة الثلج الإضافي"
           sub="مكاسب خالصة من قوة الفائدة المركبة"
         />
       </div>

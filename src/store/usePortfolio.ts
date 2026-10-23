@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import type { Stock } from '@/data'
 import { getAnnualPs } from '@/format'
-import { useStocks } from './StocksProvider'
+import { useStocks } from './useStocks'
 
 export interface PortfolioItem {
   sym: string

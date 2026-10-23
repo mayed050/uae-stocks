@@ -1,40 +1,40 @@
 import { useState, useMemo } from 'react'
-import {
-  XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, AreaChart, Area,
-} from 'recharts'
+import { LineChart } from 'lucide-react'
 import type { Stock } from '@/data'
 import { useHistory } from '@/store'
+import type { HistPoint } from '@/store'
 import Avatar from '@/components/Avatar'
-import SimBadge from '@/components/ui/SimBadge'
-import { getDailyData, generateHistoricalData, generateSparklineData, realHistory } from '@/market'
+import { ChartSlot } from '@/components/LazySlot'
+import { LazyPriceChart } from '@/components/lazy'
+import { getDailyData, periodSeries } from '@/market'
+import type { Timeframe } from '@/market'
 
 // الأسهم القيادية المعروضة في قائمة الاختيار الجانبية
 const FEATURED_SYMS = ['DEWA', 'EMAAR', 'FAB', 'SALIK', 'ADNOCDIST', 'ADIB', 'EAND', 'DIB']
+const TF_LABEL: Record<Timeframe, string> = { '1W': 'أسبوع', '1M': 'شهر', '3M': '3 أشهر', '6M': '6 أشهر', '1Y': 'سنة', ALL: 'الكل' }
 
-/** لوحة الرسم البياني التفاعلي لأسعار الأسهم الفردية مع قائمة الأسهم القيادية وSparklines. */
+/** خط مصغّر من آخر 20 إغلاقًا حقيقيًا (لا يُرسم شيء دون سجل). */
+function sparkPath(pts: HistPoint[] | undefined): string | null {
+  const closes = (pts ?? []).slice(-20).map((p) => p[1])
+  if (closes.length < 2) return null
+  const min = Math.min(...closes)
+  const span = Math.max(...closes) - min || 1
+  return closes.map((c, i) => `${(i / (closes.length - 1)) * 40},${14 - ((c - min) / span) * 10}`).join(' ')
+}
+
+/** لوحة الرسم البياني لأسعار الأسهم القيادية — أسعار إغلاق حقيقية فقط (Lightweight Charts). */
 export default function InteractiveChartPanel({ stocks }: { stocks: Stock[] }) {
-  const histMap = useHistory()
-
-  // السهم النشط المختار للرسم البياني المتطور
+  const { history: histMap, pending } = useHistory()
   const [selectedChartSym, setSelectedChartSym] = useState<string>('DEWA')
-  // الفترة الزمنية النشطة للرسم البياني
-  const [chartTimeframe, setChartTimeframe] = useState<'1W' | '1M' | '3M' | '6M' | '1Y' | 'ALL'>('3M')
+  const [chartTimeframe, setChartTimeframe] = useState<Timeframe>('3M')
 
-  // الحصول على بيانات السهم المختار للرسم البياني وتوليد تاريخه
-  const selectedChartStock = useMemo(() => {
-    // stocks هي بيانات البذرة المضمّنة وغير فارغة دائماً؛ التأكيد يطابق افتراض التطبيق القائم.
-    const s = stocks.find(st => st.sym.toUpperCase() === selectedChartSym.toUpperCase()) ?? stocks[0]!
-    const realPts = histMap[s.sym]
-    const isReal = Array.isArray(realPts) && realPts.length > 1
-    const history = isReal
-      ? realHistory(realPts, chartTimeframe, s.price ?? 1.0)
-      : generateHistoricalData(s.sym, chartTimeframe, s.price ?? 1.0)
-    return {
-      stock: s,
-      isReal,
-      ...history
-    }
-  }, [stocks, selectedChartSym, chartTimeframe, histMap])
+  // stocks هي بيانات البذرة المضمّنة وغير فارغة دائماً؛ التأكيد يطابق افتراض التطبيق القائم.
+  const stock = stocks.find((st) => st.sym.toUpperCase() === selectedChartSym.toUpperCase()) ?? stocks[0]!
+  const series = useMemo(
+    () => periodSeries(histMap[stock.sym] ?? [], chartTimeframe, { price: stock.price, asof: stock.asof }),
+    [histMap, stock, chartTimeframe],
+  )
+  const daily = getDailyData(stock)
 
   return (
     <div className="panel o-chart-panel">
@@ -47,132 +47,89 @@ export default function InteractiveChartPanel({ stocks }: { stocks: Stock[] }) {
           <div className="o-chart-head">
             <div>
               <h3 className="o-chart-title">
-                <Avatar sym={selectedChartStock.stock.sym} size={28} />
-                {selectedChartStock.stock.sym} — {selectedChartStock.stock.name.split('—')[0]}
-                {selectedChartStock.isReal ? (
-                  <span title="أسعار إغلاق تاريخية حقيقية (سنة) من Yahoo Finance." className="o-real-badge">● تاريخ حقيقي</span>
-                ) : (
-                  <SimBadge title="السعر الحالي والتغيّر اليومي حقيقيان؛ سلسلة الأسعار التاريخية لهذا السهم (أبوظبي) توضيحية مُولّدة للعرض فقط.">التاريخ توضيحي</SimBadge>
+                <Avatar sym={stock.sym} size={28} />
+                {stock.sym} — {stock.name.split('—')[0]}
+                {series && (
+                  <span title="أسعار إغلاق يومية حقيقية من Yahoo Finance." className="o-real-badge">● أسعار حقيقية</span>
                 )}
               </h3>
               <div className="o-price-row">
-                <span className="o-price-big">
-                  {selectedChartStock.stock.price?.toFixed(2)} د.إ
-                </span>
-                <span className={'o-price-change ' + (selectedChartStock.isOverallUp ? 'up' : 'down')}>
-                  {selectedChartStock.isOverallUp ? '▲' : '▼'} {selectedChartStock.change.toFixed(2)} ({selectedChartStock.changePct.toFixed(2)}%)
-                </span>
+                <span className="o-price-big">{stock.price?.toFixed(2)} د.إ</span>
+                {series && (
+                  <span className={'o-price-change ' + (series.up ? 'up' : 'down')} title={`التغيّر خلال ${TF_LABEL[chartTimeframe]}`}>
+                    {series.up ? '▲' : '▼'} {series.change.toFixed(2)} ({series.changePct.toFixed(2)}%) · {TF_LABEL[chartTimeframe]}
+                  </span>
+                )}
               </div>
             </div>
 
             {/* أزرار تحديد المدى الزمني للرسم البياني */}
             <div className="o-tf-group">
-              {(['1W', '1M', '3M', '6M', '1Y', 'ALL'] as const).map((tf) => {
-                const tfLabel = tf === '1W' ? 'أسبوع' : tf === '1M' ? 'شهر' : tf === '3M' ? '3 أشهر' : tf === '6M' ? '6 أشهر' : tf === '1Y' ? 'سنة' : 'الكل'
-                return (
-                  <button
-                    key={tf}
-                    onClick={() => setChartTimeframe(tf)}
-                    className={`chart-timeframe-btn ${chartTimeframe === tf ? 'active' : ''}`}
-                  >
-                    {tfLabel}
-                  </button>
-                )
-              })}
+              {(Object.keys(TF_LABEL) as Timeframe[]).map((tf) => (
+                <button
+                  key={tf}
+                  onClick={() => setChartTimeframe(tf)}
+                  aria-pressed={chartTimeframe === tf}
+                  className={`chart-timeframe-btn ${chartTimeframe === tf ? 'active' : ''}`}
+                >
+                  {TF_LABEL[tf]}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* مساحة الرسم البياني التفاعلي المتجاوب مع تلوين ديناميكي للاتجاه */}
-          <div className="o-chart-area">
-            <ResponsiveContainer width="100%" height={250}>
-              <AreaChart data={selectedChartStock.data} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="chartColorGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={selectedChartStock.isOverallUp ? '#21c98b' : '#ff5a72'} stopOpacity={0.25}/>
-                    <stop offset="95%" stopColor={selectedChartStock.isOverallUp ? '#21c98b' : '#ff5a72'} stopOpacity={0.0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid vertical={false} stroke="var(--line)" strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="date"
-                  tick={{ fill: 'var(--muted)', fontSize: 10 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  domain={['auto', 'auto']}
-                  orientation="right"
-                  tick={{ fill: 'var(--muted)', fontSize: 10 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Tooltip
-                  contentStyle={{
-                    background: 'var(--panel-solid)',
-                    border: '1px solid var(--line)',
-                    borderRadius: 8,
-                    fontSize: '11.5px',
-                    color: 'var(--txt)',
-                    textAlign: 'right'
-                  }}
-                  formatter={(val) => [`${Number(val).toFixed(2)} د.إ`, 'السعر']}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="price"
-                  stroke={selectedChartStock.isOverallUp ? '#21c98b' : '#ff5a72'}
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#chartColorGrad)"
-                  animationDuration={600}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          {series ? (
+            <ChartSlot height={260}>
+              <LazyPriceChart points={series.points} up={series.up} label={`سعر إغلاق ${stock.sym} — ${TF_LABEL[chartTimeframe]}`} />
+            </ChartSlot>
+          ) : pending ? (
+            <div className="chart-skeleton" role="status" aria-label="جارٍ تحميل الأسعار التاريخية" style={{ height: 260 }} />
+          ) : (
+            <div className="chart-empty">
+              <LineChart size={28} aria-hidden />
+              <b>لا يتوفر سجل أسعار تاريخي لهذا السهم بعد</b>
+              <span>
+                {histMap[stock.sym]?.[0]
+                  ? `يُبنى سجل هذا السهم يوميًا منذ ${histMap[stock.sym]![0]![0]} من أسعار الإغلاق الفعلية؛ يظهر المخطط بعد يومَي تداول.`
+                  : 'أسعار أبوظبي التاريخية غير متاحة مجانًا؛ يُبنى سجلها يوميًا من أسعار الإغلاق الفعلية. يُعرض الآن السعر الحالي والتغيّر اليومي الحقيقيان فقط.'}
+              </span>
+            </div>
+          )}
 
-          {/* جدول البيانات والملخص الفني السفلي للسهم المختار */}
           <div className="o-chart-stats">
-
-            {/* العمود الأيمن: مؤشرات الأسعار الفنية */}
             <div className="o-stat-col">
               <div className="o-kv">
-                <span className="k">الأعلى سعر:</span>
-                <b>{selectedChartStock.high.toFixed(2)} د.إ</b>
+                <span className="k">أعلى إغلاق في الفترة:</span>
+                <b>{series ? `${series.high.toFixed(2)} د.إ` : '—'}</b>
               </div>
               <div className="o-kv">
-                <span className="k">الأدنى سعر:</span>
-                <b>{selectedChartStock.low.toFixed(2)} د.إ</b>
+                <span className="k">أدنى إغلاق في الفترة:</span>
+                <b>{series ? `${series.low.toFixed(2)} د.إ` : '—'}</b>
               </div>
               <div className="o-kv">
-                <span className="k">سعر الافتتاح:</span>
-                <b>{selectedChartStock.open.toFixed(2)} د.إ</b>
+                <span className="k">إغلاق أول الفترة:</span>
+                <b>{series ? `${series.start.toFixed(2)} د.إ` : '—'}</b>
               </div>
               <div className="o-kv nb">
-                <span className="k">إغلاق السهم الحالي:</span>
-                <b>{selectedChartStock.close.toFixed(2)} د.إ</b>
+                <span className="k">آخر سعر:</span>
+                <b>{stock.price !== null ? `${stock.price.toFixed(2)} د.إ` : '—'}</b>
               </div>
             </div>
 
-            {/* العمود الأيسر: مؤشرات التغير والعوائد */}
             <div className="o-stat-col">
               <div className="o-kv">
                 <span className="k">مقدار التغير اليومي:</span>
-                <b className={selectedChartStock.stock.price !== null && getDailyData(selectedChartStock.stock).change >= 0 ? 'up' : 'down'}>
-                  {selectedChartStock.stock.price !== null ? (getDailyData(selectedChartStock.stock).change >= 0 ? '+' : '') : ''}{selectedChartStock.stock.price !== null ? getDailyData(selectedChartStock.stock).change.toFixed(2) : '—'}
-                </b>
+                <b className={daily.change >= 0 ? 'up' : 'down'}>{daily.change >= 0 ? '+' : ''}{daily.change.toFixed(2)}</b>
               </div>
               <div className="o-kv">
                 <span className="k">نسبة التغير اليومي:</span>
-                <b className={selectedChartStock.stock.price !== null && getDailyData(selectedChartStock.stock).change >= 0 ? 'up' : 'down'}>
-                  {getDailyData(selectedChartStock.stock).pct}
-                </b>
+                <b className={daily.change >= 0 ? 'up' : 'down'}>{daily.pct}</b>
               </div>
               <div className="o-kv nb">
                 <span className="k">العائد النقدي (%) الحالي:</span>
-                <b className="good">{selectedChartStock.stock.div.yld ?? '—'}</b>
+                <b className="good">{stock.div.yld ?? '—'}</b>
               </div>
             </div>
-
           </div>
 
         </div>
@@ -185,47 +142,36 @@ export default function InteractiveChartPanel({ stocks }: { stocks: Stock[] }) {
           {stocks.filter(st => FEATURED_SYMS.includes(st.sym.toUpperCase())).map((stock) => {
             const isActive = stock.sym.toUpperCase() === selectedChartSym.toUpperCase()
             const stockDaily = getDailyData(stock)
-
-            // توليد Sparkline
-            const sparkPoints = generateSparklineData(stock.sym, stock.price ?? 1)
-            const minP = Math.min(...sparkPoints)
-            const maxP = Math.max(...sparkPoints)
-            const normalizedPoints = sparkPoints.map((p, idx) => {
-              const x = (idx / (sparkPoints.length - 1)) * 40
-              const y = 14 - ((p - minP) / (maxP - minP || 1)) * 10
-              return `${x},${y}`
-            }).join(' ')
+            const spark = sparkPath(histMap[stock.sym])
 
             return (
-              <div
+              <button
                 key={stock.sym}
                 onClick={() => setSelectedChartSym(stock.sym)}
+                aria-pressed={isActive}
                 className={`chart-stock-item ${isActive ? 'active' : ''}`}
               >
-                <div className="o-spark-row">
+                <span className="o-spark-row">
                   <span className="o-spark-sym">{stock.sym}</span>
                   <span className="o-spark-price">{stock.price?.toFixed(2)} د.إ</span>
-                </div>
+                </span>
 
-                <div className="o-spark-row m2">
+                <span className="o-spark-row m2">
                   <span className="o-spark-name">{stock.name.split('—')[0]}</span>
 
                   {/* Sparkline رسم بياني خطي مصغر */}
-                  <div className="o-spark-mini">
-                    <svg width="40" height="15" className="o-spark-svg">
-                      <polyline
-                        fill="none"
-                        stroke={stockDaily.isUp ? 'var(--good)' : 'var(--bad)'}
-                        strokeWidth="1.5"
-                        points={normalizedPoints}
-                      />
-                    </svg>
+                  <span className="o-spark-mini">
+                    {spark && (
+                      <svg width="40" height="15" className="o-spark-svg" aria-hidden>
+                        <polyline fill="none" stroke={stockDaily.isUp ? 'var(--good)' : 'var(--bad)'} strokeWidth="1.5" points={spark} />
+                      </svg>
+                    )}
                     <span className={'o-spark-pct ' + (stockDaily.isUp ? 'up' : 'down')}>
                       {stockDaily.pct}
                     </span>
-                  </div>
-                </div>
-              </div>
+                  </span>
+                </span>
+              </button>
             )
           })}
         </div>

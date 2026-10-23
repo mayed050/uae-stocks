@@ -23,23 +23,27 @@ jobs:
   deploy:
     # عند التشغيل عبر workflow_run، انشر فقط إذا نجح سير عمل تحديث البيانات
     # (تبقى دفعات push و workflow_dispatch تعمل دائماً).
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    # (ولا يُنشر إلا ما على main: تحديث تجريبي على فرع لا يُعيد نشر الموقع)
+    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Test
+        run: npm test
 
       - name: Build
         run: npm run build

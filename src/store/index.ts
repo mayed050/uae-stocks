@@ -1,5 +1,9 @@
 /** نقطة دخول موحّدة لطبقة الحالة — تبقي الاستيرادات `@/store` ثابتة. */
-export { StocksProvider, useStocks } from './StocksProvider'
+export { default as AppProviders } from './AppProviders'
+export { useStocks } from './useStocks'
+export { usePortfolioStore } from './portfolioStore'
+export { useUiStore } from './uiStore'
+export type { Holding } from './portfolioStore'
 export { usePortfolio } from './usePortfolio'
 export type { PortfolioItem } from './usePortfolio'
 export { useMarketStats } from './useMarketStats'

@@ -1,3 +1,4 @@
+import { Trophy, Landmark, Gem, type LucideIcon } from 'lucide-react'
 import type { Stock } from '@/data'
 import Avatar from '@/components/Avatar'
 import { fmtAmount } from '@/format'
@@ -9,20 +10,20 @@ interface LeaderRow {
 
 function LeaderCard({
   title,
-  icon,
+  icon: Icon,
   rows,
   badgeClass,
   onOpen,
 }: {
   title: string
-  icon: string
+  icon: LucideIcon
   rows: LeaderRow[]
   badgeClass: string
   onOpen: (s: Stock) => void
 }) {
   return (
     <div className="o-widget">
-      <h4 className="o-widget-h">{icon} {title}</h4>
+      <h4 className="o-widget-h"><Icon size={16} className="ico" aria-hidden /> {title}</h4>
       <div className="o-lead-list">
         {rows.map(({ stock, value }) => (
           <button key={stock.sym} className="o-lead-item" onClick={() => onOpen(stock)}>
@@ -55,21 +56,21 @@ export default function MarketLeaders({
     <>
       <LeaderCard
         title="رواد عوائد التوزيعات"
-        icon="🏆"
+        icon={Trophy}
         badgeClass="o-badge-good"
         onOpen={onOpen}
         rows={yieldLeaders.map((x) => ({ stock: x.s, value: x.s.div.yld ?? '—' }))}
       />
       <LeaderCard
         title="عمالقة السوق"
-        icon="🐘"
+        icon={Landmark}
         badgeClass="o-badge-brand"
         onOpen={onOpen}
         rows={marketGiants.map((x) => ({ stock: x.s, value: `${fmtAmount(x.mc)} د` }))}
       />
       <LeaderCard
         title="فرص التقييم (أقل P/E)"
-        icon="💎"
+        icon={Gem}
         badgeClass="o-badge-warn"
         onOpen={onOpen}
         rows={valuationOpportunities.map((s) => ({ stock: s, value: `P/E ${s.pe?.toFixed(1) ?? '—'}` }))}

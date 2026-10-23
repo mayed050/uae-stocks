@@ -1,21 +1,17 @@
-export type View = 'overview' | 'screener' | 'dividends' | 'compare' | 'portfolio' | 'financials'
+import { Link } from '@tanstack/react-router'
+import { Search } from 'lucide-react'
+import { NAV } from './nav'
+import { useStocks, useUiStore } from '@/store'
 
-const NAV: { v: View; label: string; icon: string }[] = [
-  { v: 'overview', label: 'نظرة عامة', icon: '📊' },
-  { v: 'screener', label: 'مستكشف الأسهم', icon: '🔎' },
-  { v: 'dividends', label: 'التوزيعات', icon: '💵' },
-  { v: 'financials', label: 'النتائج المالية', icon: '📈' },
-  { v: 'compare', label: 'المقارنة', icon: '⚖️' },
-  { v: 'portfolio', label: 'حاسبة المحفظة', icon: '💼' },
-]
+export type { View } from './nav'
 
-export default function Sidebar({
-  view,
-  setView,
-}: {
-  view: View
-  setView: (v: View) => void
-}) {
+export default function Sidebar() {
+  const { lastUpdated } = useStocks()
+  const openPalette = useUiStore((s) => s.setPaletteOpen)
+  const dataDate = lastUpdated
+    ? new Date(lastUpdated).toLocaleDateString('ar-AE', { day: 'numeric', month: 'long', year: 'numeric' })
+    : null
+
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -26,21 +22,31 @@ export default function Sidebar({
         </div>
       </div>
 
+      <button className="palette-trigger" onClick={() => openPalette(true)} aria-keyshortcuts="Control+K Meta+K /">
+        <Search size={16} aria-hidden />
+        <span className="pt-label">بحث سريع…</span>
+        <kbd className="pt-kbd" dir="ltr" aria-hidden>Ctrl K</kbd>
+      </button>
+
       <nav className="nav">
         {NAV.map((n) => (
-          <button
+          <Link
             key={n.v}
-            className={'navitem' + (view === n.v ? ' active' : '')}
-            onClick={() => setView(n.v)}
+            to={n.to}
+            className="navitem"
+            activeProps={{ className: 'active' }}
+            activeOptions={{ exact: n.to === '/', includeSearch: false }}
           >
-            <span className="navicon">{n.icon}</span>
+            <span className="navicon"><n.icon size={18} strokeWidth={2} aria-hidden /></span>
             {n.label}
-          </button>
+          </Link>
         ))}
       </nav>
 
       <div className="sidebar-foot">
-        <div className="sidebar-note">بيانات 28 مايو 2026 — للمعلومات فقط</div>
+        <div className="sidebar-note">
+          {dataDate ? `بيانات ${dataDate}` : 'البيانات المُضمّنة'} — للمعلومات فقط
+        </div>
       </div>
     </aside>
   )

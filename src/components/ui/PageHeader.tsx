@@ -1,3 +1,4 @@
+import { TriangleAlert } from 'lucide-react'
 import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { useStocks } from '@/store'
@@ -13,7 +14,7 @@ function useMountTime(): number {
  * توحّد مقاسات العناوين وتُظهر حداثة البيانات في كل الصفحات.
  */
 export default function PageHeader({ title, children }: { title: ReactNode; children?: ReactNode }) {
-  const { lastUpdated } = useStocks()
+  const { lastUpdated, loading } = useStocks()
   // لقطة زمنية تُؤخذ مرة واحدة عند التركيب (Date.now دالة غير نقية لا تُستدعى أثناء الـ render).
   const mountNow = useMountTime()
   const days = lastUpdated ? Math.floor((mountNow - new Date(lastUpdated).getTime()) / 86400000) : null
@@ -26,6 +27,9 @@ export default function PageHeader({ title, children }: { title: ReactNode; chil
           {children}
           {lastUpdated && (
             <span className="updated"> · آخر تحديث: {new Date(lastUpdated).toLocaleDateString('ar-AE', { dateStyle: 'medium' })}</span>
+          )}
+          {loading && (
+            <span className="refreshing" role="status"> · جارٍ جلب أحدث البيانات…</span>
           )}
           {stale && (
             <span
@@ -41,7 +45,7 @@ export default function PageHeader({ title, children }: { title: ReactNode; chil
                 padding: '2px 9px',
               }}
             >
-              ⚠️ بيانات قديمة ({days} يوم)
+              <TriangleAlert size={12} className="ico" aria-hidden /> بيانات قديمة ({days} يوم)
             </span>
           )}
         </p>

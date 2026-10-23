@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
-import { CAT_LABEL } from '@/data'
-import type { Stock, Exchange, Category } from '@/data'
+import { Search, X, Table2, LayoutGrid, BriefcaseBusiness, Plus, ListFilter } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate, useSearch } from '@tanstack/react-router'
+import type { Stock } from '@/data'
 import { useStocks, usePortfolio } from '@/store'
 import { parseYield, parseAmount } from '@/format'
 import Avatar from '@/components/Avatar'
@@ -9,28 +10,52 @@ import { cell } from '@/components/ui/cell'
 import StatCard from '@/components/ui/StatCard'
 import PageHeader from '@/components/ui/PageHeader'
 import { SECTOR_TITLES, mapDFMSectorToDb } from '@/data/sectors'
+import ScreenerGrid from './ScreenerGrid'
+import type { DisplayMode, ScreenerSearch, SortKey } from '@/search'
 
-type SortKey = 'name' | 'price' | 'change' | 'pe' | 'yield' | 'mcap'
+const defaultDir = (k: SortKey): 1 | -1 => (k === 'name' ? 1 : -1)
+
+function savedDisplayMode(): DisplayMode {
+  try {
+    const saved = localStorage.getItem('screener_display_mode')
+    return saved === 'sectors' ? 'sectors' : 'list'
+  } catch {
+    return 'list'
+  }
+}
 
 export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
   const { stocks: DATA } = useStocks()
   const { isInPortfolio, togglePortfolioStock } = usePortfolio()
-  const [q, setQ] = useState('')
-  const [ex, setEx] = useState<'all' | Exchange>('all')
-  const [cat, setCat] = useState<'all' | Category>('all')
-  const [sort, setSort] = useState<SortKey>('mcap')
-  const [dir, setDir] = useState<1 | -1>(-1)
-  const [sector, setSector] = useState<string>('all')
-  
-  // حفظ وتغيير وضع العرض المفضل للمستثمر
-  const [displayMode, setDisplayMode] = useState<'list' | 'sectors'>(() => {
-    const saved = localStorage.getItem('screener_display_mode')
-    return (saved === 'list' || saved === 'sectors') ? saved : 'list'
+  // الفلاتر والترتيب ووضع العرض محفوظة في الرابط (?q=&ex=&cat=&sector=&sort=&dir=&view=) فتُشارَك كما هي
+  const search = useSearch({ from: '/screener' })
+  const navigate = useNavigate({ from: '/screener' })
+  const update = (patch: ScreenerSearch) =>
+    void navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true })
+
+  const ex = search.ex ?? 'all'
+  const cat = search.cat ?? 'all'
+  const sector = search.sector ?? 'all'
+  const sort = search.sort ?? 'mcap'
+  const dir: 1 | -1 = search.dir ? (search.dir === 'asc' ? 1 : -1) : defaultDir(sort)
+  const displayMode = search.view ?? savedDisplayMode()
+
+  // نص البحث محلي للكتابة السلسة، ويُنسخ إلى الرابط بعد توقّف الكتابة
+  const [q, setQ] = useState(() => search.q ?? '')
+  useEffect(() => {
+    const term = q.trim()
+    if (term === (search.q ?? '')) return
+    const t = setTimeout(() => update({ q: term || undefined }), 300)
+    return () => clearTimeout(t)
   })
 
-  const changeDisplayMode = (mode: 'list' | 'sectors') => {
-    setDisplayMode(mode)
-    localStorage.setItem('screener_display_mode', mode)
+  const changeDisplayMode = (mode: DisplayMode) => {
+    update({ view: mode })
+    try {
+      localStorage.setItem('screener_display_mode', mode)
+    } catch {
+      /* التخزين غير متاح */
+    }
   }
 
 
@@ -40,6 +65,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
     const list = DATA.filter((s) => {
       if (ex !== 'all' && s.ex !== ex) return false
       if (cat !== 'all' && s.cat !== cat) return false
+      if (search.cov === 'curated' && s.auto) return false
       if (sector !== 'all') {
         const allowedSectors = mapDFMSectorToDb(sector)
         if (!allowedSectors.includes(s.sector)) return false
@@ -63,7 +89,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
         return String(av).localeCompare(String(bv), 'ar') * dir
       return (av - bv) * dir
     })
-  }, [DATA, q, ex, cat, sector, sort, dir])
+  }, [DATA, q, ex, cat, sector, sort, dir, search.cov])
 
   const sectorGroups = useMemo(() => {
     const groups: { title: string; stocks: Stock[] }[] = []
@@ -85,11 +111,6 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
     return groups
   }, [rows])
 
-  function toggleSort(k: SortKey) {
-    if (sort === k) setDir((d) => (d === 1 ? -1 : 1))
-    else { setSort(k); setDir(k === 'name' ? 1 : -1) }
-  }
-  const arrow = (k: SortKey) => (sort === k ? (dir === 1 ? ' ▲' : ' ▼') : '')
 
   // ملخّص حيّ للنتائج المطابقة للفلتر الحالي (يتحدّث تلقائياً)
   const summary = useMemo(() => {
@@ -120,22 +141,28 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
           
           <div className="controls">
             <div className="search">
-              <span>🔍</span>
-              <input placeholder="ابحث بالاسم أو الرمز أو القطاع…" value={q} onChange={(e) => setQ(e.target.value)} />
+              <Search size={16} className="ico" aria-hidden />
+              <input aria-label="ابحث في الأسهم بالاسم أو الرمز أو القطاع" placeholder="ابحث بالاسم أو الرمز أو القطاع…" value={q} onChange={(e) => setQ(e.target.value)} />
             </div>
             <div className="chips">
               {([['all', 'كل الأسواق'], ['DFM', 'دبي'], ['ADX', 'أبوظبي']] as const).map(([v, l]) => (
-                <button key={v} className="chip" aria-pressed={ex === v} onClick={() => setEx(v)}>{l}</button>
+                <button key={v} className="chip" aria-pressed={ex === v} onClick={() => update({ ex: v === 'all' ? undefined : v })}>{l}</button>
+              ))}
+            </div>
+            <div className="chips">
+              {([['all', 'كل الأسهم'], ['curated', 'المُراجَعة يدويًا']] as const).map(([v, l]) => (
+                <button key={v} className="chip" aria-pressed={(search.cov ?? 'all') === v} onClick={() => update({ cov: v === 'all' ? undefined : v })}
+                  title={v === 'curated' ? 'الأسهم ذات البيانات المنسّقة يدويًا (التوزيعات والأساسيات)' : 'كامل أسهم السوقين، ومنها المضافة آليًا'}>{l}</button>
               ))}
             </div>
             <div className="chips">
               {([['all', 'كل التصنيفات'], ['income', 'دخل مستقر'], ['growth', 'نمو'], ['risk', 'مخاطر أعلى']] as const).map(([v, l]) => (
-                <button key={v} className="chip" aria-pressed={cat === v} onClick={() => setCat(v)}>{l}</button>
+                <button key={v} className="chip" aria-pressed={cat === v} onClick={() => update({ cat: v === 'all' ? undefined : v })}>{l}</button>
               ))}
             </div>
             {sector !== 'all' && (
-              <button className="chip" style={{ background: 'var(--bad)', color: '#fff', border: 0 }} onClick={() => setSector('all')}>
-                إلغاء فلتر القطاع: {sector} ✕
+              <button className="chip" style={{ background: 'var(--bad)', color: '#fff', border: 0 }} onClick={() => update({ sector: undefined })}>
+                إلغاء فلتر القطاع: {sector} <X size={13} className="ico" aria-hidden />
               </button>
             )}
             
@@ -146,7 +173,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                 onClick={() => changeDisplayMode('list')}
                 style={{
                   border: 0,
-                  background: displayMode === 'list' ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'transparent',
+                  background: displayMode === 'list' ? 'linear-gradient(120deg, var(--brand-fill), var(--brand2-fill))' : 'transparent',
                   color: displayMode === 'list' ? '#fff' : 'var(--muted)',
                   fontSize: '12px',
                   padding: '6px 12px',
@@ -157,14 +184,14 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                   transition: 'all 0.15s ease'
                 }}
               >
-                📋 جدول موحد
+                <Table2 size={14} className="ico" aria-hidden /> جدول موحد
               </button>
               <button 
                 className={'o-toggle-btn' + (displayMode === 'sectors' ? ' active' : '')} 
                 onClick={() => changeDisplayMode('sectors')}
                 style={{
                   border: 0,
-                  background: displayMode === 'sectors' ? 'linear-gradient(120deg, var(--brand), var(--brand2))' : 'transparent',
+                  background: displayMode === 'sectors' ? 'linear-gradient(120deg, var(--brand-fill), var(--brand2-fill))' : 'transparent',
                   color: displayMode === 'sectors' ? '#fff' : 'var(--muted)',
                   fontSize: '12px',
                   padding: '6px 12px',
@@ -175,80 +202,31 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                   transition: 'all 0.15s ease'
                 }}
               >
-                🗂️ حسب القطاعات
+                <LayoutGrid size={14} className="ico" aria-hidden /> حسب القطاعات
               </button>
             </div>
           </div>
 
           {displayMode === 'list' ? (
-            <div className="tablewrap">
-              <table className="screener">
-                <thead>
-                  <tr>
-                    <th className="sortable" onClick={() => toggleSort('name')}>السهم{arrow('name')}</th>
-                    <th>السوق</th>
-                    <th className="sortable" onClick={() => toggleSort('price')}>السعر{arrow('price')}</th>
-                    <th className="sortable" onClick={() => toggleSort('change')}>التغيّر اليومي{arrow('change')}</th>
-                    <th className="sortable" onClick={() => toggleSort('pe')}>P/E{arrow('pe')}</th>
-                    <th>EPS</th>
-                    <th className="sortable" onClick={() => toggleSort('mcap')}>القيمة السوقية{arrow('mcap')}</th>
-                    <th>صافي الربح</th>
-                    <th className="sortable" onClick={() => toggleSort('yield')}>العائد{arrow('yield')}</th>
-                    <th>التصنيف</th>
-                    <th>المحفظة</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((s) => (
-                    <tr key={s.sym} onClick={() => onOpen(s)} className="rowlink">
-                      <td>
-                        <span className="cellname">
-                          <Avatar sym={s.sym} size={30} />
-                          <span>
-                            <span className="cn-name">{s.name}</span>
-                            <span className="cn-sym">{s.sym}</span>
-                          </span>
-                        </span>
-                      </td>
-                      <td><span className={'exch ex-' + s.ex}>{s.ex}</span></td>
-                      <td>{cell(s.price !== null ? s.price.toFixed(2) : null)}</td>
-                      <td style={{ direction: 'ltr', fontWeight: 700, color: typeof s.change === 'number' ? (s.change > 0 ? 'var(--good)' : s.change < 0 ? 'var(--bad)' : 'var(--muted)') : 'var(--muted2)' }}>
-                        {typeof s.change === 'number' ? `${s.change > 0 ? '▲ +' : s.change < 0 ? '▼ ' : ''}${Math.abs(s.change).toFixed(2)}%` : '—'}
-                      </td>
-                      <td>{cell(s.pe)}</td>
-                      <td>{cell(s.eps)}</td>
-                      <td>{cell(s.mcap)}</td>
-                      <td>{cell(s.net)}</td>
-                      <td>{cell(s.div.yld)}</td>
-                      <td><span className={'ribbon cat-' + s.cat}>{CAT_LABEL[s.cat]}</span></td>
-                      <td onClick={(e) => e.stopPropagation()}>
-                        <button 
-                          onClick={() => togglePortfolioStock(s.sym)}
-                          style={{
-                            background: 'transparent',
-                            border: 0,
-                            cursor: 'pointer',
-                            fontSize: '15px',
-                            padding: '4px 8px',
-                            transition: 'transform 0.12s ease'
-                          }}
-                          title={isInPortfolio(s.sym) ? 'إزالة من المحفظة 🗑️' : 'إضافة إلى المحفظة +'}
-                        >
-                          {isInPortfolio(s.sym) ? '💼' : '➕'}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <ScreenerGrid
+              rows={rows}
+              sort={sort}
+              desc={dir === -1}
+              onOpen={onOpen}
+              onSort={(k, desc) =>
+                update({
+                  sort: k === 'mcap' ? undefined : k,
+                  dir: (desc ? -1 : 1) === defaultDir(k) ? undefined : desc ? 'desc' : 'asc',
+                })
+              }
+            />
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
               {sectorGroups.map(group => (
                 <div key={group.title} className="panel" style={{ border: '1px solid var(--line)', background: 'var(--panel)', padding: '16px', borderRadius: '18px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', borderBottom: '1px solid var(--line)', paddingBottom: '8px' }}>
                     <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: 'var(--brand)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ color: 'var(--brand2)' }}>🔸</span>
+                      <span style={{ width: 8, height: 8, borderRadius: 2, background: 'var(--brand2)', transform: 'rotate(45deg)' }} aria-hidden />
                       {group.title}
                       <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 500 }}>({group.stocks.length} شركات مطابقة)</span>
                     </h3>
@@ -334,9 +312,9 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                                     padding: '4px 8px',
                                     transition: 'transform 0.12s ease'
                                   }}
-                                  title={isInPortfolio(s.sym) ? 'إزالة من المحفظة 🗑️' : 'إضافة إلى المحفظة +'}
+                                  title={isInPortfolio(s.sym) ? 'إزالة من المحفظة' : 'إضافة إلى المحفظة +'}
                                 >
-                                  {isInPortfolio(s.sym) ? '💼' : '➕'}
+                                  {isInPortfolio(s.sym) ? <BriefcaseBusiness size={16} color="var(--brand)" aria-hidden /> : <Plus size={16} aria-hidden />}
                                 </button>
                               </td>
                             </tr>
@@ -356,7 +334,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
         {/* الشريط الجانبي: ملخّص حيّ للنتائج المطابقة */}
         <div className="overview-sidebar">
           <div className="o-widget">
-            <h4 className="o-widget-h">🔎 ملخّص النتائج</h4>
+            <h4 className="o-widget-h"><ListFilter size={16} className="ico" aria-hidden /> ملخّص النتائج</h4>
 
             <div className="stats" style={{ gridTemplateColumns: '1fr 1fr', gap: '10px', margin: '0 0 14px' }}>
               <StatCard color="var(--brand)" value={rows.length} label="أسهم مطابقة" />

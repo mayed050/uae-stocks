@@ -1,3 +1,4 @@
+import { FileText } from 'lucide-react'
 import type { Stock } from '@/data'
 
 /** مجموعة «البيانات والتقارير»: البيانات الأساسية (Fundamentals) + قائمة التقارير. */
@@ -8,7 +9,7 @@ export default function FinancialDataTabs({ stock }: { stock: Stock }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
         <div style={{ background: 'var(--chip)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)', textAlign: 'center' }}>
           <div style={{ fontSize: '11.5px', color: 'var(--muted)', fontWeight: 700, marginBottom: '6px' }}>مكرر الربحية (P/E)</div>
-          <b style={{ fontSize: '20px', color: '#ff6b00' }}>{stock.pe?.toFixed(2) ?? 'يلزم تحقق'}</b>
+          <b style={{ fontSize: '20px', color: 'var(--brand)' }}>{stock.pe?.toFixed(2) ?? 'يلزم تحقق'}</b>
           <div style={{ fontSize: '9.5px', color: 'var(--muted)', marginTop: '4px' }}>المعدل الفعلي لتقييم سعر السهم</div>
         </div>
         <div style={{ background: 'var(--chip)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)', textAlign: 'center' }}>
@@ -32,14 +33,14 @@ export default function FinancialDataTabs({ stock }: { stock: Stock }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '14px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--chip)', padding: '12px 16px', borderRadius: '10px', border: '1px solid var(--line)' }}>
           <div>
-            <b style={{ fontSize: '13px', display: 'block', color: 'var(--txt)' }}>📄 تقرير الاستدامة والحوكمة لعام 2025</b>
+            <b style={{ fontSize: '13px', display: 'block', color: 'var(--txt)' }}><FileText size={14} className="ico" aria-hidden /> تقرير الاستدامة والحوكمة لعام 2025</b>
             <span style={{ fontSize: '10px', color: 'var(--muted)' }}>تنسيق PDF · 4.8 ميجابايت</span>
           </div>
           <button onClick={() => alert('جاري تحميل التقرير...')} style={{ border: 0, background: 'linear-gradient(135deg, #ff7b00, #ff4500)', color: '#fff', fontSize: '11px', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 700 }}>تحميل التقرير</button>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--chip)', padding: '12px 16px', borderRadius: '10px', border: '1px solid var(--line)' }}>
           <div>
-            <b style={{ fontSize: '13px', display: 'block', color: 'var(--txt)' }}>📄 القوائم المالية السنوية المدققة لعام 2025</b>
+            <b style={{ fontSize: '13px', display: 'block', color: 'var(--txt)' }}><FileText size={14} className="ico" aria-hidden /> القوائم المالية السنوية المدققة لعام 2025</b>
             <span style={{ fontSize: '10px', color: 'var(--muted)' }}>تنسيق PDF · 8.2 ميجابايت</span>
           </div>
           <button onClick={() => alert('جاري تحميل التقرير...')} style={{ border: 0, background: 'linear-gradient(135deg, #ff7b00, #ff4500)', color: '#fff', fontSize: '11px', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 700 }}>تحميل القوائم</button>

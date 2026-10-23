@@ -1,3 +1,4 @@
+import { ChartColumn } from 'lucide-react'
 import { useState } from 'react'
 import type { Stock } from '@/data'
 import { ADX_MOVEMENTS } from '@/data/movements'
@@ -11,7 +12,7 @@ export default function CompanyPricesWidget({ stocks, onOpen }: { stocks: Stock[
   return (
     <div className="o-widget">
       <div className="o-widget-head">
-        <h4 className="o-widget-h">📊 أسعار الشركات</h4>
+        <h4 className="o-widget-h"><ChartColumn size={16} className="ico" aria-hidden /> أسعار الشركات</h4>
         <div className="o-mkt-tabs">
           <button
             onClick={() => setMarketTab('dubai')}
@@ -29,7 +30,7 @@ export default function CompanyPricesWidget({ stocks, onOpen }: { stocks: Stock[
       </div>
 
       {marketTab === 'dubai' ? (
-        <div className="o-prices-scroll">
+        <div className="o-prices-scroll" tabIndex={0} aria-label="قائمة أسعار الشركات (قابلة للتمرير)">
           <table className="o-mini-table">
             <thead>
               <tr>

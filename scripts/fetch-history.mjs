@@ -1,11 +1,11 @@
-// يجلب أسعار الإغلاق التاريخية (سنة، يومي) لأسهم سوق دبي من Yahoo ويكتب public/history.json.
-// سوق أبوظبي غير مغطّى تاريخيًا مجانًا، فيبقى رسمه توضيحيًا في الواجهة.
+// يحدّث public/history.json: أسعار إغلاق سنة كاملة لأسهم دبي من Yahoo، ولبقية الأسهم (أبوظبي غير مغطّى
+// في Yahoo) يُلحق إغلاق اليوم من data.json فيُبنى سجلها تراكميًا. ما تعذّر جلبه يبقى ولا يُحذف.
 // التشغيل: node scripts/fetch-history.mjs   (يتطلب Node 18+)
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { round, isoDate } from './lib.mjs'
+import { round, isoDate, mergeHistory } from './lib.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(__dirname, '..')
@@ -44,14 +44,14 @@ async function main() {
   const data = JSON.parse(readFileSync(base, 'utf8'))
   const dfm = data.stocks.filter((s) => s.priceAuto && s.ex === 'DFM' && s.yahoo)
 
-  const history = {}
+  const fetched = {}
   let ok = 0
   const fail = []
   for (const s of dfm) {
     try {
       const pts = await fetchHistory(s.yahoo)
       if (pts.length) {
-        history[s.sym] = pts
+        fetched[s.sym] = pts
         ok++
         console.log(`✓ ${s.sym.padEnd(12)} ${pts.length} نقطة`)
       } else {
@@ -64,10 +64,14 @@ async function main() {
     await sleep(250)
   }
 
+  const existing = existsSync(OUT) ? (JSON.parse(readFileSync(OUT, 'utf8')).history ?? {}) : {}
+  const history = mergeHistory(existing, fetched, data.stocks)
+  const accumulated = Object.keys(history).filter((k) => !fetched[k])
+
   mkdirSync(dirname(OUT), { recursive: true })
   writeFileSync(OUT, JSON.stringify({ updated: new Date().toISOString(), history }) + '\n', 'utf8')
-  console.log(`\nاكتمل: ${ok}/${dfm.length} سهمًا${fail.length ? ` — تعذّر: ${fail.join(', ')}` : ''} → ${OUT}`)
-  if (ok === 0) process.exit(1)
+  console.log(`\nاكتمل: ${ok}/${dfm.length} من Yahoo${fail.length ? ` — تعذّر: ${fail.join(', ')}` : ''}؛ تراكمي: ${accumulated.length} سهمًا → ${OUT}`)
+  if (Object.keys(history).length === 0) process.exit(1)
 }
 
 main().catch((e) => {

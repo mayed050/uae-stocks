@@ -10,6 +10,7 @@ import type { Stock } from './data'
 import { parseAmount } from './format'
 import { SECTOR_MOVEMENTS, ADX_MOVEMENTS } from './data/movements'
 import type { MovementStock } from './data/movements'
+import type { HistPoint } from './store/useHistory'
 
 export interface DailyData {
   change: number
@@ -109,90 +110,56 @@ export function getDailyData(s: Stock): DailyData {
   }
 }
 
-export interface PriceHistory {
-  data: { date: string; price: number }[]
+export type Timeframe = '1W' | '1M' | '3M' | '6M' | '1Y' | 'ALL'
+const TF_DAYS: Record<Exclude<Timeframe, 'ALL'>, number> = { '1W': 7, '1M': 31, '3M': 92, '6M': 183, '1Y': 366 }
+
+export interface PeriodSeries {
+  points: HistPoint[]
   high: number
   low: number
-  open: number
-  close: number
+  start: number
+  end: number
   change: number
   changePct: number
-  isOverallUp: boolean
+  up: boolean
 }
 
-const TIMEFRAME_POINTS: Record<string, number> = { '1W': 7, '1M': 30, '3M': 90, '6M': 120, '1Y': 250 }
+const iso = (d: Date) => d.toISOString().slice(0, 10)
 
-/** يبني سلسلة الرسم من أسعار إغلاق تاريخية حقيقية ([تاريخ، سعر])، مقسّمة حسب الفترة. */
-export function realHistory(points: [string, number][], timeframe: string, currentPrice: number): PriceHistory {
-  const want = TIMEFRAME_POINTS[timeframe] ?? points.length
-  const slice = points.slice(Math.max(0, points.length - want))
-  const data = slice.map(([d, c]) => {
-    const dt = new Date(d)
-    const label = (timeframe === '1W' || timeframe === '1M')
-      ? dt.toLocaleDateString('ar-AE', { day: 'numeric', month: 'short' })
-      : dt.toLocaleDateString('ar-AE', { month: 'short', year: '2-digit' })
-    return { date: label, price: c }
-  })
-  const lastPoint = data[data.length - 1]
-  if (lastPoint) lastPoint.price = currentPrice
-  const prices = data.map((d) => d.price)
-  const high = prices.length ? Math.max(...prices) : currentPrice
-  const low = prices.length ? Math.min(...prices) : currentPrice
-  const open = data[0]?.price ?? currentPrice
-  const close = currentPrice
-  const change = close - open
-  const changePct = open > 0 ? (change / open) * 100 : 0
-  return { data, high, low, open, close, change, changePct, isOverallUp: change >= 0 }
-}
-
-/** سلسلة أسعار تاريخية محاكاة لفترة زمنية مختارة. */
-export function generateHistoricalData(sym: string, timeframe: string, currentPrice: number): PriceHistory {
-  const seed = symbolSeed(sym)
-  const points = TIMEFRAME_POINTS[timeframe] ?? 365
-
-  const data: { date: string; price: number }[] = []
-  let price = currentPrice
-  const isUpTrend = seed % 2 === 0
-  const volatility = 0.012
-  const today = new Date()
-
-  for (let i = points - 1; i >= 0; i--) {
-    const date = new Date(today)
-    date.setDate(today.getDate() - i)
-    const label = (timeframe === '1W' || timeframe === '1M')
-      ? date.toLocaleDateString('ar-AE', { day: 'numeric', month: 'short' })
-      : date.toLocaleDateString('ar-AE', { month: 'short', year: '2-digit' })
-
-    data.push({ date: label, price: parseFloat(price.toFixed(2)) })
-
-    const changePct = (Math.sin(seed + i) * volatility) + (isUpTrend ? -0.0006 : 0.0006)
-    price = price * (1 - changePct)
+/**
+ * سلسلة فترة من أسعار إغلاق حقيقية: تُقطع بالتاريخ (أسبوع = 7 أيام تقويمية) لا بعدد النقاط،
+ * ويُدمج السعر الحالي إن كان أحدث من آخر نقطة. لا توليد لأي قيمة.
+ */
+export function periodSeries(
+  history: HistPoint[],
+  tf: Timeframe,
+  current?: { price: number | null; asof: string | null },
+): PeriodSeries | null {
+  let pts = [...history]
+  const lastDate = pts[pts.length - 1]?.[0]
+  if (current?.price && current.asof) {
+    if (!lastDate || current.asof > lastDate) pts.push([current.asof, current.price])
+    else if (current.asof === lastDate) pts[pts.length - 1] = [current.asof, current.price]
   }
-
-  data[data.length - 1]!.price = currentPrice
-  const prices = data.map(d => d.price)
-  const high = Math.max(...prices)
-  const low = Math.min(...prices)
-  const open = data[0]!.price
-  const close = currentPrice
-  const change = close - open
-  const changePct = (change / open) * 100
-
-  return { data, high, low, open, close, change, changePct, isOverallUp: change >= 0 }
-}
-
-/** سلسلة مصغّرة (sparkline) من 10 نقاط لعرض الاتجاه. */
-export function generateSparklineData(sym: string, currentPrice: number): number[] {
-  const seed = symbolSeed(sym)
-  const points = 10
-  const data: number[] = []
-  let price = currentPrice
-  const isUpTrend = seed % 2 === 0
-
-  for (let i = points - 1; i >= 0; i--) {
-    data.push(price)
-    const changePct = (Math.sin(seed + i) * 0.008) + (isUpTrend ? -0.0004 : 0.0004)
-    price = price * (1 - changePct)
+  if (tf !== 'ALL' && pts.length) {
+    const from = new Date(pts[pts.length - 1]![0] + 'T00:00:00Z')
+    from.setUTCDate(from.getUTCDate() - TF_DAYS[tf])
+    const cut = iso(from)
+    pts = pts.filter(([d]) => d >= cut)
   }
-  return data.reverse()
+  if (pts.length < 2) return null
+  const closes = pts.map((p) => p[1])
+  const start = closes[0]!
+  const end = closes[closes.length - 1]!
+  const change = end - start
+  return {
+    points: pts,
+    high: Math.max(...closes),
+    low: Math.min(...closes),
+    start,
+    end,
+    change,
+    changePct: start > 0 ? (change / start) * 100 : 0,
+    up: change >= 0,
+  }
 }

@@ -1,20 +1,49 @@
-import { useState, useEffect } from 'react'
-import type { Stock } from './data'
+import { useState, useEffect, useRef } from 'react'
+import { Sun, Moon, X } from 'lucide-react'
+import { Link, Outlet, useCanGoBack, useLocation, useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import Sidebar from './components/Sidebar'
-import type { View } from './components/Sidebar'
-import StockDetail from './components/StockDetail'
+import { NAV } from './components/nav'
+import LazySlot from './components/LazySlot'
+import { LazyStockDetail } from './components/lazy'
+import CommandPalette from './components/CommandPalette'
+import { useStocks } from './store'
 
-// الاستيراد المباشر (Static Imports) لضمان موثوقية كاملة بنسبة 100% وتفادي أخطاء تحميل الحزم الديناميكية على منصات Vercel و GitHub Pages 🚀
-import Overview from '@/features/overview/Overview'
-import Screener from '@/features/screener/Screener'
-import Dividends from '@/features/dividends/Dividends'
-import Compare from '@/features/compare/Compare'
-import Portfolio from '@/features/portfolio/Portfolio'
-import Financials from '@/features/financials/Financials'
-
+/** الهيكل العام لكل الصفحات: الشريط الجانبي، المحتوى (Outlet)، الشريط السفلي، وبطاقة السهم من ?stock=. */
 export default function App() {
-  const [view, setView] = useState<View>('overview')
-  const [detail, setDetail] = useState<Stock | null>(null)
+  const { stocks } = useStocks()
+  const { stock: stockSym } = useSearch({ from: '__root__' })
+  const detail = stockSym ? (stocks.find((s) => s.sym === stockSym) ?? null) : null
+  const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const router = useRouter()
+  const canGoBack = useCanGoBack()
+  const mainRef = useRef<HTMLElement>(null)
+
+  // الإغلاق يعود خطوة في السجل إن فُتحت البطاقة من داخل التطبيق، وإلا يُزال ?stock= (رابط مباشر)
+  function closeDetail() {
+    if (canGoBack) router.history.back()
+    else void navigate({ to: '.', search: (prev) => ({ ...prev, stock: undefined }), replace: true })
+  }
+
+  // تجهيز بطاقة السهم في وقت الفراغ بعد العرض الأول، فتُفتح فورًا عند النقر
+  useEffect(() => {
+    const run = () => void LazyStockDetail.preload?.()
+    if ('requestIdleCallback' in window) window.requestIdleCallback(run, { timeout: 4000 })
+    else setTimeout(run, 1500)
+  }, [])
+
+  // الصعود لأعلى الصفحة عند الانتقال بين الصفحات
+  useEffect(() => {
+    mainRef.current?.scrollTo?.({ top: 0 })
+    window.scrollTo({ top: 0 })
+  }, [pathname])
+
+  // عنوان التبويب يعكس الصفحة والسهم المفتوح (يظهر في السجل والإشارات المرجعية)
+  useEffect(() => {
+    const page = NAV.find((n) => n.to === pathname)?.label
+    const parts = [detail ? `${detail.name.split('—')[0]?.trim()} (${detail.sym})` : null, page, 'منصة الأسهم الإماراتية']
+    document.title = parts.filter(Boolean).join(' — ')
+  }, [pathname, detail])
   
   // الوضع الافتراضي يتبع تفضيل النظام عند أول زيارة، ثم يُحترم اختيار المستخدم المحفوظ
   const [dark, setDark] = useState<boolean>(() => {
@@ -47,11 +76,17 @@ export default function App() {
 
   return (
     <div className="app">
-      <Sidebar view={view} setView={setView} />
-      <button className="theme-toggle-floating" onClick={toggleTheme} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
-        {dark ? '☀️' : '🌙'}
+      <button className="skip-link" onClick={() => mainRef.current?.focus()}>تخطَّ إلى المحتوى الرئيسي</button>
+      <Sidebar />
+      <button
+        className="theme-toggle-floating"
+        onClick={toggleTheme}
+        title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}
+        aria-label={dark ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'}
+      >
+        {dark ? <Sun size={18} aria-hidden /> : <Moon size={18} aria-hidden />}
       </button>
-      <main className="main">
+      <main className="main" ref={mainRef} tabIndex={-1} aria-label="المحتوى الرئيسي">
         {!disclaimerHidden && (
           <div className="disclaimer">
             <b>تنويه:</b> منصّة معلوماتية للمتابعة فقط — لا تتضمّن أي توصية بالشراء أو البيع. البنود
@@ -59,42 +94,36 @@ export default function App() {
             <button
               onClick={dismissDisclaimer}
               title="إخفاء التنويه"
-              style={{ marginInlineStart: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: 16, lineHeight: 1, padding: '0 4px' }}
-            >✕</button>
+              aria-label="إخفاء التنويه"
+              style={{ marginInlineStart: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', lineHeight: 1, padding: '0 4px', display: 'inline-flex' }}
+            ><X size={16} aria-hidden /></button>
           </div>
         )}
-        {view === 'overview' && <Overview onOpen={setDetail} onNavigate={setView} />}
-        {view === 'screener' && <Screener onOpen={setDetail} />}
-        {view === 'dividends' && <Dividends onOpen={setDetail} />}
-        {view === 'financials' && <Financials onOpen={setDetail} />}
-        {view === 'compare' && <Compare />}
-        {view === 'portfolio' && <Portfolio onOpen={setDetail} />}
+        <Outlet />
       </main>
       
       {/* شريط التنقل السفلي المطور لتطبيقات الهواتف الذكية (Bottom Navigation Bar) */}
       <nav className="bottom-nav">
-        {BOTTOM_NAV.map((n) => (
-          <button
+        {NAV.map((n) => (
+          <Link
             key={n.v}
-            className={'bottom-navitem' + (view === n.v ? ' active' : '')}
-            onClick={() => setView(n.v)}
+            to={n.to}
+            className="bottom-navitem"
+            activeProps={{ className: 'active' }}
+            activeOptions={{ exact: n.to === '/', includeSearch: false }}
           >
-            <span className="bottom-navitem-icon">{n.icon}</span>
-            <span className="bottom-navitem-label">{n.label}</span>
-          </button>
+            <span className="bottom-navitem-icon"><n.icon size={20} aria-hidden /></span>
+            <span className="bottom-navitem-label">{n.short}</span>
+          </Link>
         ))}
       </nav>
 
-      {detail && <StockDetail item={detail} onClose={() => setDetail(null)} />}
+      {detail && (
+        <LazySlot loading={null} failed={null}>
+          <LazyStockDetail item={detail} onClose={closeDetail} />
+        </LazySlot>
+      )}
+      <CommandPalette />
     </div>
   )
 }
-
-const BOTTOM_NAV: { v: View; label: string; icon: string }[] = [
-  { v: 'overview', label: 'الرئيسية', icon: '📊' },
-  { v: 'screener', label: 'المستكشف', icon: '🔎' },
-  { v: 'dividends', label: 'التوزيعات', icon: '💵' },
-  { v: 'financials', label: 'النتائج', icon: '📈' },
-  { v: 'compare', label: 'المقارنة', icon: '⚖️' },
-  { v: 'portfolio', label: 'المحفظة', icon: '💼' },
-]

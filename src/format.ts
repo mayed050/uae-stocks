@@ -64,7 +64,7 @@ export function scores(s: Stock): Scores {
     yield: y === null ? 0 : clamp((y / 8) * 100),
     value: s.pe === null ? 50 : clamp(((40 - s.pe) / 35) * 100),
     growth: g === null ? 45 : clamp((g / 35) * 100),
-    stability: s.cat === 'income' ? 85 : s.cat === 'growth' ? 60 : 32,
+    stability: s.cat === 'income' ? 85 : s.cat === 'growth' ? 60 : s.cat === 'risk' ? 32 : 50, // غير مصنّف: محايد
     size: mc === null ? 40 : clamp((mc / 130e9) * 100),
   }
 }
@@ -81,7 +81,7 @@ export const AXIS_LABEL: Record<keyof Scores, string> = {
 export function symColor(sym: string): string {
   let h = 0
   for (let i = 0; i < sym.length; i++) h = (h * 31 + sym.charCodeAt(i)) % 360
-  return `hsl(${h} 65% 45%)`
+  return `hsl(${h} 60% 30%)` // داكن بما يكفي لنص أبيض بتباين ≥ 4.5:1 لكل الألوان
 }
 
 /** اسم الشهر العربي من رقم 0–11. */
@@ -113,5 +113,23 @@ export function getAnnualPs(s: Stock): number {
   if (freq === 'سنوي') return val
   // fallback: بعض السجلات القديمة قد تضمّن التكرار في ps
   if (s.div.ps?.includes('ربع')) return val * 4
+  // تكرار غير معروف (الأسهم المكتشفة آليًا): التوزيع الفعلي لآخر 12 شهرًا أدق من آخر شريحة
+  if (s.div.ttmPs != null) return s.div.ttmPs
   return val
+}
+
+/**
+ * تطبيع النص العربي للبحث: توحيد الهمزات والألف والتاء المربوطة والياء، وحذف التشكيل والتطويل،
+ * فيجد «اعمار» «إعمار» و«الاماراتية» «الإماراتية».
+ */
+export function normalizeAr(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[ً-ٰٟـ]/g, '') // تشكيل + تطويل
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/ؤ/g, 'و')
+    .replace(/ئ/g, 'ي')
+    .trim()
 }
