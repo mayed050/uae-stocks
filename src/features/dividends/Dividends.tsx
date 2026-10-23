@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import type { Stock } from '@/data'
 import { useStocks } from '@/store'
 import { exportCsv, exportIcs } from '@/export'
+import CalendarSubscribe from '@/components/CalendarSubscribe'
 import { dividendEvents, buildIcs } from '@/calendar'
 import { parseISO } from '@/lib'
 import { MONTHS_AR, parseYield, getAnnualPs } from '@/format'
@@ -257,6 +258,8 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
           <CalendarPlus size={14} className="ico" aria-hidden /> إضافة المواعيد القادمة للتقويم
         </button>
       </div>
+      <CalendarSubscribe />
+      <p className="cal-sub-hint">تقويم السوق بلا تنبيهات؛ ولتنبيهات سهم بعينه اشترك في تقويمه من بطاقة السهم.</p>
       <div className="tablewrap">
         <table>
           <thead>

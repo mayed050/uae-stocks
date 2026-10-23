@@ -317,6 +317,11 @@ th.sortable:hover{color:var(--txt)}
 .drow .val{font-weight:600; text-align:end}
 .modal-note{color:var(--muted2); font-size:11.5px; margin:8px 0 0; text-align:center}
 .modal-note a{color:var(--brand); text-decoration:underline; text-underline-offset:2px}
+.cal-sub{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:12px}
+.cal-sub-label{color:var(--muted); font-size:12.5px; display:inline-flex; align-items:center; gap:4px}
+.cal-sub a.chip{text-decoration:none}
+.cal-sub-hint{color:var(--muted2); font-size:11.5px; margin:6px 0 12px}
+.cal-sub-url{font-size:11px; word-break:break-all; background:var(--chip); border-radius:6px; padding:2px 6px}
 .modal-tag{margin-top:12px; background:var(--chip); border:1px solid var(--line); border-radius:10px;
   padding:9px 12px; font-size:12.5px; color:var(--muted)}
 .modal-foot{margin-top:18px; padding-top:14px; border-top:1px solid var(--line);

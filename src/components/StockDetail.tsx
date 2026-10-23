@@ -10,6 +10,7 @@ import { usePortfolio, useHistory, useUiStore, useStocks } from '../store'
 import { periodSeries } from '@/market'
 import type { Timeframe } from '@/market'
 import PriceChart from './PriceChart'
+import CalendarSubscribe from './CalendarSubscribe'
 import { NA } from '@/constants/ui'
 import { cell as v } from '@/components/ui/cell'
 
@@ -224,6 +225,7 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
                 المصدر الرسمي: <a href={item.div.src.url} target="_blank" rel="noopener noreferrer">{item.div.src.label}</a> · روجع في {item.div.src.asof}
               </p>
             )}
+            <CalendarSubscribe sym={item.sym} />
           </section>
           <section className="modal-card wide chart">
             <div className="modal-chart-head">

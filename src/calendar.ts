@@ -23,16 +23,23 @@ const STEPS: { key: 'lastEnt' | 'exd' | 'nextExd' | 'pay' | 'nextPay'; label: st
 const ymd = (d: Date) =>
   `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`
 
-/** مواعيد التوزيع القادمة (اليوم فما بعد) لسهم واحد. */
-export function dividendEvents(s: Stock, today: Date = new Date()): CalEvent[] {
-  const start = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+/** مصدر التاريخ في وصف الحدث: إفصاح رسمي مُراجَع، أو قيمة آلية لم يُتحقق منها بعد. */
+function provenance(s: Stock, key: (typeof STEPS)[number]['key']): string {
+  if (s.div.auto?.fields.includes(key)) return 'المصدر: TradingView (آلي — يلزم التحقق من إفصاح الشركة).'
+  if (s.div.src && !key.startsWith('next')) return `الإفصاح الرسمي: ${s.div.src.url}`
+  return 'تحقّق دائمًا من إفصاح الشركة الرسمي.'
+}
+
+/** مواعيد التوزيع لسهم واحد بدءًا من تاريخ from (افتراضيًا اليوم: القادمة فقط). */
+export function dividendEvents(s: Stock, from: Date = new Date()): CalEvent[] {
+  const start = new Date(from.getFullYear(), from.getMonth(), from.getDate())
   const name = s.name.split('—')[0]?.trim() ?? s.sym
   const events: CalEvent[] = []
   for (const step of STEPS) {
     const d = parseISO(s.div[step.key] ?? null)
     if (!d || d < start) continue
     const ps = step.key.startsWith('next') ? (s.div.nextPs ?? s.div.ps) : s.div.ps
-    const details = [ps && `التوزيع: ${ps}`, `السوق: ${s.ex}`, 'تحقّق دائمًا من إفصاح الشركة الرسمي.']
+    const details = [ps && `التوزيع: ${ps}`, `السوق: ${s.ex}`, provenance(s, step.key)]
     events.push({
       uid: `${s.sym}-${step.key}-${ymd(d)}@uae-stocks`,
       date: d,
@@ -69,8 +76,18 @@ export function foldLine(line: string): string {
   return parts.join('\r\n ')
 }
 
-/** يبني ملف .ics كاملًا؛ لكل حدث تنبيه في الساعة 9 صباح اليوم السابق. */
-export function buildIcs(events: CalEvent[], now: Date = new Date()): string {
+export interface IcsOptions {
+  /** اسم التقويم في تطبيق المستخدم (تقاويم الاشتراك). */
+  name?: string
+  /** تنبيه 9 صباح اليوم السابق لكل حدث (افتراضيًا نعم؛ يُعطَّل في تقويم السوق كاملًا كي لا يغرق المستخدم بالتنبيهات). */
+  alarms?: boolean
+  /** تقويم اشتراك: يطلب من التطبيق إعادة الجلب كل refreshHours ساعة. */
+  refreshHours?: number
+}
+
+/** يبني ملف .ics كاملًا؛ لكل حدث تنبيه في الساعة 9 صباح اليوم السابق ما لم يُعطَّل. */
+export function buildIcs(events: CalEvent[], now: Date = new Date(), opts: IcsOptions = {}): string {
+  const { name, alarms = true, refreshHours } = opts
   const stamp = now.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
   const lines = [
     'BEGIN:VCALENDAR',
@@ -79,6 +96,8 @@ export function buildIcs(events: CalEvent[], now: Date = new Date()): string {
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
   ]
+  if (name) lines.push(`X-WR-CALNAME:${escapeText(name)}`, 'X-WR-TIMEZONE:Asia/Dubai')
+  if (refreshHours) lines.push(`REFRESH-INTERVAL;VALUE=DURATION:PT${refreshHours}H`, `X-PUBLISHED-TTL:PT${refreshHours}H`)
   for (const e of events) {
     const next = new Date(e.date.getFullYear(), e.date.getMonth(), e.date.getDate() + 1)
     lines.push(
@@ -90,13 +109,9 @@ export function buildIcs(events: CalEvent[], now: Date = new Date()): string {
       `SUMMARY:${escapeText(e.title)}`,
       `DESCRIPTION:${escapeText(e.description)}`,
       'TRANSP:TRANSPARENT',
-      'BEGIN:VALARM',
-      'ACTION:DISPLAY',
-      'TRIGGER:-PT15H',
-      `DESCRIPTION:${escapeText(e.title)}`,
-      'END:VALARM',
-      'END:VEVENT',
     )
+    if (alarms) lines.push('BEGIN:VALARM', 'ACTION:DISPLAY', 'TRIGGER:-PT15H', `DESCRIPTION:${escapeText(e.title)}`, 'END:VALARM')
+    lines.push('END:VEVENT')
   }
   lines.push('END:VCALENDAR')
   return lines.map(foldLine).join('\r\n') + '\r\n'

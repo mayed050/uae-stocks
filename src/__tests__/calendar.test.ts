@@ -20,6 +20,22 @@ describe('dividendEvents', () => {
   it('قائمة فارغة عند غياب تواريخ قادمة', () => {
     expect(dividendEvents(makeStock({}, { exd: isoDaysFromNow(-30) }))).toEqual([])
   })
+  it('تاريخ بداية سابق يُبقي المواعيد المنقضية (تقاويم الاشتراك)', () => {
+    const from = new Date()
+    from.setDate(from.getDate() - 60)
+    expect(dividendEvents(makeStock({}, { exd: isoDaysFromNow(-30) }), from)).toHaveLength(1)
+  })
+  it('يذكر مصدر التاريخ: آلي يلزم التحقق، أو رابط الإفصاح الرسمي', () => {
+    const s = makeStock({}, {
+      exd: isoDaysFromNow(5),
+      pay: isoDaysFromNow(20),
+      auto: { src: 'tradingview', asof: isoDaysFromNow(0), fields: ['pay'] },
+      src: { url: 'https://example.ae/agm.pdf', label: 'نتائج الجمعية', asof: isoDaysFromNow(0) },
+    })
+    const [exd, pay] = dividendEvents(s)
+    expect(exd!.description).toContain('الإفصاح الرسمي: https://example.ae/agm.pdf')
+    expect(pay!.description).toContain('آلي — يلزم التحقق')
+  })
 })
 
 describe('escapeText', () => {
@@ -58,6 +74,14 @@ describe('buildIcs', () => {
     expect(ics).toContain('DTSTAMP:20261022T080000Z')
     expect(ics).toContain('BEGIN:VALARM')
     expect(ics.split('BEGIN:VEVENT').length - 1).toBe(1)
+  })
+  it('تقويم اشتراك: اسم ومدة تحديث، وبلا تنبيهات عند تعطيلها', () => {
+    const ev = [{ uid: 'u', date: new Date(2026, 10, 5), title: 't', description: 'd' }]
+    const ics = buildIcs(ev, new Date('2026-10-22T08:00:00Z'), { name: 'توزيعات السوق', alarms: false, refreshHours: 12 })
+    expect(ics).toContain('X-WR-CALNAME:توزيعات السوق')
+    expect(ics).toContain('REFRESH-INTERVAL;VALUE=DURATION:PT12H')
+    expect(ics).not.toContain('VALARM')
+    expect(ics).toContain('END:VEVENT\r\nEND:VCALENDAR')
   })
   it('يعبر نهاية الشهر بشكل صحيح في DTEND', () => {
     const ics = buildIcs([{ uid: 'u', date: new Date(2026, 11, 31), title: 't', description: 'd' }])
