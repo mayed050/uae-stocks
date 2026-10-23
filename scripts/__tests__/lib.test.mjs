@@ -165,6 +165,16 @@ describe('mergeDividend', () => {
     expect(changes).toEqual([])
     expect(conflicts).toEqual([{ field: 'exd', manual: '2026-03-09', auto: '2026-03-18' }])
   })
+  it('حدث مراجَع على إفصاح رسمي (المشرق: الاستبعاد 19/3 وTradingView 18/3) لا يرفع تعارضًا، ويسقط مرجعه مع الحدث التالي', () => {
+    const src = { url: 'https://www.mashreq.com/agm-2026.pdf', label: 'نتائج الجمعية العمومية', asof: TODAY }
+    const verified = manual({ exd: '2026-03-19', pay: null, ps: '10.20 درهم', src })
+    const same = mergeDividend(verified, { exRecent: '2026-03-18', payRecent: '2026-03-18', amountRecent: 10.2 }, TODAY)
+    expect(same.conflicts).toEqual([])
+    expect(same.div).toEqual(verified)
+    const next = mergeDividend(verified, { exRecent: '2027-03-18', payRecent: '2027-04-01', amountRecent: 11 }, TODAY)
+    expect(next.div.exd).toBe('2027-03-18')
+    expect(next.div.src).toBeUndefined()
+  })
   it('تاريخ دفع = تاريخ الاستبعاد يُعدّ غير معروف (قيمة مؤقتة لدى المصدر)', () => {
     const { div } = mergeDividend(manual({ exd: '2026-04-08' }), { exRecent: '2026-07-31', payRecent: '2026-07-31', amountRecent: 0.2596 }, TODAY)
     expect(div.pay).toBeNull()

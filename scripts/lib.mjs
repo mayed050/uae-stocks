@@ -159,10 +159,12 @@ export function mergeDividend(div, tv, today) {
     const ps = fmtDps(tv.amountRecent)
     if (!out.exd || days(tv.exRecent, out.exd) > SAME_EVENT_DAYS) {
       Object.assign(out, { exd: tv.exRecent, pay, lastEnt: null, rec: null, agm: null })
+      delete out.src // الإفصاح المرجعي يخصّ الحدث السابق
       if (ps) out.ps = ps
       mark('exd', 'pay', ...(ps ? ['ps'] : []))
       changes.push({ kind: 'new', ex: tv.exRecent, pay, ps })
-    } else if (Math.abs(days(tv.exRecent, out.exd)) <= SAME_EVENT_DAYS) {
+    } else if (!out.src && Math.abs(days(tv.exRecent, out.exd)) <= SAME_EVENT_DAYS) {
+      // الحدث المراجَع على إفصاح رسمي (out.src) لا يُبلَّغ عن فروقه مع TradingView
       if (tv.exRecent !== out.exd) conflicts.push({ field: 'exd', manual: out.exd, auto: tv.exRecent })
       else if (pay && out.pay && pay !== out.pay) conflicts.push({ field: 'pay', manual: out.pay, auto: pay })
     }

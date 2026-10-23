@@ -29,6 +29,8 @@ export const DividendSchema = z.object({
   watch: z.optional(z.boolean()),
   // مصدر الحقول المملوءة آليًا (غير المتحقق منها بعد) — تُعرض بعلامة «يلزم التحقق»
   auto: z.optional(z.object({ src: z.string(), asof: isoDate, fields: z.array(z.string()) })),
+  // الإفصاح الرسمي الذي رُوجع عليه الحدث يدويًا: يُعرض رابطًا، ويُسكت تعارضات الحدث نفسه مع TradingView
+  src: z.optional(z.object({ url: z.string().check(z.regex(/^https:\/\//, 'رابط https')), label: z.string().check(z.minLength(1)), asof: isoDate })),
 })
 
 export const StockSchema = z.object({

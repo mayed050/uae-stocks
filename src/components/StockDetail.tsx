@@ -219,6 +219,11 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
               {item.div.nextPs && <Row k="مبلغ الشريحة القادمة" val={dv('nextPs', item.div.nextPs)} />}
             </div>
             {item.div.note && <div className="modal-tag"><Info size={13} className="ico" aria-hidden /> {item.div.note}</div>}
+            {item.div.src && (
+              <p className="modal-note">
+                المصدر الرسمي: <a href={item.div.src.url} target="_blank" rel="noopener noreferrer">{item.div.src.label}</a> · روجع في {item.div.src.asof}
+              </p>
+            )}
           </section>
           <section className="modal-card wide chart">
             <div className="modal-chart-head">
