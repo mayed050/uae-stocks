@@ -196,6 +196,8 @@ async function main() {
 }
 
 /** يكتب تقرير المراجعة البشرية (Markdown) — فارغ إن لم يكن هناك ما يُراجع. */
+const FIELD_AR = { exd: 'تاريخ الاستبعاد', pay: 'تاريخ الدفع', ps: 'مبلغ التوزيع', nextExd: 'استبعاد الشريحة القادمة' }
+
 function writeReview(staleList, changes, conflicts, discovered = []) {
   const name = (s) => `${s.name.split('—')[0].trim()} (${s.sym})`
   const out = []
@@ -210,7 +212,7 @@ function writeReview(staleList, changes, conflicts, discovered = []) {
   if (conflicts.length) {
     out.push('### تعارضات: أُبقيت القيمة اليدوية — يُرجى التحقق من الإفصاح الرسمي', '',
       '| السهم | الحقل | اليدوي (معروض) | TradingView |', '|---|---|---|---|',
-      ...conflicts.map((c) => `| ${name(c.s)} | ${c.field} | ${c.manual} | ${c.auto} |`), '')
+      ...conflicts.map((c) => `| ${name(c.s)} | ${FIELD_AR[c.field] ?? c.field} | ${c.manual} | ${c.auto} |`), '')
   }
   if (discovered.length) {
     out.push(`### أسهم أُضيفت آليًا إلى التغطية (${discovered.length}) — «غير مصنّفة» وبياناتها آلية بالكامل`, '',

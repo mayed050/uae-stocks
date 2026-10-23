@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { num, round, fmtMcap, parseTvRow, applyQuote, toIndexQuote, tvDate, fmtDps, mergeDividend, staleStocks, mergeHistory, arName, arSector, fundamentalsText, discoverStocks, stockKey, TV_COLS } from '../lib.mjs'
+import { num, round, fmtMcap, parseTvRow, applyQuote, toIndexQuote, tvDate, fmtDps, mergeDividend, psAed, amountsDiffer, staleStocks, mergeHistory, arName, arSector, fundamentalsText, discoverStocks, stockKey, TV_COLS } from '../lib.mjs'
 
 describe('num', () => {
   it('يقبل الأرقام الصحيحة', () => {
@@ -164,6 +164,23 @@ describe('mergeDividend', () => {
     expect(div.auto).toBeUndefined()
     expect(changes).toEqual([])
     expect(conflicts).toEqual([{ field: 'exd', manual: '2026-03-09', auto: '2026-03-18' }])
+  })
+  it('المبلغ يُقارن مستقلًا عن التاريخ: مبلغ يدوي منقول من سنة سابقة يُرفع تعارضًا (المشرق 18.5 والمعتمد 10.20)', () => {
+    const { div, conflicts } = mergeDividend(manual({ exd: '2026-03-18', ps: '18.5 درهم' }), { exRecent: '2026-03-18', amountRecent: 10.1999998 }, TODAY)
+    expect(div.ps).toBe('18.5 درهم')
+    expect(conflicts).toEqual([{ field: 'ps', manual: '18.5 درهم', auto: '10.20 درهم' }])
+  })
+  it('فروق التقريب لا تُعدّ تعارضًا في المبلغ', () => {
+    for (const [ps, tv] of [['7.9 فلس (شريحة نهائية)', 0.07895261], ['10.20 درهم (102%)', 10.1999998], ['97.05 فلس', 0.970499992], ['0.80 درهم', 0.7987]]) {
+      expect(mergeDividend(manual({ exd: '2026-03-18', ps }), { exRecent: '2026-03-18', amountRecent: tv }, TODAY).conflicts).toEqual([])
+    }
+  })
+  it('يقرأ مبلغ التوزيع اليدوي بالدرهم', () => {
+    expect(psAed('30 فلس (30%)')).toBeCloseTo(0.3)
+    expect(psAed('10.20 درهم (102%)')).toBeCloseTo(10.2)
+    expect(psAed('غير معلن')).toBeNull()
+    expect(amountsDiffer(0.3, 0.15)).toBe(true)
+    expect(amountsDiffer(0.0198, 0.0199)).toBe(false)
   })
   it('حدث مراجَع على إفصاح رسمي (المشرق: الاستبعاد 19/3 وTradingView 18/3) لا يرفع تعارضًا، ويسقط مرجعه مع الحدث التالي', () => {
     const src = { url: 'https://www.mashreq.com/agm-2026.pdf', label: 'نتائج الجمعية العمومية', asof: TODAY }
