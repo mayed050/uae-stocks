@@ -11,13 +11,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: Probe
         run: |
+          command -v pdftotext || (sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils >/dev/null)
           node scripts/probe-sources.mjs > probe.txt 2>&1 || true
           # النتيجة كملاحظات (annotations) مقسّمة لقراءتها عبر واجهة GitHub البرمجية
-          split -l 25 probe.txt part_
+          split -l 40 probe.txt part_
+          i=0
           for f in part_*; do
             body=$(sed -e 's/%/%25/g' "$f" | awk 'BEGIN{ORS="%0A"} {print}')
-            echo "::notice title=probe-$f::$body"
+            if [ $i -lt 10 ]; then echo "::notice title=probe-$f::$body"; else echo "::warning title=probe-$f::$body"; fi
+            i=$((i+1))
           done
