@@ -1,26 +1,26 @@
 name: Probe data sources (temporary)
 on:
   push:
-    branches: [probe/data-sources]
+    branches: [probe/dividend-docs]
 permissions:
-  contents: read
+  contents: write
 jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
       - name: Probe
         run: |
           command -v pdftotext || (sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils >/dev/null)
-          node scripts/probe-sources.mjs > probe.txt 2>&1 || true
-          # النتيجة كملاحظات (annotations) مقسّمة لقراءتها عبر واجهة GitHub البرمجية
-          split -l 45 probe.txt part_
-          i=0
-          for f in part_*; do
-            body=$(sed -e 's/%/%25/g' "$f" | awk 'BEGIN{ORS="%0A"} {print}')
-            if [ $i -lt 10 ]; then echo "::notice title=probe-$f::$body"; else echo "::warning title=probe-$f::$body"; fi
-            i=$((i+1))
-          done
+          node scripts/probe-dividends.mjs 2>probe-err.txt || true
+      # النتائج تُلتزم على فرع الفحص نفسه (دفع GITHUB_TOKEN لا يُطلق سير عمل جديدًا)
+      - name: Commit results
+        run: |
+          mkdir -p probe-out && cp probe-err.txt probe-out/ || true
+          git config user.name "probe-bot"
+          git config user.email "actions@github.com"
+          git add probe-out
+          git commit -m "probe: نتائج الفحص" && git push || echo "no results"
