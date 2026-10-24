@@ -1,0 +1,401 @@
+==== A) TradingView uae/scan — حقل بحقل DFM:EMAAR ADX:FAB DFM:DEWA ADX:ALDAR
+✓ total_revenue_fy :: DFM:EMAAR=50838105000 | ADX:FAB=79174000000 | DFM:DEWA=32841822999.999996 | ADX:ALDAR=33902411000
+✓ total_revenue_ttm :: DFM:EMAAR=54861695000 | ADX:FAB=79476000000 | DFM:DEWA=33104949000 | ADX:ALDAR=35202179000
+✓ total_revenue_fq :: DFM:EMAAR=11790314000 | ADX:FAB=20210000000 | DFM:DEWA=8412995000.000001 | ADX:ALDAR=8117709000
+✓ net_income_fy :: DFM:EMAAR=17599179000 | ADX:FAB=20431000000 | DFM:DEWA=8346887000.000001 | ADX:ALDAR=7507597000
+✓ net_income_fq :: DFM:EMAAR=3672649000 | ADX:FAB=5546000000 | DFM:DEWA=2289044000 | ADX:ALDAR=2165659000
+✓ gross_profit_fy :: DFM:EMAAR=26873225000 | ADX:FAB=null | DFM:DEWA=12726847000 | ADX:ALDAR=11020475000
+✓ oper_income_fy :: DFM:EMAAR=23182945000 | ADX:FAB=25415000000 | DFM:DEWA=9928762000 | ADX:ALDAR=9069171000
+✓ ebitda :: DFM:EMAAR=26599028000 | ADX:FAB=null | DFM:DEWA=17012469000.000002 | ADX:ALDAR=10734533000
+✓ ebitda_fy :: DFM:EMAAR=24871625000 | ADX:FAB=null | DFM:DEWA=16637887999.999998 | ADX:ALDAR=9786350000
+✓ earnings_per_share_fy :: DFM:EMAAR=1.99 | ADX:FAB=1.85 | DFM:DEWA=0.167 | ADX:ALDAR=0.955
+✓ earnings_per_share_basic_fy :: DFM:EMAAR=1.9911 | ADX:FAB=1.8493 | DFM:DEWA=0.1669 | ADX:ALDAR=0.9548
+✓ earnings_per_share_diluted_fy :: DFM:EMAAR=1.9911 | ADX:FAB=1.8493 | DFM:DEWA=0.1669 | ADX:ALDAR=0.9548
+✓ earnings_per_share_diluted_ttm :: DFM:EMAAR=2.171 | ADX:FAB=1.8505 | DFM:DEWA=0.1757 | ADX:ALDAR=1.0314
+✓ total_assets_fq :: DFM:EMAAR=192985243000 | ADX:FAB=1408739000000 | DFM:DEWA=198436727000 | ADX:ALDAR=125523772000
+✓ total_assets_fy :: DFM:EMAAR=186700687000 | ADX:FAB=1403864000000 | DFM:DEWA=195136111000 | ADX:ALDAR=109614744000
+✓ total_liabilities_fq :: DFM:EMAAR=84101806000 | ADX:FAB=1276349000000 | DFM:DEWA=105755231000 | ADX:ALDAR=73521520000
+✓ total_liabilities_fy :: DFM:EMAAR=79024380000 | ADX:FAB=1271407000000 | DFM:DEWA=97366576000 | ADX:ALDAR=62551215000
+✓ total_equity_fq :: DFM:EMAAR=108883437000 | ADX:FAB=132390000000 | DFM:DEWA=92681496000 | ADX:ALDAR=51799069000
+✓ total_equity_fy :: DFM:EMAAR=107676307000 | ADX:FAB=132457000000 | DFM:DEWA=97769535000 | ADX:ALDAR=46936343000
+✓ total_debt_fq :: DFM:EMAAR=10188068000 | ADX:FAB=326765000000 | DFM:DEWA=44240390000 | ADX:ALDAR=34558472000
+✓ total_debt_fy :: DFM:EMAAR=10614989000 | ADX:FAB=316683000000 | DFM:DEWA=38630356000 | ADX:ALDAR=28316003000
+✓ cash_n_short_term_invest_fq :: DFM:EMAAR=73561509000 | ADX:FAB=null | DFM:DEWA=14007979000 | ADX:ALDAR=22818191000
+✓ cash_n_equivalents_fq :: DFM:EMAAR=2757019000 | ADX:FAB=null | DFM:DEWA=9198194000 | ADX:ALDAR=22721471000
+✓ net_debt_fq :: DFM:EMAAR=-63373441000 | ADX:FAB=62918000000 | DFM:DEWA=30232411000 | ADX:ALDAR=11740281000
+✓ return_on_equity :: DFM:EMAAR=21.6490548425046 | ADX:FAB=16.0771299602082 | DFM:DEWA=10.0276672246895 | ADX:ALDAR=20.2049478370678
+✓ return_on_equity_fq :: DFM:EMAAR=21.6490548425046 | ADX:FAB=16.0771299602082 | DFM:DEWA=10.0276672246895 | ADX:ALDAR=20.2049478370678
+✓ return_on_equity_fy :: DFM:EMAAR=19.5866082427275 | ADX:FAB=16.1979172860501 | DFM:DEWA=9.2555122536042 | ADX:ALDAR=19.8508315546698
+✓ return_on_assets :: DFM:EMAAR=10.639077015913 | ADX:FAB=1.48568779191069 | DFM:DEWA=4.5412804905794 | ADX:ALDAR=7.238029691797221
+✓ return_on_assets_fq :: DFM:EMAAR=10.639077015913 | ADX:FAB=1.48568779191069 | DFM:DEWA=4.5412804905794 | ADX:ALDAR=7.23802969179722
+✓ return_on_invested_capital :: DFM:EMAAR=20.1057234292262 | ADX:FAB=6.00397935434609 | DFM:DEWA=7.24143287409192 | ADX:ALDAR=11.8461595061036
+✓ gross_margin :: DFM:EMAAR=52.8062302850833 | ADX:FAB=null | DFM:DEWA=39.4116269443581 | ADX:ALDAR=33.7438145519344
+✓ gross_margin_ttm :: DFM:EMAAR=52.8062302850833 | ADX:FAB=null | DFM:DEWA=39.4116269443581 | ADX:ALDAR=33.7438145519344
+✓ gross_margin_fy :: DFM:EMAAR=52.8603987107702 | ADX:FAB=null | DFM:DEWA=38.7519505235748 | ADX:ALDAR=32.5064639208108
+✓ operating_margin :: DFM:EMAAR=45.229574113596 | ADX:FAB=64.08992456494137 | DFM:DEWA=30.788765148075004 | ADX:ALDAR=28.280286285687
+✓ operating_margin_ttm :: DFM:EMAAR=45.229574113596 | ADX:FAB=64.08992456494137 | DFM:DEWA=30.788765148075 | ADX:ALDAR=28.280286285687
+✓ operating_margin_fy :: DFM:EMAAR=45.6015128809384 | ADX:FAB=65.30900680971348 | DFM:DEWA=30.2320672028468 | ADX:ALDAR=26.7508142709968
+✓ net_margin :: DFM:EMAAR=34.977512087441 | ADX:FAB=50.89750292528693 | DFM:DEWA=26.5374249632585 | ADX:ALDAR=23.0369006418608
+✓ net_margin_ttm :: DFM:EMAAR=34.977512087441 | ADX:FAB=50.89750292528693 | DFM:DEWA=26.5374249632585 | ADX:ALDAR=23.0369006418608
+✓ net_margin_fy :: DFM:EMAAR=34.6180861776811 | ADX:FAB=52.50160606449955 | DFM:DEWA=25.415419235406 | ADX:ALDAR=22.1447288807867
+✓ debt_to_equity :: DFM:EMAAR=0.10853086883121099 | ADX:FAB=2.47137346846165 | DFM:DEWA=0.51128905061383 | ADX:ALDAR=0.7991683286873069
+✓ debt_to_equity_fq :: DFM:EMAAR=0.10853086883121099 | ADX:FAB=2.47137346846165 | DFM:DEWA=0.51128905061383 | ADX:ALDAR=0.7991683286873069
+✓ current_ratio :: DFM:EMAAR=1.91526054771219 | ADX:FAB=0.717491453687124 | DFM:DEWA=0.922337036605581 | ADX:ALDAR=2.29095635149655
+✓ current_ratio_fq :: DFM:EMAAR=1.91526054771219 | ADX:FAB=0.717491453687124 | DFM:DEWA=0.922337036605581 | ADX:ALDAR=2.29095635149655
+✓ quick_ratio :: DFM:EMAAR=1.24695677090913 | ADX:FAB=null | DFM:DEWA=0.867617724933031 | ADX:ALDAR=1.51365054827063
+✓ price_book_ratio :: DFM:EMAAR=1.0443942560190953 | ADX:FAB=1.5452335808491267 | DFM:DEWA=1.4722605241906688 | ADX:ALDAR=1.4394902737925939
+✓ price_book_fq :: DFM:EMAAR=1.0489059459031937 | ADX:FAB=1.545817185810568 | DFM:DEWA=1.548649554474326 | ADX:ALDAR=1.3564080278990949
+✓ price_sales_ratio :: DFM:EMAAR=1.936804162563495 | ADX:FAB=5.252164974945393 | DFM:DEWA=4.080163272300688 | ADX:ALDAR=1.7301193368925905
+✓ price_sales_current :: DFM:EMAAR=1.8334240056979652 | ADX:FAB=5.12146189658177 | DFM:DEWA=4.047733165213455 | ADX:ALDAR=1.7176102011960663
+✓ enterprise_value_current :: DFM:EMAAR=50100919455.99999 | ADX:FAB=267334521973 | DFM:DEWA=170386749338 | ADX:ALDAR=78951520583
+✓ enterprise_value_fq :: DFM:EMAAR=56995121863.52 | ADX:FAB=250904000000 | DFM:DEWA=175386746000 | ADX:ALDAR=85398878228.76001
+✓ enterprise_value_ebitda_ttm :: DFM:EMAAR=1.8835620405377216 | ADX:FAB=null | DFM:DEWA=10.015403956827194 | ADX:ALDAR=7.354909671710916
+· dividends_per_share_fq :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· dividends_per_share_fy :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+✓ dividend_payout_ratio_ttm :: DFM:EMAAR=0 | ADX:FAB=0 | DFM:DEWA=0 | ADX:ALDAR=0
+✓ dividend_payout_ratio_fy :: DFM:EMAAR=50.2234945507508 | ADX:FAB=43.2596117449846 | DFM:DEWA=111.443978430198 | ADX:ALDAR=21.4704650188521
+✓ dps_common_stock_prim_issue_fy :: DFM:EMAAR=1 | ADX:FAB=0.8 | DFM:DEWA=0.186 | ADX:ALDAR=0.205
+✓ total_shares_outstanding_fundamental :: DFM:EMAAR=8838730257 | ADX:FAB=11047600000 | DFM:DEWA=50000000000 | ADX:ALDAR=7862630000
+✓ total_shares_outstanding :: DFM:EMAAR=8838730257 | ADX:FAB=11047600000 | DFM:DEWA=50000000000 | ADX:ALDAR=7862630000
+✓ float_shares_outstanding :: DFM:EMAAR=6211099493.8175 | ADX:FAB=4903068498.8 | DFM:DEWA=9000000000 | ADX:ALDAR=3801927560.7200003
+✓ float_shares_outstanding_current :: DFM:EMAAR=6211099493.8175 | ADX:FAB=4903068498.8 | DFM:DEWA=9000000000 | ADX:ALDAR=3801927560.7200003
+✓ float_shares_percent_current :: DFM:EMAAR=70.27140000000003 | ADX:FAB=44.3813 | DFM:DEWA=18 | ADX:ALDAR=48.354400000000005
+· number_of_employees :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· number_of_employees_fy :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+✓ earnings_release_date :: DFM:EMAAR=1786080660 | ADX:FAB=1784664000 | DFM:DEWA=1786532520 | ADX:ALDAR=1785299700
+✓ earnings_release_next_date :: DFM:EMAAR=1793880000 | ADX:FAB=1793188800 | DFM:DEWA=1793966400 | ADX:ALDAR=1793079000
+✓ earnings_release_trading_date_fq :: DFM:EMAAR=1786060800 | ADX:FAB=1784678400 | DFM:DEWA=1786492800 | ADX:ALDAR=1785283200
+✓ earnings_release_next_trading_date_fq :: DFM:EMAAR=1793836800 | ADX:FAB=1793145600 | DFM:DEWA=1793923200 | ADX:ALDAR=1793059200
+✓ earnings_per_share_forecast_next_fq :: DFM:EMAAR=0.459124 | ADX:FAB=0.475764 | DFM:DEWA=0.064822 | ADX:ALDAR=0.240336
+✓ revenue_forecast_next_fq :: DFM:EMAAR=12100762078 | ADX:FAB=9770367581 | DFM:DEWA=10242085044 | ADX:ALDAR=9217814589
+✓ total_revenue_yoy_growth_fy :: DFM:EMAAR=37.35762124909744 | ADX:FAB=3.060281426135402 | DFM:DEWA=6.018823236370328 | ADX:ALDAR=46.81098762687908
+✓ total_revenue_yoy_growth_ttm :: DFM:EMAAR=29.11779427115504 | ADX:FAB=2.7578449245568444 | DFM:DEWA=3.7287837023891433 | ADX:ALDAR=27.10999551712241
+✓ net_income_yoy_growth_fy :: DFM:EMAAR=30.229833820460033 | ADX:FAB=25.251348700343307 | DFM:DEWA=19.025975877912245 | ADX:ALDAR=36.6766351785002
+✓ earnings_per_share_diluted_yoy_growth_fy :: DFM:EMAAR=30.22236756049707 | ADX:FAB=25.17260051441721 | DFM:DEWA=18.95937277263007 | ADX:ALDAR=36.67334669338677
+✓ fundamental_currency_code :: DFM:EMAAR="AED" | ADX:FAB="AED" | DFM:DEWA="AED" | ADX:ALDAR="AED"
+✓ currency :: DFM:EMAAR="AED" | ADX:FAB="AED" | DFM:DEWA="AED" | ADX:ALDAR="AED"
+✓ isin :: DFM:EMAAR="AEE000301011" | ADX:FAB="AEN000101016" | DFM:DEWA="AED001801011" | ADX:ALDAR="AEA002001013"
+✓ country :: DFM:EMAAR="United Arab Emirates" | ADX:FAB="United Arab Emirates" | DFM:DEWA="United Arab Emirates" | ADX:ALDAR="United Arab Emirates"
+· business_description :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· web_site_url :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· website :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· ceo :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· founded :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· location :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· fiscal_period_end :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· fiscal_year_end :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+✓ free_cash_flow_fy :: DFM:EMAAR=34161071000.000004 | ADX:FAB=32047000000 | DFM:DEWA=10258465000 | ADX:ALDAR=7201388000
+✓ free_cash_flow_ttm :: DFM:EMAAR=27151772000 | ADX:FAB=null | DFM:DEWA=9056527000 | ADX:ALDAR=4671428000
+✓ cash_f_operating_activities_fy :: DFM:EMAAR=35095440000 | ADX:FAB=32935000000 | DFM:DEWA=20848675000 | ADX:ALDAR=7804021000
+✓ capital_expenditures_fy :: DFM:EMAAR=-934369000 | ADX:FAB=-888000000 | DFM:DEWA=-10603812000 | ADX:ALDAR=-776073000
+✓ book_value_per_share_fq :: DFM:EMAAR=10.62059 | ADX:FAB=11.96778 | DFM:DEWA=1.73054 | ADX:ALDAR=5.49982
+· net_interest_income_fy :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· interest_income_fy :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· total_deposits_fq :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· loans_net_fq :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+✓ beta_1_year :: DFM:EMAAR=1.4653401 | ADX:FAB=0.98875946 | DFM:DEWA=0.5930165 | ADX:ALDAR=1.6362193
+✓ Volatility.M :: DFM:EMAAR=1.59000476418555 | ADX:FAB=1.789629660188317 | DFM:DEWA=1.7694256267543895 | ADX:ALDAR=1.92105288741535
+✓ RSI :: DFM:EMAAR=39.78778125477422 | ADX:FAB=35.83514473765622 | DFM:DEWA=47.92344222162828 | ADX:ALDAR=26.88399892779958
+✓ SMA50 :: DFM:EMAAR=11.283199999999992 | ADX:FAB=19.479599999999945 | DFM:DEWA=2.7111999999999976 | ADX:ALDAR=7.896000000000003
+✓ SMA200 :: DFM:EMAAR=12.480149999999979 | ADX:FAB=18.50550000000002 | DFM:DEWA=2.779100000000001 | ADX:ALDAR=8.370600000000001
+✓ Perf.W :: DFM:EMAAR=-2.280701754385963 | ADX:FAB=-3.946002076843206 | DFM:DEWA=0.7518796992481209 | ADX:ALDAR=-6.8664169787765275
+✓ Perf.1M :: DFM:EMAAR=-4.459691252144078 | ADX:FAB=-7.035175879396978 | DFM:DEWA=-2.898550724637668 | ADX:ALDAR=-7.558859975216856
+✓ Perf.3M :: DFM:EMAAR=0.17985611510792582 | ADX:FAB=-2.6315789473684212 | DFM:DEWA=-0.3717472118959029 | ADX:ALDAR=-2.356020942408373
+✓ Perf.YTD :: DFM:EMAAR=-20.71174377224199 | ADX:FAB=6.077981651376139 | DFM:DEWA=-3.2490974729241824 | ADX:ALDAR=-14.252873563218383
+✓ Perf.Y :: DFM:EMAAR=-19.566787003610102 | ADX:FAB=7.433217189314758 | DFM:DEWA=-3.2490974729241824 | ADX:ALDAR=-21.390937829293996
+✓ average_volume_30d_calc :: DFM:EMAAR=18975950.700000007 | ADX:FAB=4867390.933333327 | DFM:DEWA=7249037.2 | ADX:ALDAR=10762988.366666667
+✓ relative_volume_10d_calc :: DFM:EMAAR=1.794499547723088 | ADX:FAB=1.3530738022425675 | DFM:DEWA=0.7788826195180675 | ADX:ALDAR=2.2013302079074024
+✓ total_revenue_fy_h :: DFM:EMAAR=[20] [50838105000,37011492000,28162056000,25808838000,28509461000,18226142000,25705819000,26508982000,19515408000,16292469000,14562122000,10674354000] | ADX:FAB=[20] [79174000000,76823000000,73394296000,38245062000,30267014000,27123898000,33381629000,29707977000,22444257000,12028876000,13487832000,13003778000] | DFM:DEWA=[17] [32841822999.999996,30977351000,29178009000,27335534000,23823968000,22461895000,22886986000,22233414000,21602330000,20604954000,19067408000,17804659000] | ADX:ALDAR=[20] [33902411000,23092557000,14412540000,11250430000,8629891000,8579602999.999999,7229619000,6512392000,6812888000,6475951000,5114039000,6663481000]
+✓ net_income_fy_h :: DFM:EMAAR=[20] [17599179000,13513938000,11629238000,6832049000,3800661000,2109199999.9999998,6200029000,6139196000,5572427000,5418541000,4082165000,3293205000] | ADX:FAB=[20] [20431000000,16312000000,15752669000,13034733000,12174907000,10128976000,11948348000,11515773000,8751559000,5887970000,5030630000,5391374000] | DFM:DEWA=[17] [8346887000.000001,7012660000,7700823000,7722834000,6123112000,5094728000,6414663000,6449811000,6428332000,6039289000,6175493000,5359428000] | ADX:ALDAR=[20] [7507597000,5492963000,3818974000,2892819000,2315601000,1932238000,1984097000,1855808000,1995505000,2782364000,2536794000,2235136000]
+✓ earnings_per_share_basic_fy_h :: DFM:EMAAR=[20] [1.9911,1.529,1.3157,0.8308,0.5225,0.2946,0.866,0.8575,0.7783,0.76,0.57,0.48] | ADX:FAB=[20] [1.8493,1.4774,1.4267,1.1806,1.0901,0.918,1.0839,1.0478,0.8995,0.9489,0.9588,1.0244] | DFM:DEWA=[17] [0.1669,0.1403,0.154,0.1545,0.1225,0.1,null,null,null,null,null,null] | ADX:ALDAR=[20] [0.9548,0.6986,0.4857,0.3679,0.2945,0.2458,0.2524,0.236,0.254,0.354,0.323,0.284]
+✓ earnings_per_share_diluted_fy_h :: DFM:EMAAR=[20] [1.9911,1.529,1.3157,0.8308,0.5225,0.2946,0.866,0.8575,0.7783,0.76,0.57,0.48] | ADX:FAB=[20] [1.8493,1.4774,1.4267,1.1806,1.09,0.918,1.0836,1.0458,0.8995,1.0314,0.939,1.0064] | DFM:DEWA=[17] [0.1669,0.1403,0.154,0.1545,0.1225,0.1,null,null,null,null,null,null] | ADX:ALDAR=[20] [0.9548,0.6986,0.4857,0.3679,0.2945,0.2458,0.2524,0.236,0.254,0.354,0.323,0.284]
+✓ total_assets_fy_h :: DFM:EMAAR=[20] [186700687000,160222368000,139397232000,132364128999.99998,120613553000,117976596000,116870404000,111419081000,113637347000,96080366000,79556794000,74179256000] | ADX:FAB=[20] [1403864000000,1213247000000,1168632561000,1110056095000,1001096103000,919060532000,821968015000,744125195000,668968295000,223979941000,406563807000,376098712000] | DFM:DEWA=[17] [195136111000,184755308000,180957777000,180752559000,169408385000,159924966000,150322740000,140546971000,131068329000,118012943000,105382213000,103278786000] | ADX:ALDAR=[20] [109614744000,85771718000,72877403000,61275984000,49542737000,40232648000,41266723000,38543705000,36396926000,35561097000,36140676000,38549130000]
+· total_equity_fy_h :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+✓ total_debt_fy_h :: DFM:EMAAR=[20] [10614989000,10447584000,13134220000,15478735000,19023991000,22599812000,23849051000,20909983000,21568428000,17350202000,12948917000,11621594000] | ADX:FAB=[20] [316683000000,204787000000,196489616000,206491814000,235063662000,218916210000,162954552000,146605227000,145803563000,57006244000,107958745000,76663219000] | DFM:DEWA=[17] [38630356000,36216705000,38919813000,40726241000,26770822000,18820707000,16938687000.000002,11339019000,13247341000,11456525000,13064638000,18704611000] | ADX:ALDAR=[20] [28316003000,19211278000,14814389000,12579195000,8706899000,8337697000,8646747000,7585842000,2376275000,4917981000,5967236000,7625593000]
+✓ total_revenue_fq_h :: DFM:EMAAR=[32] [11790314000,12670963000,16760405999.999998,13640012000,10042458000,10395230000,12317487000,9734472000,7927532000,7034934000,9068262000,6331271000] | ADX:FAB=[32] [20210000000,19184000000,19609000000,20473000000,20318000000,18774000000,18382000000,19869000000,19150000000,19427000000,20720371000,18127000000] | DFM:DEWA=[18] [8412995000.000001,6451762000,7924240000,10315952000,8637530000,5964101000,7443045000,9870235000,7864070000,5800001000,7017214000,9422286000] | ADX:ALDAR=[32] [8117709000,8753877000,10288105000,8042488000,7763553000,7808276000,6520624000,5601812000,5329355000,5642528000,4441236000,3530621000]
+✓ net_income_fq_h :: DFM:EMAAR=[32] [3672649000,4997205000,6146182000,4373220000,3370625000,3709152000,4991018000,3182594000,2419433000,2920893000,3392471000,3291081000] | ADX:FAB=[32] [5546000000,4752000000,5029000000,5117000000,5444000000,4840000000,4126000000,4161000000,4193000000,3832000000,3948525000,3961000000] | DFM:DEWA=[18] [2289044000,904655000,1980518000,3610984000,2257567000,497818000,1646213000,2858650000,1860375000,647422000,1701764000,3325045000] | ADX:ALDAR=[32] [2165659000,1996995000,2443229000,1503608000,1971279000,1589482000,1614382000,1061968000.0000001,1551614000,1265000000,1178480000,768336000]
+✓ fiscal_period_fy_h :: DFM:EMAAR=[20] [2025,2024,2023,2022,2021,2020,2019,2018,2017,2016,2015,2014] | ADX:FAB=[20] [2025,2024,2023,2022,2021,2020,2019,2018,2017,2016,2015,2014] | DFM:DEWA=[17] [2025,2024,2023,2022,2021,2020,2019,2018,2017,2016,2015,2014] | ADX:ALDAR=[20] [2025,2024,2023,2022,2021,2020,2019,2018,2017,2016,2015,2014]
+· fiscal_period_fq_h :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· fiscal_period_end_fy_h :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· fiscal_period_end_fq_h :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+✓ dps_common_stock_prim_issue_fy_h :: DFM:EMAAR=[20] [1,1,0.5,0.25,0.15,0.1,0,0.15,0.14,0.15,0.15,0.15] | ADX:FAB=[20] [0.8,0.75,0.71,0.52,0.48434001230303,0.73145,0.73145,0.73145,0.69191,0.4448,0.4448,0.35943600170911] | DFM:DEWA=[17] [0.186,0.124,0.186,0.124,null,null,null,null,null,null,null,null] | ADX:ALDAR=[20] [0.205,0.185,0.17,0.16,0.15,0.145,0.145,0.14,0.12,0.11,0.1,0.09]
+· dividends_per_share_fy_h :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· gross_margin_fy_h :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· net_margin_fy_h :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· return_on_equity_fy_h :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+· earnings_release_date_fq_h :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+✓ free_cash_flow_fy_h :: DFM:EMAAR=[20] [34161071000.000004,25001628000,20028035000,17824235000,8819358000,942620000,-1213034000,-1139434000,555316000,1166667000,4686570000,6930413000] | ADX:FAB=[20] [32047000000,null,22468206000,12464894000,6076405000,20759675000,16489785000,9756921000,14055125000,6379400000,5398820000,10278865000] | DFM:DEWA=[17] [10258465000,6605720000,8067964000,4053874000,-3186397000,-5453192000,-2224765000,4128620000,2983121000,5192618000,6011959000,5161070000] | ADX:ALDAR=[20] [7201388000,4371298000,2691224000,3825710000,5501178000,1115815000,997695000,-325072000,1652469000,1763058000,5881470000,6104336000]
+· cash_f_operating_activities_fy_h :: DFM:EMAAR=null | ADX:FAB=null | DFM:DEWA=null | ADX:ALDAR=null
+OK FIELDS: total_revenue_fy,total_revenue_ttm,total_revenue_fq,net_income_fy,net_income_fq,gross_profit_fy,oper_income_fy,ebitda,ebitda_fy,earnings_per_share_fy,earnings_per_share_basic_fy,earnings_per_share_diluted_fy,earnings_per_share_diluted_ttm,total_assets_fq,total_assets_fy,total_liabilities_fq,total_liabilities_fy,total_equity_fq,total_equity_fy,total_debt_fq,total_debt_fy,cash_n_short_term_invest_fq,cash_n_equivalents_fq,net_debt_fq,return_on_equity,return_on_equity_fq,return_on_equity_fy,return_on_assets,return_on_assets_fq,return_on_invested_capital,gross_margin,gross_margin_ttm,gross_margin_fy,operating_margin,operating_margin_ttm,operating_margin_fy,net_margin,net_margin_ttm,net_margin_fy,debt_to_equity,debt_to_equity_fq,current_ratio,current_ratio_fq,quick_ratio,price_book_ratio,price_book_fq,price_sales_ratio,price_sales_current,enterprise_value_current,enterprise_value_fq,enterprise_value_ebitda_ttm,dividend_payout_ratio_ttm,dividend_payout_ratio_fy,dps_common_stock_prim_issue_fy,total_shares_outstanding_fundamental,total_shares_outstanding,float_shares_outstanding,float_shares_outstanding_current,float_shares_percent_current,earnings_release_date,earnings_release_next_date,earnings_release_trading_date_fq,earnings_release_next_trading_date_fq,earnings_per_share_forecast_next_fq,revenue_forecast_next_fq,total_revenue_yoy_growth_fy,total_revenue_yoy_growth_ttm,net_income_yoy_growth_fy,earnings_per_share_diluted_yoy_growth_fy,fundamental_currency_code,currency,isin,country,free_cash_flow_fy,free_cash_flow_ttm,cash_f_operating_activities_fy,capital_expenditures_fy,book_value_per_share_fq,beta_1_year,Volatility.M,RSI,SMA50,SMA200,Perf.W,Perf.1M,Perf.3M,Perf.YTD,Perf.Y,average_volume_30d_calc,relative_volume_10d_calc,total_revenue_fy_h,net_income_fy_h,earnings_per_share_basic_fy_h,earnings_per_share_diluted_fy_h,total_assets_fy_h,total_debt_fy_h,total_revenue_fq_h,net_income_fq_h,fiscal_period_fy_h,dps_common_stock_prim_issue_fy_h,free_cash_flow_fy_h
+
+==== A2) TradingView /symbol
+DFM:EMAAR HTTP 200 len=6742
+  Perf.1M = -4.459691252144078
+  Perf.3M = 0.17985611510792582
+  Perf.W = -2.280701754385963
+  Perf.Y = -19.566787003610102
+  Perf.YTD = -20.71174377224199
+  RSI = 39.78778125477422
+  SMA200 = 12.480149999999979
+  SMA50 = 11.283199999999992
+  Volatility.M = 1.59000476418555
+  average_volume_30d_calc = 18975950.700000007
+  beta_1_year = 1.4653401
+  book_value_per_share_fq = 2.8872073914999996
+  capital_expenditures_fy = -254036243.72
+  cash_f_operating_activities_fy = 9541748227.2
+  cash_n_equivalents_fq = 749495615.15
+  cash_n_short_term_invest_fq = 19997696221.649998
+  country = "United Arab Emirates"
+  currency = "AED"
+  current_ratio = 1.91526054771219
+  current_ratio_fq = 1.91526054771219
+  debt_to_equity = 0.10853086883121099
+  debt_to_equity_fq = 0.10853086883121099
+  dividend_payout_ratio_fy = 50.2234945507508
+  dividend_payout_ratio_ttm = 0
+  dps_common_stock_prim_issue_fy = 0.27188
+  dps_common_stock_prim_issue_fy_h = [20] [1,1,0.5,0.25,0.15,0.1,0,0.15,0.14,0.15,0.15,0.15]
+  earnings_per_share_basic_fy = 0.541340268
+  earnings_per_share_basic_fy_h = [20] [1.9911,1.529,1.3157,0.8308,0.5225,0.2946,0.866,0.8575,0.7783,0.76,0.57,0.48]
+  earnings_per_share_diluted_fy = 0.541340268
+  earnings_per_share_diluted_fy_h = [20] [1.9911,1.529,1.3157,0.8308,0.5225,0.2946,0.866,0.8575,0.7783,0.76,0.57,0.48]
+  earnings_per_share_diluted_ttm = 0.5901863499999999
+  earnings_per_share_diluted_yoy_growth_fy = 30.22236756049707
+  earnings_per_share_forecast_next_fq = 0.12480826816
+  earnings_per_share_fy = 1.99
+  earnings_release_date = 1786080660
+  earnings_release_next_date = 1793880000
+  earnings_release_next_trading_date_fq = 1793836800
+  earnings_release_trading_date_fq = 1786060800
+  ebitda = 7230945761.799999
+  ebitda_fy = 6762097405
+  enterprise_value_current = 13618932935.72448
+  enterprise_value_ebitda_ttm = 1.8834234669095788
+  enterprise_value_fq = 15494123878.59791
+  fiscal_period_fy_h = [20] [2025,2024,2023,2022,2021,2020,2019,2018,2017,2016,2015,2014]
+  float_shares_outstanding = 6211099493.8175
+  float_shares_outstanding_current = 6211099493.8175
+  float_shares_percent_current = 70.27140000000003
+  free_cash_flow_fy = 9287711983.480001
+  free_cash_flow_fy_h = [20] [34161071000.000004,25001628000,20028035000,17824235000,8819358000,942620000,-1213034000,-1139434000,555316000,1166667000,4686570000,6930413000]
+  free_cash_flow_ttm = 7381209218.2
+  fundamental_currency_code = "USD"
+  gross_margin = 52.8062302850833
+  gross_margin_fy = 52.8603987107702
+  gross_margin_ttm = 52.8062302850833
+  gross_profit_fy = 7306292413
+  isin = "AEE000301011"
+  net_debt_fq = -17228069935.85
+  net_income_fq = 998409630.65
+  net_income_fq_h = [32] [3672649000,4997205000,6146182000,4373220000,3370625000,3709152000,4991018000,3182594000,2419433000,2920893000,3392471000,3291081000]
+  net_income_fy = 4784864786.52
+  net_income_fy_h = [20] [17599179000,13513938000,11629238000,6832049000,3800661000,2109199999.9999998,6200029000,6139196000,5572427000,5418541000,4082165000,3293205000]
+  net_income_yoy_growth_fy = 30.229833820460033
+  net_margin = 34.977512087441
+  net_margin_fy = 34.6180861776811
+  net_margin_ttm = 34.977512087441
+  oper_income_fy = 6302979086.6
+  operating_margin = 45.229574113596
+  operating_margin_fy = 45.6015128809384
+  operating_margin_ttm = 45.229574113596
+  price_book_fq = 1.0489059459031937
+  price_book_ratio = 1.0443942560190953
+  price_sales_current = 1.8334240056979652
+  price_sales_ratio = 1.936804162563495
+  quick_ratio = 1.24695677090913
+  relative_volume_10d_calc = 1.794499547723088
+  return_on_assets = 10.639077015913
+  return_on_assets_fq = 10.639077015913
+  return_on_equity = 21.6490548425046
+  return_on_equity_fq = 21.6490548425046
+  return_on_equity_fy = 19.5866082427275
+  return_on_invested_capital = 20.1057234292262
+  revenue_forecast_next_fq = 3289471163.28352
+  total_assets_fq = 52463038309.549995
+  total_assets_fy = 50760182781.560005
+  total_assets_fy_h = [20] [186700687000,160222368000,139397232000,132364128999.99998,120613553000,117976596000,116870404000,111419081000,113637347000,96080366000,79556794000,74179256000]
+  total_debt_fq = 2769626285.7999997
+  total_debt_fy = 2886003209.32
+  total_debt_fy_h = [20] [10614989000,10447584000,13134220000,15478735000,19023991000,22599812000,23849051000,20909983000,21568428000,17350202000,12948917000,11621594000]
+  total_equity_fq = 29599962348.449997
+  total_equity_fy = 29275034347.16
+  total_liabilities_fq = 22863075961.1
+  total_liabilities_fy = 21485148434.4
+  total_revenue_fq = 3205196860.8999996
+  total_revenue_fq_h = [32] [11790314000,12670963000,16760405999.999998,13640012000,10042458000,10395230000,12317487000,9734472000,7927532000,7034934000,9068262000,6331271000]
+  total_revenue_fy = 13821863987.4
+  total_revenue_fy_h = [20] [50838105000,37011492000,28162056000,25808838000,28509461000,18226142000,25705819000,26508982000,19515408000,16292469000,14562122000,10674354000]
+  total_revenue_ttm = 14914151785.749998
+  total_revenue_yoy_growth_fy = 37.35762124909744
+  total_revenue_yoy_growth_ttm = 29.11779427115504
+  total_shares_outstanding = 8838730257
+  total_shares_outstanding_fundamental = 8838730257
+ADX:FAB HTTP 200 len=6682
+  Perf.1M = -7.035175879396978
+  Perf.3M = -2.6315789473684212
+  Perf.W = -3.946002076843206
+  Perf.Y = 7.433217189314758
+  Perf.YTD = 6.077981651376139
+  RSI = 35.83514473765622
+  SMA200 = 18.50550000000002
+  SMA50 = 19.479599999999945
+  Volatility.M = 1.789629660188317
+  average_volume_30d_calc = 4867390.933333327
+  beta_1_year = 0.98875946
+  book_value_per_share_fq = 3.2534409929999994
+  capital_expenditures_fy = -241429440
+  cash_f_operating_activities_fy = 8954367800
+  country = "United Arab Emirates"
+  currency = "AED"
+  current_ratio = 0.717491453687124
+  current_ratio_fq = 0.717491453687124
+  debt_to_equity = 2.47137346846165
+  debt_to_equity_fq = 2.47137346846165
+  dividend_payout_ratio_fy = 43.2596117449846
+  dividend_payout_ratio_ttm = 0
+  dps_common_stock_prim_issue_fy = 0.21750400000000003
+  dps_common_stock_prim_issue_fy_h = [20] [0.8,0.75,0.71,0.52,0.48434001230303,0.73145,0.73145,0.73145,0.69191,0.4448,0.4448,0.35943600170911]
+  earnings_per_share_basic_fy = 0.502787684
+  earnings_per_share_basic_fy_h = [20] [1.8493,1.4774,1.4267,1.1806,1.0901,0.918,1.0839,1.0478,0.8995,0.9489,0.9588,1.0244]
+  earnings_per_share_diluted_fy = 0.502787684
+  earnings_per_share_diluted_fy_h = [20] [1.8493,1.4774,1.4267,1.1806,1.09,0.918,1.0836,1.0458,0.8995,1.0314,0.939,1.0064]
+  earnings_per_share_diluted_ttm = 0.503058425
+  earnings_per_share_diluted_yoy_growth_fy = 25.17260051441721
+  earnings_per_share_forecast_next_fq = 0.12933168576
+  earnings_per_share_fy = 1.85
+  earnings_release_date = 1784664000
+  earnings_release_next_date = 1793188800
+  earnings_release_next_trading_date_fq = 1793145600
+  earnings_release_trading_date_fq = 1784678400
+  enterprise_value_current = 72669543107.9206
+  enterprise_value_fq = 68208252399.99999
+  fiscal_period_fy_h = [20] [2025,2024,2023,2022,2021,2020,2019,2018,2017,2016,2015,2014]
+  float_shares_outstanding = 4903068498.8
+  float_shares_outstanding_current = 4903068498.8
+  float_shares_percent_current = 44.3813
+  free_cash_flow_fy = 8712938360
+  free_cash_flow_fy_h = [20] [32047000000,1e+100,22468206000,12464894000,6076405000,20759675000,16489785000,9756921000,14055125000,6379400000,5398820000,10278865000]
+  fundamental_currency_code = "USD"
+  isin = "AEN000101016"
+  net_debt_fq = 17104258299.999998
+  net_income_fq = 1507680100
+  net_income_fq_h = [32] [5546000000,4752000000,5029000000,5117000000,5444000000,4840000000,4126000000,4161000000,4193000000,3832000000,3948525000,3961000000]
+  net_income_fy = 5554780280
+  net_income_fy_h = [20] [20431000000,16312000000,15752669000,13034733000,12174907000,10128976000,11948348000,11515773000,8751559000,5887970000,5030630000,5391374000]
+  net_income_yoy_growth_fy = 25.251348700343307
+  net_margin = 50.89750292528693
+  net_margin_fy = 52.50160606449955
+  net_margin_ttm = 50.89750292528693
+  oper_income_fy = 6909830200
+  operating_margin = 64.08992456494137
+  operating_margin_fy = 65.30900680971348
+  operating_margin_ttm = 64.08992456494137
+  price_book_fq = 1.545817185810568
+  price_book_ratio = 1.5452335808491267
+  price_sales_current = 5.12146189658177
+  price_sales_ratio = 5.252164974945393
+  relative_volume_10d_calc = 1.3530738022425675
+  return_on_assets = 1.48568779191069
+  return_on_assets_fq = 1.48568779191069
+  return_on_equity = 16.0771299602082
+  return_on_equity_fq = 16.0771299602082
+  return_on_equity_fy = 16.1979172860501
+  return_on_invested_capital = 6.00397935434609
+  revenue_forecast_next_fq = 2655976723.2190404
+  total_assets_fq = 382965697150
+  total_assets_fy = 381682544320
+  total_assets_fy_h = [20] [1403864000000,1213247000000,1168632561000,1110056095000,1001096103000,919060532000,821968015000,744125195000,668968295000,223979941000,406563807000,376098712000]
+  total_debt_fq = 88831065250
+  total_debt_fy = 86099774040
+  total_debt_fy_h = [20] [316683000000,204787000000,196489616000,206491814000,235063662000,218916210000,162954552000,146605227000,145803563000,57006244000,107958745000,76663219000]
+  total_equity_fq = 35990221500
+  total_equity_fy = 36012409160
+  total_liabilities_fq = 346975475650
+  total_liabilities_fy = 345670135160
+  total_revenue_fq = 5494088500
+  total_revenue_fq_h = [32] [20210000000,19184000000,19609000000,20473000000,20318000000,18774000000,18382000000,19869000000,19150000000,19427000000,20720371000,18127000000]
+  total_revenue_fy = 21525827120
+  total_revenue_fy_h = [20] [79174000000,76823000000,73394296000,38245062000,30267014000,27123898000,33381629000,29707977000,22444257000,12028876000,13487832000,13003778000]
+  total_revenue_ttm = 21605550600
+  total_revenue_yoy_growth_fy = 3.060281426135402
+  total_revenue_yoy_growth_ttm = 2.7578449245568444
+  total_shares_outstanding = 11047600000
+  total_shares_outstanding_fundamental = 11047600000
+
+==== B) DFM
+
+== DFM disclosures 200 https://www.dfm.ae/the-exchange/news-disclosures/disclosures len=121305 ct=text/html;charset=utf-8 title=DFM - Disclosures
+company links: /the-exchange/market-information/listed-securities , /the-exchange/market-information/listed-securities/equities , https://www.linkedin.com/company/dubai-financial-market_2
+documents: https://assets.dfm.ae/docs/default-source/circulars/dfm/2023/mar/9/dfm-fees-list-english-as-of-mar-23.pdf
+state: {};window.__NUXT__.config={public:{appleStoreLink:"https://apps.apple.com/ae/app/dfm-dubai-financial-market/id997641752",iVestorAppleStoreLink:"https://apps.apple.com/us/app/ivestor/id1628119841",googleStoreLink:"https://play.google.com/store/apps/details?id=com.DFM",iVestorGoogleStoreLink:"https://play.google.com/store/apps/details?id=ae.dfm.ivestorapp&pcampaignid=web_share",hostDomain:"https://w
+payload refs: 
+
+== DFM /the-exchange/market-information/company/EMAAR/overview 404 https://www.dfm.ae/the-exchange/market-information/company/EMAAR/overview len=26973 ct=text/html;charset=utf-8 title=DFM - Region&#x27;s leading financial exchange
+  links: 
+
+== DFM /the-exchange/market-information/company/EMAAR/trading/trading-summary 200 https://www.dfm.ae/the-exchange/market-information/company/EMAAR/trading len=110949 ct=text/html;charset=utf-8 title=DFM - EMAAR - Dubai Financial Market
+  · The Exchange ⟂ News &amp; Disclosures ⟂ Market Announcements ⟂ Disclosures
+  · Market Announcements ⟂ Disclosures ⟂ Corporate Actions ⟂ eBoard - Listed Companies Board Positions
+  · Statistics &amp; Reports ⟂ Ownership Holding Statistics ⟂ Foreign ownership ⟂ Bulletins
+  · Ownership Holding Statistics ⟂ Foreign ownership ⟂ Bulletins ⟂ Historical Data
+  · Listed Securities ⟂ Foreign Ownership ⟂ Investor Relations ⟂ Related Companies
+  links: https://www.dfm.ae/the-exchange/market-information/company/EMAAR/trading , https://www.dfm.ae/ar/the-exchange/market-information/company/EMAAR/trading , /ar/the-exchange/market-information/company/EMAAR/trading
+
+== DFM /the-exchange/market-information/company/EMAAR/news-disclosures/disclosures 404 https://www.dfm.ae/the-exchange/market-information/company/EMAAR/news-disclosures/disclosures len=27023 ct=text/html;charset=utf-8 title=DFM - Region&#x27;s leading financial exchange
+  links: 
+
+== DFM /the-exchange/market-information/company/EMAAR/company-profile 404 https://www.dfm.ae/the-exchange/market-information/company/EMAAR/company-profile len=26987 ct=text/html;charset=utf-8 title=DFM - Region&#x27;s leading financial exchange
+  links: 
+
+== DFM /the-exchange/market-information/company/EMAAR/shareholders 404 https://www.dfm.ae/the-exchange/market-information/company/EMAAR/shareholders len=26981 ct=text/html;charset=utf-8 title=DFM - Region&#x27;s leading financial exchange
+  links: 
+
+== DFM /the-exchange/market-information/company/EMAAR/financials 404 https://www.dfm.ae/the-exchange/market-information/company/EMAAR/financials len=26977 ct=text/html;charset=utf-8 title=DFM - Region&#x27;s leading financial exchange
+  links: 
+
+== DFM /en/the-exchange/market-information/company/EMAAR/overview 404 https://www.dfm.ae/the-exchange/market-information/company/EMAAR/overview len=26973 ct=text/html;charset=utf-8 title=DFM - Region&#x27;s leading financial exchange
+  links: 
+
+== DFM /the-exchange/statistics-reports/foreign-ownership 200 https://www.dfm.ae/the-exchange/statistics-reports/foreign-ownership len=116267 ct=text/html;charset=utf-8 title=DFM - Region&#x27;s leading financial exchange
+  · The Exchange ⟂ News &amp; Disclosures ⟂ Market Announcements ⟂ Disclosures
+  · Market Announcements ⟂ Disclosures ⟂ Corporate Actions ⟂ eBoard - Listed Companies Board Positions
+  · Statistics &amp; Reports ⟂ Ownership Holding Statistics ⟂ Foreign ownership ⟂ Bulletins
+  · Ownership Holding Statistics ⟂ Foreign ownership ⟂ Bulletins ⟂ Historical Data
+  · Market Watch ⟂ Foreign Ownership ⟂ Listed companies are subject to Foreign Ownership Limits. Find the maximum  permitted, actual and available ownership limits for any DFM-listed security using the table below. ⟂ The table includes historical data from Februar
+  · Foreign Ownership ⟂ Listed companies are subject to Foreign Ownership Limits. Find the maximum  permitted, actual and available ownership limits for any DFM-listed security using the table below. ⟂ The table includes historical data from February 5, 2019. ⟂ Fe
+  · All other nationalities. ⟂ Note: For companies where GCC Permitted ownership limit is Not Applicable (NA), the ownership of GCC citizens will show in the ownership columns of Foreigners. ⟂ Permitted: ⟂ The maximum percentage of ownership allowed by the Company
+  · Permitted: ⟂ The maximum percentage of ownership allowed by the Company for the investors group. ⟂ Actual: ⟂ The owned quantity, unsettled trades. It also includes open buy orders between 8:00 AM and 3:00 PM.
+  links: https://www.dfm.ae/the-exchange/statistics-reports/foreign-ownership , https://www.dfm.ae/ar/the-exchange/statistics-reports/foreign-ownership , /the-exchange/statistics-reports/ownership-holding-statistics , /the-exchange/statistics-reports/foreign-ownership , /the-exchange/statistics-reports/bulletins , /the-exchange/statistics-reports/historical-data , /the-exchange/statistics-reports/weekly-margin-trading-report , /the-exchange/statistics-reports/sharia-classification-list , /ar/the-exchange/statistics-reports/foreign-ownership , https://res.cloudinary.com/dubaifinancialmarket/image/upload/f_auto,q_auto,dpr_auto,g_center,w_2800,h_840,c_lfill/visuals/foreign-ownership-hero_pua89d
+
+== DFM /the-exchange/market-information/foreign-ownership 404 https://www.dfm.ae/the-exchange/market-information/foreign-ownership len=26943 ct=text/html;charset=utf-8 title=DFM - Region&#x27;s leading financial exchange
+  links: 
+
+== DFM /the-exchange/statistics-reports 404 https://www.dfm.ae/the-exchange/statistics-reports len=26897 ct=text/html;charset=utf-8 title=DFM - Region&#x27;s leading financial exchange
+  links: 
+
+==== C) ADX
+
+== ADX home 403 https://www.adx.ae/ len=4900 ct=text/html; charset=UTF-8 title=Attention Required! | Cloudflare
+company links: 
+state: no state blob
+
+== ADX /main-market/company-profile/overview?secCode=FAB 403 https://www.adx.ae/main-market/company-profile/overview?secCode=FAB len=4900 ct=text/html; charset=UTF-8 title=Attention Required! | Cloudflare
+  state: no state blob
+
+== ADX /main-market/company-profile/disclosures?secCode=FAB 403 https://www.adx.ae/main-market/company-profile/disclosures?secCode=FAB len=4900 ct=text/html; charset=UTF-8 title=Attention Required! | Cloudflare
+  state: no state blob
+
+== ADX /main-market/company-profile/shareholders?secCode=FAB 403 https://www.adx.ae/main-market/company-profile/shareholders?secCode=FAB len=4900 ct=text/html; charset=UTF-8 title=Attention Required! | Cloudflare
+  state: no state blob
+
+== ADX /main-market/company-profile/board-of-directors?secCode=FAB 403 https://www.adx.ae/main-market/company-profile/board-of-directors?secCode=FAB len=4900 ct=text/html; charset=UTF-8 title=Attention Required! | Cloudflare
+  state: no state blob
+
+== ADX /main-market/company-profile/financials?secCode=FAB 403 https://www.adx.ae/main-market/company-profile/financials?secCode=FAB len=4900 ct=text/html; charset=UTF-8 title=Attention Required! | Cloudflare
+  state: no state blob
+
+== ADX /english/pages/productsandservices/securities/comp/companyprofile.aspx?secCode=FAB 200 https://www.adx.ae/ len=173657 ct=text/html; charset=utf-8 title=ADX | Abu Dhabi Securities Exchange
+  · Quick Links ⟂ Disclosure Calendar ⟂ Listed Companies ⟂ Brokerage Firms
+  · Suspension and Resumption ⟂ Disclosures ⟂ Services ⟂ Post Trade Services
+  state: {"props":{"pageProps":{"compressedProps":"eNrsvYlyG8mVKPorZUU8j/QCRWJf3G33BQmgmzMtiRapbvsNHROFqgRZFlAFVwGkaN+OuL9xf+9+yTtbLrUABCjJ3Z7bs7SIWrJOZp48+/KPF3m8US9+948XSbCCf18E0ccXjRfLILndBrd4QSXw+y7NN2/4gf/3xU9wPw2Dpbm7DB7T7WYSbAIcCAcM04wGDdNkoz5u8M81DDeN4k2c3L743SJY5qrxYq2yPE2CsyBX0TsVxZkKN3GafB8nH3IY/B832U3ieTcvXgfZB7V5HXxQ2c2L33lyHe9ssyVeuXlxqpLTdZYu4qXq9Junucru41Dlp6tHX/9986JhX0Sw+M3i5SC7VXLjv+awDB/gAbr7U0NDM/0Y3sH6qANBCcIw3SabVZAEtyuVbAAkuXs0QLlaLqrwfB/nGxWdp6t1kDz+AtbnnbpFiDIVvc/3b9gqiBN/RZv7mdbiu3SbA4aNF4sgzvJfwGJcXL49oxvHQZKpdZptPhsUeDZ/UEmU/hLOz0Vyr/JNmp0DMfi7Sg6ECNdjkS7j9DNhiobincrjCI7lzw
