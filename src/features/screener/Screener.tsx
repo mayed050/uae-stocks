@@ -6,6 +6,15 @@ import { useStocks, usePortfolio } from '@/store'
 import { parseYield, parseAmount } from '@/format'
 import Avatar from '@/components/Avatar'
 import { getDailyData } from '@/market'
+
+const f2 = (n: number | null) => (n == null ? '—' : n.toFixed(2))
+
+/** «شركة مطابقة»، «شركتان مطابقتان»، «5 شركات مطابقة»، «19 شركة مطابقة» — صيغة العدد العربية. */
+function companiesWord(n: number): string {
+  if (n === 1) return 'شركة مطابقة'
+  if (n === 2) return 'شركتان مطابقتان'
+  return n <= 10 ? `${n} شركات مطابقة` : `${n} شركة مطابقة`
+}
 import { cell } from '@/components/ui/cell'
 import StatCard from '@/components/ui/StatCard'
 import PageHeader from '@/components/ui/PageHeader'
@@ -235,21 +244,20 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                     <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: 'var(--brand)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span style={{ width: 8, height: 8, borderRadius: 2, background: 'var(--brand2)', transform: 'rotate(45deg)' }} aria-hidden />
                       {group.title}
-                      <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 500 }}>({group.stocks.length} شركات مطابقة)</span>
+                      <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 500 }}>({companiesWord(group.stocks.length)})</span>
                     </h3>
                   </div>
                   <div className="tablewrap">
-                    <table className="screener" style={{ width: '100%', minWidth: '1020px' }}>
+                    <table className="screener" style={{ width: '100%', minWidth: '940px' }}>
                       <thead>
                         <tr>
                           <th>اسم الشركة</th>
-                          <th style={{ textAlign: 'center' }}>القيمة الاسمية</th>
                           <th style={{ width: '130px', textAlign: 'center' }}>المدى اليومي (أدنى/أعلى)</th>
                           <th>آخر سعر</th>
                           <th>التغير</th>
                           <th>التغير (%)</th>
                           <th>حجم التداول (سهم)</th>
-                          <th>قيمة التداول</th>
+                          <th title="الحجم × سعر الإغلاق — المصدر لا يوفّر القيمة الفعلية">قيمة التداول (تقريبية)</th>
                           <th>الإغلاق السابق</th>
                           <th>سعر الفتح</th>
                           <th>الأعلى</th>
@@ -260,7 +268,8 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                       <tbody>
                         {group.stocks.map(s => {
                           const d = getDailyData(s)
-                          const percent = d.high > d.low ? ((s.price ?? 1) - d.low) / (d.high - d.low) * 100 : 50
+                          // موضع السعر بين أدنى اليوم وأعلاه — يُرسم فقط إن توفّر المدى الحقيقي
+                          const range = d.high != null && d.low != null && s.price != null && d.high > d.low ? { high: d.high, low: d.low, at: ((s.price - d.low) / (d.high - d.low)) * 100 } : null
                           return (
                             <tr key={s.sym} onClick={() => onOpen(s)} className="rowlink">
                               <td>
@@ -272,14 +281,14 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                                   </span>
                                 </span>
                               </td>
-                              <td style={{ textAlign: 'center', color: 'var(--muted)', fontWeight: 600 }}>1.00</td>
                               <td onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                {range ? (
                                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', direction: 'ltr', justifyContent: 'center' }}>
-                                  <span style={{ fontSize: '9px', color: 'var(--muted2)', fontWeight: 600 }}>{d.low.toFixed(2)}</span>
-                                  <div style={{ position: 'relative', width: '50px', height: '4px', background: 'var(--line)', borderRadius: '2px' }} title={`أعلى سعر اليوم: ${d.high.toFixed(2)} — أدنى سعر اليوم: ${d.low.toFixed(2)}`}>
+                                  <span style={{ fontSize: '9px', color: 'var(--muted2)', fontWeight: 600 }}>{range.low.toFixed(2)}</span>
+                                  <div style={{ position: 'relative', width: '50px', height: '4px', background: 'var(--line)', borderRadius: '2px' }} title={`أعلى سعر اليوم: ${range.high.toFixed(2)} — أدنى سعر اليوم: ${range.low.toFixed(2)}`}>
                                     <div style={{
                                       position: 'absolute',
-                                      left: `${Math.min(100, Math.max(0, percent))}%`,
+                                      left: `${Math.min(100, Math.max(0, range.at))}%`,
                                       top: '50%',
                                       transform: 'translate(-50%, -50%)',
                                       width: '8px',
@@ -290,22 +299,23 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                                       boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
                                     }} />
                                   </div>
-                                  <span style={{ fontSize: '9px', color: 'var(--muted2)', fontWeight: 600 }}>{d.high.toFixed(2)}</span>
+                                  <span style={{ fontSize: '9px', color: 'var(--muted2)', fontWeight: 600 }}>{range.high.toFixed(2)}</span>
                                 </div>
+                                ) : '—'}
                               </td>
                               <td style={{ fontWeight: 700 }}>{cell(s.price !== null ? s.price.toFixed(2) : null)}</td>
                               <td style={{ fontWeight: 800, direction: 'ltr', color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)' }}>
-                                {d.isFlat ? '0.00' : `${d.isUp ? '▲ +' : '▼ '}${Math.abs(d.change).toFixed(2)}`}
+                                {d.change == null ? '—' : d.isFlat ? '0.00' : `${d.isUp ? '▲ +' : '▼ '}${Math.abs(d.change).toFixed(2)}`}
                               </td>
                               <td style={{ fontWeight: 800, direction: 'ltr', color: d.isFlat ? 'var(--muted)' : d.isUp ? 'var(--good)' : 'var(--bad)' }}>
                                 {d.pct}
                               </td>
-                              <td>{d.volume.toLocaleString('en-US')}</td>
-                              <td>{Math.round(d.value).toLocaleString('en-US')} د.إ</td>
-                              <td>{d.prevClose.toFixed(2)}</td>
-                              <td>{d.open.toFixed(2)}</td>
-                              <td style={{ color: 'var(--good)' }}>{d.high.toFixed(2)}</td>
-                              <td style={{ color: 'var(--bad)' }}>{d.low.toFixed(2)}</td>
+                              <td>{d.volume == null ? '—' : d.volume.toLocaleString('en-US')}</td>
+                              <td>{d.value == null ? '—' : `${Math.round(d.value).toLocaleString('en-US')} د.إ`}</td>
+                              <td>{f2(d.prevClose)}</td>
+                              <td>{f2(d.open)}</td>
+                              <td style={{ color: 'var(--good)' }}>{f2(d.high)}</td>
+                              <td style={{ color: 'var(--bad)' }}>{f2(d.low)}</td>
                               <td onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center' }}>
                                 <button 
                                   onClick={() => togglePortfolioStock(s.sym)}

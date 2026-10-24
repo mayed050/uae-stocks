@@ -1,47 +1,36 @@
 import { describe, it, expect } from 'vitest'
-import { symbolSeed, seededRand, getDailyData, periodSeries } from '@/market'
+import { getDailyData, periodSeries } from '@/market'
+import { SECTOR_TITLES, mapDFMSectorToDb } from '@/data/sectors'
+import publicData from '../../public/data.json'
 import type { HistPoint } from '@/store/useHistory'
 import { makeStock } from './factory'
 
-describe('symbolSeed', () => {
-  it('مجموع رموز الأحرف وثابت', () => {
-    expect(symbolSeed('AB')).toBe(65 + 66)
-    expect(symbolSeed('DEWA')).toBe(symbolSeed('DEWA'))
-  })
-})
-
-describe('seededRand', () => {
-  it('متسلسلة قابلة لإعادة الإنتاج لنفس الـ seed', () => {
-    const a = seededRand(42)
-    const b = seededRand(42)
-    expect(a(1)).toBe(b(1))
-    expect(a(1)).toBe(b(1))
-  })
-  it('يحترم الحدود الدنيا والعليا', () => {
-    const r = seededRand(7)
-    for (let i = 0; i < 50; i++) {
-      const v = r(10, 2)
-      expect(v).toBeGreaterThanOrEqual(2)
-      expect(v).toBeLessThan(10)
-    }
-  })
-})
-
 describe('getDailyData', () => {
-  it('حتمي لنفس السهم', () => {
-    const s = makeStock({ sym: 'ZZZ', price: 5 })
-    expect(getDailyData(s)).toEqual(getDailyData(s))
+  it('يشتق الإغلاق السابق والتغيّر بالدرهم من السعر ونسبة التغيّر الحقيقيين', () => {
+    const d = getDailyData(makeStock({ sym: 'EMAAR', price: 11.14, change: -2.11, volume: 23925237, open: 11.38, high: 11.38, low: 11.1 }))
+    expect(d.prevClose).toBeCloseTo(11.38, 2)
+    expect(d.change).toBeCloseTo(-0.24, 2)
+    expect(d.pct).toBe('-2.11%')
+    expect(d.value).toBeCloseTo(23925237 * 11.14)
+    expect([d.isUp, d.isDown, d.isFlat]).toEqual([false, true, false])
   })
-  it('يستخدم الحركة المعلنة مسبقاً لسهم معروف (DIB صاعد)', () => {
+  it('لا يولّد أي قيمة لما غاب: كل الحقول null والنسبة «—»', () => {
     const d = getDailyData(makeStock({ sym: 'DIB', price: 7.4 }))
-    expect(d.change).toBeCloseTo(0.02)
-    expect(d.isUp).toBe(true)
-    expect(d.isFlat).toBe(false)
+    expect(d).toMatchObject({ changePct: null, change: null, prevClose: null, open: null, high: null, low: null, volume: null, value: null, pct: '—' })
+    expect([d.isUp, d.isDown, d.isFlat]).toEqual([false, false, false])
   })
-  it('تناسق أعلام الاتجاه', () => {
-    const d = getDailyData(makeStock({ sym: 'QWERTY', price: 3 }))
-    expect(d.isUp && d.isDown).toBe(false)
-    expect([true, false]).toContain(d.isFlat)
+  it('النسبة الموجبة بإشارة واحدة', () => {
+    expect(getDailyData(makeStock({ price: 5, change: 2.53 })).pct).toBe('+2.53%')
+  })
+})
+
+describe('تصنيف القطاعات', () => {
+  it('كل قطاع في بيانات الأسهم ينتمي إلى قطاع عرض واحد بالضبط', () => {
+    const sectors = new Set((publicData as { stocks: { sector: string }[] }).stocks.map((s) => s.sector))
+    for (const sec of sectors) {
+      const owners = SECTOR_TITLES.filter((t) => mapDFMSectorToDb(t).includes(sec))
+      expect(owners, sec).toHaveLength(1)
+    }
   })
 })
 

@@ -27,31 +27,31 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
 
   // تصفية وفرز قائمة حركة السوق بناء على التبويب المختار
   const movementStocks = useMemo(() => {
-    // أسهم ذات تغيّر/حجم حقيقيين فقط — getDailyData يولّد قيمًا توضيحية لما غاب، فتُستبعد هنا
-    const stocksWithData = stocks
-      .filter((s) => typeof s.change === 'number' && typeof s.volume === 'number')
-      .map(s => {
-        const d = getDailyData(s)
-        return { s, d, pctNum: parseFloat(d.pct.replace('%', '')) }
-      })
+    // أسهم آخر جلسة ذات تغيّر وحجم مجلوبين فقط؛ ما نقص منه أحدهما لا يدخل الترتيب
+    const stocksWithData = stocks.flatMap((s) => {
+      const d = getDailyData(s)
+      return d.changePct != null && d.volume != null && d.value != null
+        ? [{ s, d, pctNum: d.changePct, volume: d.volume, value: d.value }]
+        : []
+    })
 
     if (movementTab === 'gainers') {
       return stocksWithData
-        .filter(x => x.d.change > 0)
+        .filter(x => x.pctNum > 0)
         .sort((a, b) => b.pctNum - a.pctNum)
         .slice(0, ROWS)
     } else if (movementTab === 'losers') {
       return stocksWithData
-        .filter(x => x.d.change < 0)
+        .filter(x => x.pctNum < 0)
         .sort((a, b) => a.pctNum - b.pctNum)
         .slice(0, ROWS)
     } else if (movementTab === 'volume') {
       return stocksWithData
-        .sort((a, b) => b.d.volume - a.d.volume)
+        .sort((a, b) => b.volume - a.volume)
         .slice(0, ROWS)
     } else { // 'value'
       return stocksWithData
-        .sort((a, b) => b.d.value - a.d.value)
+        .sort((a, b) => b.value - a.value)
         .slice(0, ROWS)
     }
   }, [stocks, movementTab])
@@ -97,15 +97,15 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
               <th className="al-c">التغير</th>
               <th className="al-c">مكرر الربحية</th>
               <th className="al-c">العائد النقدي</th>
-              <th className="al-l">قيمة التداول</th>
+              <th className="al-l" title="الحجم × سعر الإغلاق — المصدر لا يوفّر القيمة الفعلية">قيمة التداول ≈</th>
             </tr>
           </thead>
           <tbody>
-            {movementStocks.map(({ s, d }) => {
+            {movementStocks.map(({ s, d, value }) => {
               const priceFormatted = s.price !== null ? `${s.price.toFixed(2)} د.إ` : '—'
               const peFormatted = s.pe !== null ? s.pe.toFixed(2) : '—'
               const yieldFormatted = s.div.yld ?? '—'
-              const valueFormatted = fmtTradingValue(d.value)
+              const valueFormatted = fmtTradingValue(value)
 
               return (
                 <tr
@@ -130,7 +130,7 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
 
                   {/* عمود التغير */}
                   <td className={'o-mv-change ' + (d.isFlat ? 'flat' : d.isUp ? 'up' : 'down')}>
-                    {d.isUp ? `+` : ''}{d.pct}
+                    {d.pct}
                   </td>
 
                   {/* عمود مكرر الربحية */}
