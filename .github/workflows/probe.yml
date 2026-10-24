@@ -13,7 +13,7 @@ jobs:
         with:
           node-version: 24
       - name: Probe
-        run: node scripts/probe-financials.mjs > /dev/null 2>probe-err.txt || true
+        run: node scripts/probe-dfm.mjs 2>probe-err.txt || true
       # النتائج تُلتزم على فرع الفحص نفسه لقراءتها كاملة (دفع GITHUB_TOKEN لا يُطلق سير عمل جديدًا)
       - name: Commit results
         run: |
