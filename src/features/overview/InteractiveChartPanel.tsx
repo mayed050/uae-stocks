@@ -119,11 +119,11 @@ export default function InteractiveChartPanel({ stocks }: { stocks: Stock[] }) {
             <div className="o-stat-col">
               <div className="o-kv">
                 <span className="k">مقدار التغير اليومي:</span>
-                <b className={daily.change >= 0 ? 'up' : 'down'}>{daily.change >= 0 ? '+' : ''}{daily.change.toFixed(2)}</b>
+                <b className={daily.isUp ? 'up' : daily.isDown ? 'down' : undefined}>{daily.change == null ? '—' : `${daily.change > 0 ? '+' : ''}${daily.change.toFixed(2)}`}</b>
               </div>
               <div className="o-kv">
                 <span className="k">نسبة التغير اليومي:</span>
-                <b className={daily.change >= 0 ? 'up' : 'down'}>{daily.pct}</b>
+                <b className={daily.isUp ? 'up' : daily.isDown ? 'down' : undefined}>{daily.pct}</b>
               </div>
               <div className="o-kv nb">
                 <span className="k">العائد النقدي (%) الحالي:</span>
@@ -163,10 +163,10 @@ export default function InteractiveChartPanel({ stocks }: { stocks: Stock[] }) {
                   <span className="o-spark-mini">
                     {spark && (
                       <svg width="40" height="15" className="o-spark-svg" aria-hidden>
-                        <polyline fill="none" stroke={stockDaily.isUp ? 'var(--good)' : 'var(--bad)'} strokeWidth="1.5" points={spark} />
+                        <polyline fill="none" stroke={stockDaily.isUp ? 'var(--good)' : stockDaily.isDown ? 'var(--bad)' : 'var(--muted)'} strokeWidth="1.5" points={spark} />
                       </svg>
                     )}
-                    <span className={'o-spark-pct ' + (stockDaily.isUp ? 'up' : 'down')}>
+                    <span className={'o-spark-pct ' + (stockDaily.isUp ? 'up' : stockDaily.isDown ? 'down' : '')}>
                       {stockDaily.pct}
                     </span>
                   </span>

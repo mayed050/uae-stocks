@@ -1,110 +1,54 @@
 /**
  * أدوات بيانات السوق — وحدة مشتركة بين Overview و Screener.
  *
- * التغيّر اليومي والافتتاح/الأعلى/الأدنى والحجم وقيمة التداول تُجلب حقيقيةً من
- * TradingView/Yahoo عبر السكربت اليومي (الحقول real على كائن السهم). إن غابت هذه
- * الحقول (سهم بلا تحديث) يُستخدم توليد احتياطي مشتق من رمز السهم للعرض فقط.
- * «عدد الصفقات» تقديري دائمًا (لا يوفّره المصدر).
+ * التغيّر اليومي والافتتاح/الأعلى/الأدنى والحجم تُجلب حقيقيةً من TradingView/Yahoo عبر السكربت اليومي.
+ * ما غاب منها يبقى null ويُعرض «—»: لا توليد ولا قيم بديلة.
  */
 import type { Stock } from './data'
-import { parseAmount } from './format'
-import { SECTOR_MOVEMENTS, ADX_MOVEMENTS } from './data/movements'
-import type { MovementStock } from './data/movements'
 import type { HistPoint } from './store/useHistory'
 
 export interface DailyData {
-  change: number
+  /** نسبة التغيّر اليومي % من المصدر. */
+  changePct: number | null
+  /** التغيّر بالدرهم: مشتق من سعر الإغلاق ونسبة التغيّر. */
+  change: number | null
+  /** النسبة نصًّا بإشارة صريحة («+0.27%»، «-1.02%») أو «—». */
   pct: string
-  volume: number
-  value: number
-  prevClose: number
-  open: number
-  high: number
-  low: number
+  /** الإغلاق السابق: مشتق من سعر الإغلاق ونسبة التغيّر. */
+  prevClose: number | null
+  open: number | null
+  high: number | null
+  low: number | null
+  volume: number | null
+  /** قيمة التداول التقريبية = الحجم × سعر الإغلاق (المصدر لا يوفّر القيمة الفعلية). */
+  value: number | null
   isUp: boolean
-  isFlat: boolean
   isDown: boolean
-  isReal: boolean
+  isFlat: boolean
 }
 
-/** مولّد أرقام شبه عشوائي بـ seed ثابت (لا يتغيّر بين عمليات إعادة الرسم). */
-export function seededRand(seed: number) {
-  let localSeed = seed
-  return (max: number, min = 0) => {
-    const x = Math.sin(localSeed++) * 10000
-    return min + (x - Math.floor(x)) * (max - min)
-  }
-}
+const realNum = (x: unknown): number | null => (typeof x === 'number' && Number.isFinite(x) ? x : null)
 
-/** يشتق seedًا رقمياً ثابتاً من رمز السهم. */
-export function symbolSeed(symbol: string): number {
-  let seed = 0
-  for (let i = 0; i < symbol.length; i++) seed += symbol.charCodeAt(i)
-  return seed
-}
-
-/** حركة اليوم المحاكاة لسهم: التغير، الحجم، القيمة، الصفقات، والمدى. */
+/** حركة آخر جلسة لسهم من حقوله المجلوبة فقط. */
 export function getDailyData(s: Stock): DailyData {
-  const symbol = s.sym.toUpperCase()
-  const price = s.price ?? 1.0
-  const rand = seededRand(symbolSeed(symbol))
-
-  let change: number
-  let pct: string
-  let isUp: boolean
-  let isFlat: boolean
-
-  // البحث عن حركة معلنة مسبقاً في سوق دبي ثم أبوظبي
-  let found: MovementStock | null = null
-  for (const sec of SECTOR_MOVEMENTS) {
-    const f = sec.stocks.find(st => st.sym.toUpperCase() === symbol)
-    if (f) { found = f; break }
-  }
-  if (!found) {
-    found = ADX_MOVEMENTS.find(st => st.sym.toUpperCase() === symbol) ?? null
-  }
-
-  if (typeof s.change === 'number') {
-    // نسبة تغيّر حقيقية مجلوبة من المصدر اليومي (Yahoo / TradingView)
-    const cp = s.change
-    change = Math.round(price * (cp / 100) * 100) / 100
-    pct = `${cp >= 0 ? '+' : ''}${cp.toFixed(2)}%`
-    isUp = cp > 0
-    isFlat = cp === 0
-  } else if (found) {
-    change = parseFloat(found.change)
-    pct = found.pct
-    isUp = parseFloat(found.change) > 0
-    isFlat = parseFloat(found.change) === 0
-  } else {
-    const changePct = rand(3.5, -3.5)
-    change = Math.round((price * (changePct / 100)) * 100) / 100
-    pct = `${change >= 0 ? '+' : ''}${changePct.toFixed(2)}%`
-    isUp = change > 0
-    isFlat = change === 0
-  }
-
-  // OHLC حقيقي عند توفّره، وإلا توليد احتياطي
-  const prevClose = Math.round((price - change) * 100) / 100
-  const high = typeof s.high === 'number' ? s.high : Math.max(price, prevClose) * (1 + rand(0.012, 0.001))
-  const low = typeof s.low === 'number' ? s.low : Math.min(price, prevClose) * (1 - rand(0.012, 0.001))
-  const open = typeof s.open === 'number' ? s.open : prevClose * (1 + rand(0.004, -0.004))
-
-  // الحجم الحقيقي عند توفّره، وإلا تقدير من القيمة السوقية
-  let volume: number
-  const isReal = typeof s.volume === 'number'
-  if (isReal) {
-    volume = s.volume as number
-  } else {
-    const rawMcap = parseAmount(s.mcap) ?? 5e9
-    const mcapVal = rawMcap > 1e6 ? rawMcap / 1e9 : rawMcap
-    volume = Math.round((mcapVal * 150000) * rand(2.2, 0.1))
-  }
-  const value = volume * price                       // قيمة التداول الحقيقية = الحجم × السعر
-
+  const price = realNum(s.price)
+  const changePct = realNum(s.change)
+  const prevClose = price != null && changePct != null ? price / (1 + changePct / 100) : null
+  const change = price != null && prevClose != null ? price - prevClose : null
+  const volume = realNum(s.volume)
   return {
-    change, pct, volume, value, prevClose, open, high, low,
-    isUp, isFlat, isDown: !isUp && !isFlat, isReal,
+    changePct,
+    change,
+    pct: changePct == null ? '—' : `${changePct > 0 ? '+' : ''}${changePct.toFixed(2)}%`,
+    prevClose,
+    open: realNum(s.open),
+    high: realNum(s.high),
+    low: realNum(s.low),
+    volume,
+    value: volume != null && price != null ? volume * price : null,
+    isUp: changePct != null && changePct > 0,
+    isDown: changePct != null && changePct < 0,
+    isFlat: changePct === 0,
   }
 }
 
