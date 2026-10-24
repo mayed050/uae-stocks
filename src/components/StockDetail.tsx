@@ -268,7 +268,7 @@ export default function StockDetail({ item, onClose }: { item: Stock; onClose: (
         </div>
 
         <div className="modal-foot">
-          لأغراض المعلومات فقط — لا توصية بالشراء أو البيع. تحقّق من المصدر الرسمي (DFM / ADX) قبل أي قرار.
+          لأغراض المعلومات فقط — لا توصية بالشراء أو البيع. تحقّق من الإفصاح الرسمي في سوق دبي أو أبوظبي قبل أي قرار.
         </div>
       </div>
     </div>

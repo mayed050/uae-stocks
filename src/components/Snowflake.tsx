@@ -1,4 +1,4 @@
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts'
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts'
 import type { Stock } from '../data'
 import { scores, AXIS_LABEL } from '../format'
 
@@ -33,7 +33,10 @@ export default function Snowflake({
           })}
         </defs>
         <PolarGrid stroke="var(--line)" strokeDasharray="3 3" />
-        <PolarAngleAxis dataKey="axis" tick={{ fill: 'var(--muted)', fontSize: 11, fontWeight: 800 }} />
+        {/* direction: ltr — في مستند RTL تنعكس محاذاة نصوص SVG فتنمو التسميات إلى داخل المخطط فوق نقاطه */}
+        <PolarAngleAxis dataKey="axis" tick={{ fill: 'var(--muted)', fontSize: 11, fontWeight: 800, direction: 'ltr' }} />
+        {/* مقياس ثابت أعلى من 100 قليلًا: الدرجة القصوى لا تلامس تسمية المحور */}
+        <PolarRadiusAxis domain={[0, 110]} tick={false} axisLine={false} />
         {items.map(({ stock, color }) => {
           const gradId = `grad-${stock.sym}`;
           return (

@@ -3,8 +3,10 @@ import { useState, useMemo } from 'react'
 import type { Stock } from '@/data'
 import { usePortfolio } from '@/store'
 import Avatar from '@/components/Avatar'
-import SimBadge from '@/components/ui/SimBadge'
 import { getDailyData } from '@/market'
+
+// ستة صفوف تكفي لقراءة الاتجاه في الصفحة الرئيسية؛ القائمة الكاملة في المستكشف (مرتّبة بالتغيّر)
+const ROWS = 6
 
 function fmtTradingValue(val: number) {
   if (val >= 1e6) {
@@ -37,20 +39,20 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
       return stocksWithData
         .filter(x => x.d.change > 0)
         .sort((a, b) => b.pctNum - a.pctNum)
-        .slice(0, 10)
+        .slice(0, ROWS)
     } else if (movementTab === 'losers') {
       return stocksWithData
         .filter(x => x.d.change < 0)
         .sort((a, b) => a.pctNum - b.pctNum)
-        .slice(0, 10)
+        .slice(0, ROWS)
     } else if (movementTab === 'volume') {
       return stocksWithData
         .sort((a, b) => b.d.volume - a.d.volume)
-        .slice(0, 10)
+        .slice(0, ROWS)
     } else { // 'value'
       return stocksWithData
         .sort((a, b) => b.d.value - a.d.value)
-        .slice(0, 10)
+        .slice(0, ROWS)
     }
   }, [stocks, movementTab])
 
@@ -60,7 +62,6 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
         <div>
           <h3 className="o-mv-title">
             <Activity size={16} className="ico" aria-hidden /> حركة السوق
-            <SimBadge title="الأسعار والتغيّر والحجم وقيمة التداول حقيقية من TradingView/Yahoo؛ «عدد الصفقات» فقط تقديري.">الصفقات تقديرية</SimBadge>
           </h3>
           <p className="o-mv-sub">
             قائمة مرتبة حسب {
@@ -96,7 +97,6 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
               <th className="al-c">التغير</th>
               <th className="al-c">مكرر الربحية</th>
               <th className="al-c">العائد النقدي</th>
-              <th className="al-c">عدد الصفقات</th>
               <th className="al-l">قيمة التداول</th>
             </tr>
           </thead>
@@ -105,7 +105,6 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
               const priceFormatted = s.price !== null ? `${s.price.toFixed(2)} د.إ` : '—'
               const peFormatted = s.pe !== null ? s.pe.toFixed(2) : '—'
               const yieldFormatted = s.div.yld ?? '—'
-              const tradesFormatted = d.trades.toLocaleString('en-US')
               const valueFormatted = fmtTradingValue(d.value)
 
               return (
@@ -144,11 +143,6 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
                     {yieldFormatted}
                   </td>
 
-                  {/* عمود عدد الصفقات (تقديري) */}
-                  <td className="o-mv-mut">
-                    {tradesFormatted}
-                  </td>
-
                   {/* عمود قيمة التداول */}
                   <td className="o-mv-val">
                     {valueFormatted}
@@ -159,7 +153,7 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
 
             {movementStocks.length === 0 && (
               <tr>
-                <td colSpan={7} className="o-mv-empty">
+                <td colSpan={6} className="o-mv-empty">
                   لا توجد أسهم تطابق التصفية الحالية.
                 </td>
               </tr>

@@ -5,14 +5,21 @@
 import type { Stock } from './data'
 import { parseISO } from './lib'
 
+export type EventStep = 'lastEnt' | 'exd' | 'nextExd' | 'pay' | 'nextPay'
+
 export interface CalEvent {
   uid: string
   date: Date          // حدث يوم كامل
   title: string
   description: string
+  // حقول منظَّمة لعرض المواعيد في الواجهة (أجندة النظرة العامة)
+  sym?: string
+  step?: EventStep
+  ps?: string | null
+  auto?: boolean      // التاريخ آلي من TradingView ولم يُتحقق منه بعد
 }
 
-const STEPS: { key: 'lastEnt' | 'exd' | 'nextExd' | 'pay' | 'nextPay'; label: string }[] = [
+const STEPS: { key: EventStep; label: string }[] = [
   { key: 'lastEnt', label: 'آخر يوم شراء لاستحقاق التوزيع' },
   { key: 'exd', label: 'تاريخ الاستبعاد (التداول بدون أحقية)' },
   { key: 'nextExd', label: 'تاريخ استبعاد الشريحة القادمة' },
@@ -45,6 +52,10 @@ export function dividendEvents(s: Stock, from: Date = new Date()): CalEvent[] {
       date: d,
       title: `${s.sym} · ${step.label}`,
       description: `${name}\n${details.filter(Boolean).join('\n')}`,
+      sym: s.sym,
+      step: step.key,
+      ps,
+      auto: s.div.auto?.fields.includes(step.key) ?? false,
     })
   }
   return events

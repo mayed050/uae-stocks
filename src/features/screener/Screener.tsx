@@ -1,4 +1,4 @@
-import { Search, X, Table2, LayoutGrid, BriefcaseBusiness, Plus, ListFilter } from 'lucide-react'
+import { Search, X, Table2, LayoutGrid, BriefcaseBusiness, Plus, ListFilter, SlidersHorizontal } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import type { Stock } from '@/data'
@@ -11,6 +11,8 @@ import StatCard from '@/components/ui/StatCard'
 import PageHeader from '@/components/ui/PageHeader'
 import { SECTOR_TITLES, mapDFMSectorToDb } from '@/data/sectors'
 import ScreenerGrid from './ScreenerGrid'
+import ScreenerCards from './ScreenerCards'
+import { useMediaQuery } from '@/useMediaQuery'
 import type { DisplayMode, ScreenerSearch, SortKey } from '@/search'
 
 const defaultDir = (k: SortKey): 1 | -1 => (k === 'name' ? 1 : -1)
@@ -39,6 +41,15 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
   const sort = search.sort ?? 'mcap'
   const dir: 1 | -1 = search.dir ? (search.dir === 'asc' ? 1 : -1) : defaultDir(sort)
   const displayMode = search.view ?? savedDisplayMode()
+  // الجوال: الفلاتر مطويّة خلف زر (البحث ظاهر دائمًا)، والنتائج بطاقات بدل الجدول العريض
+  const compact = useMediaQuery('(max-width: 700px)')
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const activeFilters = [search.ex, search.cat, search.cov, search.sector].filter(Boolean).length
+  const setSort = (k: SortKey, desc: boolean) =>
+    update({
+      sort: k === 'mcap' ? undefined : k,
+      dir: (desc ? -1 : 1) === defaultDir(k) ? undefined : desc ? 'desc' : 'asc',
+    })
 
   // نص البحث محلي للكتابة السلسة، ويُنسخ إلى الرابط بعد توقّف الكتابة
   const [q, setQ] = useState(() => search.q ?? '')
@@ -135,91 +146,87 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
         عرض <b style={{ color: 'var(--brand)' }}>{rows.length}</b> من {DATA.length} سهمًا مطابقًا للفلتر — اضغط أي صف للتفاصيل الكاملة
       </PageHeader>
 
-      <div className="overview-layout">
-        {/* العمود الأيمن الرئيسي (الفلاتر والجدول 70%) */}
-        <div className="overview-main">
+      <div className="screener-layout">
+        {/* الفلاتر والجدول: العرض كاملًا كي لا تُقصّ أعمدة الجدول */}
+        <div className="screener-main">
           
-          <div className="controls">
+          <div className={'controls' + (filtersOpen ? ' filters-open' : '')}>
             <div className="search">
               <Search size={16} className="ico" aria-hidden />
               <input aria-label="ابحث في الأسهم بالاسم أو الرمز أو القطاع" placeholder="ابحث بالاسم أو الرمز أو القطاع…" value={q} onChange={(e) => setQ(e.target.value)} />
             </div>
-            <div className="chips">
-              {([['all', 'كل الأسواق'], ['DFM', 'دبي'], ['ADX', 'أبوظبي']] as const).map(([v, l]) => (
-                <button key={v} className="chip" aria-pressed={ex === v} onClick={() => update({ ex: v === 'all' ? undefined : v })}>{l}</button>
-              ))}
-            </div>
-            <div className="chips">
-              {([['all', 'كل الأسهم'], ['curated', 'المُراجَعة يدويًا']] as const).map(([v, l]) => (
-                <button key={v} className="chip" aria-pressed={(search.cov ?? 'all') === v} onClick={() => update({ cov: v === 'all' ? undefined : v })}
-                  title={v === 'curated' ? 'الأسهم ذات البيانات المنسّقة يدويًا (التوزيعات والأساسيات)' : 'كامل أسهم السوقين، ومنها المضافة آليًا'}>{l}</button>
-              ))}
-            </div>
-            <div className="chips">
-              {([['all', 'كل التصنيفات'], ['income', 'دخل مستقر'], ['growth', 'نمو'], ['risk', 'مخاطر أعلى']] as const).map(([v, l]) => (
-                <button key={v} className="chip" aria-pressed={cat === v} onClick={() => update({ cat: v === 'all' ? undefined : v })}>{l}</button>
-              ))}
-            </div>
-            {sector !== 'all' && (
-              <button className="chip" style={{ background: 'var(--bad)', color: '#fff', border: 0 }} onClick={() => update({ sector: undefined })}>
-                إلغاء فلتر القطاع: {sector} <X size={13} className="ico" aria-hidden />
-              </button>
-            )}
+            <button className="chip filters-toggle" aria-expanded={filtersOpen} aria-controls="scr-filters" onClick={() => setFiltersOpen((o) => !o)}>
+              <SlidersHorizontal size={14} className="ico" aria-hidden /> الفلاتر{activeFilters ? ` (${activeFilters})` : ''}
+            </button>
+            <div className="filter-groups" id="scr-filters">
+              <div className="chips">
+                {([['all', 'كل الأسواق'], ['DFM', 'دبي'], ['ADX', 'أبوظبي']] as const).map(([v, l]) => (
+                  <button key={v} className="chip" aria-pressed={ex === v} onClick={() => update({ ex: v === 'all' ? undefined : v })}>{l}</button>
+                ))}
+              </div>
+              <div className="chips">
+                {([['all', 'كل الأسهم'], ['curated', 'المُراجَعة يدويًا']] as const).map(([v, l]) => (
+                  <button key={v} className="chip" aria-pressed={(search.cov ?? 'all') === v} onClick={() => update({ cov: v === 'all' ? undefined : v })}
+                    title={v === 'curated' ? 'الأسهم ذات البيانات المنسّقة يدويًا (التوزيعات والأساسيات)' : 'كامل أسهم السوقين، ومنها المضافة آليًا'}>{l}</button>
+                ))}
+              </div>
+              <div className="chips">
+                {([['all', 'كل التصنيفات'], ['income', 'دخل مستقر'], ['growth', 'نمو'], ['risk', 'مخاطر أعلى']] as const).map(([v, l]) => (
+                  <button key={v} className="chip" aria-pressed={cat === v} onClick={() => update({ cat: v === 'all' ? undefined : v })}>{l}</button>
+                ))}
+              </div>
+              {sector !== 'all' && (
+                <button className="chip" style={{ background: 'var(--bad)', color: '#fff', border: 0 }} onClick={() => update({ sector: undefined })}>
+                  إلغاء فلتر القطاع: {sector} <X size={13} className="ico" aria-hidden />
+                </button>
+              )}
             
-            {/* زر التبديل الفاخر لطريقة العرض */}
-            <div className="o-toggle-container" style={{ marginInlineStart: 'auto', display: 'inline-flex', gap: '6px', background: 'var(--chip)', padding: '4px', borderRadius: '10px', border: '1px solid var(--line)' }}>
-              <button 
-                className={'o-toggle-btn' + (displayMode === 'list' ? ' active' : '')} 
-                onClick={() => changeDisplayMode('list')}
-                style={{
-                  border: 0,
-                  background: displayMode === 'list' ? 'linear-gradient(120deg, var(--brand-fill), var(--brand2-fill))' : 'transparent',
-                  color: displayMode === 'list' ? '#fff' : 'var(--muted)',
-                  fontSize: '12px',
-                  padding: '6px 12px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontWeight: 700,
-                  fontFamily: 'inherit',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                <Table2 size={14} className="ico" aria-hidden /> جدول موحد
-              </button>
-              <button 
-                className={'o-toggle-btn' + (displayMode === 'sectors' ? ' active' : '')} 
-                onClick={() => changeDisplayMode('sectors')}
-                style={{
-                  border: 0,
-                  background: displayMode === 'sectors' ? 'linear-gradient(120deg, var(--brand-fill), var(--brand2-fill))' : 'transparent',
-                  color: displayMode === 'sectors' ? '#fff' : 'var(--muted)',
-                  fontSize: '12px',
-                  padding: '6px 12px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontWeight: 700,
-                  fontFamily: 'inherit',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                <LayoutGrid size={14} className="ico" aria-hidden /> حسب القطاعات
-              </button>
+              {/* زر التبديل الفاخر لطريقة العرض */}
+              <div className="o-toggle-container" style={{ marginInlineStart: 'auto', display: 'inline-flex', gap: '6px', background: 'var(--chip)', padding: '4px', borderRadius: '10px', border: '1px solid var(--line)' }}>
+                <button 
+                  className={'o-toggle-btn' + (displayMode === 'list' ? ' active' : '')} 
+                  onClick={() => changeDisplayMode('list')}
+                  style={{
+                    border: 0,
+                    background: displayMode === 'list' ? 'linear-gradient(120deg, var(--brand-fill), var(--brand2-fill))' : 'transparent',
+                    color: displayMode === 'list' ? '#fff' : 'var(--muted)',
+                    fontSize: '12px',
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontWeight: 700,
+                    fontFamily: 'inherit',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <Table2 size={14} className="ico" aria-hidden /> جدول موحد
+                </button>
+                <button 
+                  className={'o-toggle-btn' + (displayMode === 'sectors' ? ' active' : '')} 
+                  onClick={() => changeDisplayMode('sectors')}
+                  style={{
+                    border: 0,
+                    background: displayMode === 'sectors' ? 'linear-gradient(120deg, var(--brand-fill), var(--brand2-fill))' : 'transparent',
+                    color: displayMode === 'sectors' ? '#fff' : 'var(--muted)',
+                    fontSize: '12px',
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontWeight: 700,
+                    fontFamily: 'inherit',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <LayoutGrid size={14} className="ico" aria-hidden /> حسب القطاعات
+                </button>
+              </div>
             </div>
           </div>
 
-          {displayMode === 'list' ? (
-            <ScreenerGrid
-              rows={rows}
-              sort={sort}
-              desc={dir === -1}
-              onOpen={onOpen}
-              onSort={(k, desc) =>
-                update({
-                  sort: k === 'mcap' ? undefined : k,
-                  dir: (desc ? -1 : 1) === defaultDir(k) ? undefined : desc ? 'desc' : 'asc',
-                })
-              }
-            />
+          {displayMode === 'list' && compact ? (
+            <ScreenerCards rows={rows} sort={sort} desc={dir === -1} onOpen={onOpen} onSort={setSort} />
+          ) : displayMode === 'list' ? (
+            <ScreenerGrid rows={rows} sort={sort} desc={dir === -1} onOpen={onOpen} onSort={setSort} />
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
               {sectorGroups.map(group => (
@@ -243,7 +250,6 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                           <th>التغير (%)</th>
                           <th>حجم التداول (سهم)</th>
                           <th>قيمة التداول</th>
-                          <th>الصفقات</th>
                           <th>الإغلاق السابق</th>
                           <th>سعر الفتح</th>
                           <th>الأعلى</th>
@@ -296,7 +302,6 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                               </td>
                               <td>{d.volume.toLocaleString('en-US')}</td>
                               <td>{Math.round(d.value).toLocaleString('en-US')} د.إ</td>
-                              <td>{d.trades.toLocaleString('en-US')}</td>
                               <td>{d.prevClose.toFixed(2)}</td>
                               <td>{d.open.toFixed(2)}</td>
                               <td style={{ color: 'var(--good)' }}>{d.high.toFixed(2)}</td>
@@ -331,27 +336,28 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
           {rows.length === 0 && <div className="empty">لا توجد نتائج مطابقة.</div>}
         </div>
 
-        {/* الشريط الجانبي: ملخّص حيّ للنتائج المطابقة */}
-        <div className="overview-sidebar">
-          <div className="o-widget">
-            <h4 className="o-widget-h"><ListFilter size={16} className="ico" aria-hidden /> ملخّص النتائج</h4>
-
-            <div className="stats" style={{ gridTemplateColumns: '1fr 1fr', gap: '10px', margin: '0 0 14px' }}>
+        {/* ملخّص حيّ للنتائج المطابقة: شريط أفقي فوق الجدول، وعمود جانبي على الشاشات العريضة جدًا فقط */}
+        <aside className="o-widget screener-summary" aria-label="ملخّص النتائج">
+          <h4 className="o-widget-h"><ListFilter size={16} className="ico" aria-hidden /> ملخّص النتائج</h4>
+          <div className="scr-summary">
+            <div className="stats scr-sum-stats">
               <StatCard color="var(--brand)" value={rows.length} label="أسهم مطابقة" />
               <StatCard color="var(--good)" value={`${summary.avgYield.toFixed(2)}%`} label="متوسط العائد" />
             </div>
 
-            <div className="o-index-item">
-              <span style={{ color: 'var(--muted)' }}>سوق دبي (DFM)</span>
-              <b style={{ color: 'var(--brand)' }}>{summary.dfm}</b>
-            </div>
-            <div className="o-index-item">
-              <span style={{ color: 'var(--muted)' }}>سوق أبوظبي (ADX)</span>
-              <b style={{ color: 'var(--good)' }}>{summary.adx}</b>
+            <div className="scr-sum-ex">
+              <div className="o-index-item">
+                <span style={{ color: 'var(--muted)' }}>سوق دبي (DFM)</span>
+                <b style={{ color: 'var(--brand)' }}>{summary.dfm}</b>
+              </div>
+              <div className="o-index-item">
+                <span style={{ color: 'var(--muted)' }}>سوق أبوظبي (ADX)</span>
+                <b style={{ color: 'var(--good)' }}>{summary.adx}</b>
+              </div>
             </div>
 
             {summary.topSectors.length > 0 && (
-              <div style={{ marginTop: '14px' }}>
+              <div className="scr-sum-sectors">
                 <div style={{ fontSize: '11.5px', fontWeight: 800, color: 'var(--muted)', marginBottom: '8px' }}>التوزيع القطاعي</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
                   {summary.topSectors.map((s) => (
@@ -367,7 +373,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
               </div>
             )}
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   )

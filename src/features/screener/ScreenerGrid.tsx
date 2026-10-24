@@ -31,7 +31,7 @@ const helper = createColumnHelper<typeof features, Stock>()
 const SORTABLE: readonly string[] = ['name', 'price', 'change', 'pe', 'mcap', 'yield'] satisfies SortKey[]
 
 /** السعر مع نقطة تنبيه إن كان أقدم من آخر جلسة (تعذّر تحديثه). */
-function PriceCell({ s }: { s: Stock }) {
+export function PriceCell({ s }: { s: Stock }) {
   const { stocks } = useStocks()
   const stale = isStale(s, sessionDate(stocks))
   return (
@@ -42,7 +42,7 @@ function PriceCell({ s }: { s: Stock }) {
   )
 }
 
-function PortfolioToggle({ sym }: { sym: string }) {
+export function PortfolioToggle({ sym }: { sym: string }) {
   const { isInPortfolio, togglePortfolioStock } = usePortfolio()
   const held = isInPortfolio(sym)
   return (
@@ -97,13 +97,18 @@ const columns = helper.columns([
 ])
 
 const VIS_KEY = 'screener_columns'
+// افتراضيًا تُخفى ربحية السهم وصافي الربح كي يتسع الجدول لشاشة الحاسوب المحمول دون قصّ؛
+// تُظهر من قائمة «الأعمدة»، ويُحفظ اختيار المستخدم.
+const DEFAULT_VISIBILITY: ColumnVisibilityState = { eps: false, net: false }
 
 function loadVisibility(): ColumnVisibilityState {
   try {
-    const v: unknown = JSON.parse(localStorage.getItem(VIS_KEY) ?? '{}')
-    return v && typeof v === 'object' ? (v as ColumnVisibilityState) : {}
+    const saved = localStorage.getItem(VIS_KEY)
+    if (saved === null) return DEFAULT_VISIBILITY
+    const v: unknown = JSON.parse(saved)
+    return v && typeof v === 'object' ? (v as ColumnVisibilityState) : DEFAULT_VISIBILITY
   } catch {
-    return {}
+    return DEFAULT_VISIBILITY
   }
 }
 

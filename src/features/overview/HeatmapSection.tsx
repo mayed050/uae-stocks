@@ -23,25 +23,26 @@ export default function HeatmapSection({
 
   return (
     <>
+      {/* العنوان في رأس اللوحة المطويّة (Overview) */}
       <div className="o-heat-head">
-        <h2 className="sec flush">
-          <span className="dot brand2" /> خريطة السوق الحرارية — أكبر {HEAT_MAX} شركة
-        </h2>
-        <div className="o-toggle-container">
+        <div className="o-toggle-container" role="group" aria-label="تلوين الخريطة حسب">
           <button
             className={'o-toggle-btn' + (heatmapMetric === 'yield' ? ' active' : '')}
+            aria-pressed={heatmapMetric === 'yield'}
             onClick={() => setHeatmapMetric('yield')}
           >
             عائد التوزيعات (%)
           </button>
           <button
             className={'o-toggle-btn' + (heatmapMetric === 'pe' ? ' active' : '')}
+            aria-pressed={heatmapMetric === 'pe'}
             onClick={() => setHeatmapMetric('pe')}
           >
             مكرر الربحية (P/E)
           </button>
           <button
             className={'o-toggle-btn' + (heatmapMetric === 'mcap' ? ' active' : '')}
+            aria-pressed={heatmapMetric === 'mcap'}
             onClick={() => setHeatmapMetric('mcap')}
           >
             القيمة السوقية

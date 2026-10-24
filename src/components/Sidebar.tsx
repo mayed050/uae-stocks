@@ -1,11 +1,11 @@
 import { Link } from '@tanstack/react-router'
-import { Search } from 'lucide-react'
+import { Moon, Search, Sun } from 'lucide-react'
 import { NAV } from './nav'
 import { useStocks, useUiStore } from '@/store'
 
 export type { View } from './nav'
 
-export default function Sidebar() {
+export default function Sidebar({ dark, onToggleTheme }: { dark: boolean; onToggleTheme: () => void }) {
   const { lastUpdated } = useStocks()
   const openPalette = useUiStore((s) => s.setPaletteOpen)
   const dataDate = lastUpdated
@@ -22,11 +22,22 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <button className="palette-trigger" onClick={() => openPalette(true)} aria-keyshortcuts="Control+K Meta+K /">
-        <Search size={16} aria-hidden />
-        <span className="pt-label">بحث سريع…</span>
-        <kbd className="pt-kbd" dir="ltr" aria-hidden>Ctrl K</kbd>
-      </button>
+      {/* أدوات: البحث السريع وتبديل السمة — صف تحت الشعار، وفي طرف الرأس على الجوال */}
+      <div className="sidebar-tools">
+        <button className="palette-trigger" onClick={() => openPalette(true)} aria-keyshortcuts="Control+K Meta+K /">
+          <Search size={16} aria-hidden />
+          <span className="pt-label">بحث سريع…</span>
+          <kbd className="pt-kbd" dir="ltr" aria-hidden>Ctrl K</kbd>
+        </button>
+        <button
+          className="theme-toggle"
+          onClick={onToggleTheme}
+          title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}
+          aria-label={dark ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'}
+        >
+          {dark ? <Sun size={17} aria-hidden /> : <Moon size={17} aria-hidden />}
+        </button>
+      </div>
 
       <nav className="nav">
         {NAV.map((n) => (
