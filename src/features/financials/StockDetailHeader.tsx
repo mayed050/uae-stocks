@@ -1,20 +1,20 @@
 import { BriefcaseBusiness } from 'lucide-react'
 import type { Stock } from '@/data'
 import Avatar from '@/components/Avatar'
-import type { TechnicalData } from './tradingSim'
 
 /** ترويسة تفاصيل السهم المختار: الاسم والرمز والسعر وشارة التغير اليومي. */
 export default function StockDetailHeader({
   stock,
-  tech,
   inPortfolio,
   onOpen,
 }: {
   stock: Stock
-  tech: TechnicalData
   inPortfolio: boolean
   onOpen: (s: Stock) => void
 }) {
+  // التغير الحقيقي من آخر جلسة؛ والتغير بالدرهم مشتق منه
+  const chg = stock.change ?? null
+  const diff = chg != null && stock.price != null ? stock.price - stock.price / (1 + chg / 100) : null
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '12px', borderBottom: '1px solid var(--line)', paddingBottom: '14px' }}>
       <div
@@ -41,9 +41,14 @@ export default function StockDetailHeader({
         <span style={{ fontSize: '26px', fontWeight: '900', color: 'var(--txt)' }}>
           {stock.price?.toFixed(3)} <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--muted)' }}>د.إ</span>
         </span>
-        <div className={`detail-header-price-badge ${tech.isUp ? 'up' : 'down'}`}>
-          {tech.isUp ? '▲' : '▼'} {tech.change.toFixed(3)} ({tech.pct})
-        </div>
+        {chg != null && diff != null ? (
+          <div className={`detail-header-price-badge ${chg > 0 ? 'up' : chg < 0 ? 'down' : ''}`} dir="ltr">
+            {chg > 0 ? '▲' : chg < 0 ? '▼' : ''} {Math.abs(diff).toFixed(3)} ({chg > 0 ? '+' : ''}{chg.toFixed(2)}%)
+          </div>
+        ) : (
+          <div className="detail-header-price-badge">التغير غير متوفر</div>
+        )}
+        {stock.asof && <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600 }}>جلسة {new Date(`${stock.asof}T00:00:00`).toLocaleDateString('ar-AE', { day: 'numeric', month: 'long' })}</span>}
       </div>
     </div>
   )

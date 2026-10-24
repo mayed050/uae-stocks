@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react'
 import type { Stock } from '@/data'
 import Avatar from '@/components/Avatar'
-import { getTechnicalData } from './tradingSim'
 
 /** العمود الأيمن: تبويبا السوقين + البحث + قائمة الأسهم القابلة للتمرير. حالة السوق والبحث داخلية. */
 export default function StockListPanel({
@@ -13,7 +12,8 @@ export default function StockListPanel({
   selectedSym: string
   onSelect: (sym: string) => void
 }) {
-  const [activeMarket, setActiveMarket] = useState<'DFM' | 'ADX'>('DFM')
+  // السوق النشط يتبع السهم المختار (رابط مباشر لسهم من أبوظبي يفتح قائمة أبوظبي)
+  const [activeMarket, setActiveMarket] = useState<'DFM' | 'ADX'>(() => stocks.find((s) => s.sym === selectedSym)?.ex ?? 'DFM')
   const [searchQuery, setSearchQuery] = useState<string>('')
 
   // تصفية الأسهم المعروضة بناءً على السوق والبحث
@@ -66,7 +66,7 @@ export default function StockListPanel({
       <div className="stock-scroll-list" tabIndex={0} aria-label="قائمة الأسهم (قابلة للتمرير)">
         {filteredStocks.map((stock) => {
           const isActive = stock.sym.toUpperCase() === selectedSym.toUpperCase()
-          const stockDaily = getTechnicalData(stock)
+          const chg = stock.change ?? null
 
           return (
             <div
@@ -81,13 +81,13 @@ export default function StockListPanel({
               </div>
               <div style={{ textAlign: 'left' }}>
                 <span style={{ fontWeight: 700, fontSize: '12px', display: 'block', color: 'var(--txt)' }}>{stock.price?.toFixed(2)}</span>
-                <span style={{
+                {/* السمة dir لا خاصية direction: الأخيرة لا تعزل نصًا داخل عنصر سطري فتنتقل الإشارة إلى طرفه */}
+                <span dir="ltr" style={{
                   fontSize: '9.5px',
                   fontWeight: 800,
-                  color: stockDaily.isUp ? 'var(--good)' : 'var(--bad)',
-                  direction: 'ltr'
+                  color: chg == null || chg === 0 ? 'var(--muted)' : chg > 0 ? 'var(--good)' : 'var(--bad)',
                 }}>
-                  {stockDaily.pct}
+                  {chg == null ? '—' : `${chg > 0 ? '+' : ''}${chg.toFixed(2)}%`}
                 </span>
               </div>
             </div>

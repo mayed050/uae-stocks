@@ -9,7 +9,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { num, isoDate, TV_COLS, TV_SCAN_URL, parseTvRow, applyQuote, INDEX_TICKERS, toIndexQuote, mergeDividend, staleStocks, stockKey, discoverStocks } from './lib.mjs'
+import { num, isoDate, sessionDate, TV_COLS, TV_SCAN_URL, parseTvRow, applyQuote, INDEX_TICKERS, toIndexQuote, mergeDividend, staleStocks, stockKey, discoverStocks } from './lib.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(__dirname, '..')
@@ -169,7 +169,7 @@ async function main() {
     const map = await fetchTvBatch(codes.map((c) => INDEX_TICKERS[c].tv.replace(':', '-')), 'https://scanner.tradingview.com/global/scan')
     data.indices = data.indices ?? {}
     for (const c of codes) {
-      const iq = toIndexQuote(c, map[INDEX_TICKERS[c].tv.replace(':', '-')], new Date())
+      const iq = toIndexQuote(c, map[INDEX_TICKERS[c].tv.replace(':', '-')], sessionDate())
       if (iq) {
         data.indices[c] = iq
         console.log(`✓ مؤشر ${c.padEnd(6)} ${iq.value}  (${iq.changePct ?? '—'}%)`)

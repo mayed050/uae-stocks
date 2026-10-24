@@ -1,6 +1,6 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query'
 import { SEED } from '@/data'
-import { parseDataset, HistorySchema } from '@/data/schema'
+import { parseDataset, HistorySchema, FinancialsSchema } from '@/data/schema'
 
 /** عميل الاستعلامات للتطبيق: البيانات تتحدّث يوميًا، فلا داعي لإعادة الجلب المتكررة. */
 export function createQueryClient(): QueryClient {
@@ -36,5 +36,12 @@ export const datasetQuery = queryOptions({
 export const historyQuery = queryOptions({
   queryKey: ['history'],
   queryFn: async ({ signal }) => HistorySchema.parse(await getJson('history.json', signal)).history,
+  staleTime: 30 * 60_000,
+})
+
+/** البيانات المالية التفصيلية (financials.json) — تُجلب عند فتح صفحة النتائج المالية فقط. */
+export const financialsQuery = queryOptions({
+  queryKey: ['financials'],
+  queryFn: async ({ signal }) => FinancialsSchema.parse(await getJson('financials.json', signal)),
   staleTime: 30 * 60_000,
 })

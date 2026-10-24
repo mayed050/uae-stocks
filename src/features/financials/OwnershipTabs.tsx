@@ -1,54 +1,52 @@
-import { Users } from 'lucide-react'
-import type { Stock } from '@/data'
+import type { FinRecord, Stock } from '@/data'
+import { OfficialLink, Section, Stats } from './parts'
+import { dateAr, int, officialLinks, pct } from './finFormat'
 
-/** مجموعة «الملكية»: هيكل كبار المساهمين + حدود الاستثمارات الأجنبية. */
-export default function OwnershipTabs({ stock }: { stock: Stock }) {
+/** مجموعة «الملكية»: الأسهم المصدرة والحرة وISIN من TradingView، وروابط ملكية الأجانب وكبار المساهمين في موقع السوق. */
+export default function OwnershipTabs({ stock, fin }: { stock: Stock; fin: FinRecord | null }) {
+  const links = officialLinks(stock)
+  const fp = fin?.own.floatPct ?? null
+
   return (
     <>
-      {/* 8. تبويب أكبر المساهمين */}
-      <div style={{ background: 'var(--chip)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)' }}>
-        <h4 style={{ margin: '0 0 12px 0', color: 'var(--txt)', borderBottom: '1px solid var(--line)', paddingBottom: '6px' }}><Users size={16} className="ico" aria-hidden /> هيكل كبار مساهمي شركة {stock.name.split('—')[0]}</h4>
-        <table style={{ width: '100%', fontSize: '12px', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid var(--line)', color: 'var(--muted)' }}>
-              <th style={{ padding: '6px 4px', textAlign: 'right' }}>اسم المساهم الكبير</th>
-              <th style={{ padding: '6px 4px', textAlign: 'center' }}>نسبة الملكية (%)</th>
-              <th style={{ padding: '6px 4px', textAlign: 'left' }}>فئة المساهم</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style={{ borderBottom: '1px dashed var(--line)' }}>
-              <td style={{ padding: '8px 4px', fontWeight: 700 }}>جهاز الإمارات للاستثمار (حكومي)</td>
-              <td style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 800, color: 'var(--brand)' }}>45.5%</td>
-              <td style={{ padding: '8px 4px', textAlign: 'left', color: 'var(--muted)' }}>حكومة / جهة رسمية</td>
-            </tr>
-            <tr style={{ borderBottom: '1px dashed var(--line)' }}>
-              <td style={{ padding: '8px 4px', fontWeight: 700 }}>المؤسسات والصناديق الاستثمارية الوطنية</td>
-              <td style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 800, color: 'var(--txt)' }}>28.2%</td>
-              <td style={{ padding: '8px 4px', textAlign: 'left', color: 'var(--muted)' }}>مؤسسات محلية</td>
-            </tr>
-            <tr>
-              <td style={{ padding: '8px 4px', fontWeight: 700 }}>المستثمرون الأجانب والأفراد</td>
-              <td style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 800, color: 'var(--good)' }}>26.3%</td>
-              <td style={{ padding: '8px 4px', textAlign: 'left', color: 'var(--muted)' }}>أجانب / أفراد</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <Section title="هيكل الأسهم" source={fin ? `المصدر: TradingView — حتى ${dateAr(fin.asof)}. الأسهم الحرة: المتاحة للتداول بعد استبعاد حيازات المؤسسين والجهات الاستراتيجية والمقيّدة، وفق تعريف المصدر.` : undefined}>
+        <Stats
+          items={[
+            { label: 'عدد الأسهم المصدرة', value: int(fin?.own.shares) },
+            { label: 'الأسهم الحرة', value: int(fin?.own.float) },
+            { label: 'نسبة الأسهم الحرة', value: pct(fp) },
+            { label: 'القيمة السوقية', value: stock.mcap ?? '—' },
+            { label: 'رمز ISIN', value: fin?.own.isin ?? '—' },
+          ]}
+        />
+        {fp != null && (
+          <div className="fin-split" role="img" aria-label={`الأسهم الحرة ${pct(fp)}، والحيازات الاستراتيجية والمقيّدة ${pct(100 - fp)}`}>
+            <span className="fin-split-free" style={{ width: `${fp}%` }} />
+            <span className="fin-split-held" style={{ width: `${100 - fp}%` }} />
+          </div>
+        )}
+        {fp != null && (
+          <p className="fin-split-legend">
+            <span><i className="fin-dot free" /> أسهم حرة {pct(fp)}</span>
+            <span><i className="fin-dot held" /> حيازات استراتيجية ومقيّدة {pct(100 - fp)}</span>
+          </p>
+        )}
+      </Section>
 
-      {/* 9. تبويب الاستثمارات الأجنبية */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginTop: '14px' }}>
-        <div style={{ background: 'var(--chip)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)', textAlign: 'center' }}>
-          <div style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 700, marginBottom: '6px' }}>الحد الأقصى لتملك الأجانب</div>
-          <b style={{ fontSize: '22px', color: 'var(--brand)' }}>49.0%</b>
-          <div style={{ fontSize: '10px', color: 'var(--muted)', marginTop: '4px' }}>الحد الأعلى المسموح به رسمياً</div>
-        </div>
-        <div style={{ background: 'var(--chip)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)', textAlign: 'center' }}>
-          <div style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 700, marginBottom: '6px' }}>النسبة الفعلية لتملك الأجانب</div>
-          <b style={{ fontSize: '22px', color: 'var(--good)' }}>18.4%</b>
-          <div style={{ fontSize: '10px', color: 'var(--muted)', marginTop: '4px' }}>النسبة المستثمرة حالياً بالفعل</div>
-        </div>
-      </div>
+      <Section title="ملكية الأجانب">
+        <p className="fin-note">
+          الحدّ الأقصى المسموح لتملّك الأجانب والنسبة الفعلية والمتاحة تُحدَّث يوميًا في موقع السوق. لا تعرضها المنصة كي لا تُعرض
+          نسبة متقادمة.
+        </p>
+        <OfficialLink {...links.foreign} />
+      </Section>
+
+      <Section title="كبار المساهمين">
+        <p className="fin-note">
+          قائمة كبار المساهمين (5% فأكثر) غير متوفرة في مصدر بيانات المنصة. تُنشر في صفحة الشركة على موقع السوق وفي تقريرها السنوي.
+        </p>
+        <OfficialLink {...links.company} />
+      </Section>
     </>
   )
 }

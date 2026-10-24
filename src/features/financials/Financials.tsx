@@ -1,10 +1,9 @@
 import { useMemo } from 'react'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import type { Stock } from '@/data'
-import { useStocks, usePortfolio } from '@/store'
-import SimBadge from '@/components/ui/SimBadge'
+import { useStocks, usePortfolio, useFinancials, useHistory } from '@/store'
 import PageHeader from '@/components/ui/PageHeader'
-import { getTechnicalData, generateDailySessions } from './tradingSim'
+import { NoFinancials } from './parts'
 import StockListPanel from './StockListPanel'
 import StockDetailHeader from './StockDetailHeader'
 import OverviewTabs from './OverviewTabs'
@@ -22,6 +21,8 @@ const GROUP_LABELS: Record<TabGroup, string> = {
   governance: 'الإفصاحات والحوكمة',
   ownership: 'الملكية',
 }
+
+const EMPTY: never[] = []
 
 /** صفحة النتائج المالية — جذر تركيب: قائمة الأسهم يمينًا ولوحة التفاصيل بمجموعات تبويب يسارًا. */
 export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
@@ -42,23 +43,12 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
     return DATA.find(st => st.sym.toUpperCase() === selectedSym.toUpperCase()) ?? DATA[0]
   }, [DATA, selectedSym])
 
-  // البيانات اليومية الفنية للسهم المختار
-  const tech = useMemo(() => {
-    if (!currentStock) return null
-    const t = getTechnicalData(currentStock)
-    // المدى السنوي حقيقي من TradingView متى توفّر (بدل القيمة التوضيحية)
-    return currentStock.high52 != null && currentStock.low52 != null
-      ? { ...t, yearHigh: currentStock.high52, yearLow: currentStock.low52 }
-      : t
-  }, [currentStock])
+  // البيانات المالية التفصيلية (financials.json) وسجل أسعار الإغلاق — كلاهما يُجلب مرة ويُخزَّن
+  const { fin, pending, failed } = useFinancials(currentStock?.sym ?? '')
+  const { history } = useHistory()
+  const hist = currentStock ? (history[currentStock.sym] ?? EMPTY) : EMPTY
 
-  // البيانات التاريخية لتبويب ملخص يومي
-  const historicalData = useMemo(() => {
-    if (!currentStock) return []
-    return generateDailySessions(currentStock)
-  }, [currentStock])
-
-  if (!currentStock || !tech) {
+  if (!currentStock) {
     return <div style={{ padding: '24px', textAlign: 'center', color: 'var(--muted)' }}>جاري تحميل البيانات المالية...</div>
   }
 
@@ -66,7 +56,7 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
     <div className="view" style={{ direction: 'rtl' }}>
       {/* ترويسة الصفحة العامة */}
       <PageHeader title="النتائج والتقارير المالية المفصلة">
-        استعراض شامل وتحليل فني وتداولي لـ {DATA.length} شركة مدرجة في أسواق المال الإماراتية
+        القوائم والمؤشرات المالية لـ {DATA.length} شركة مدرجة — من TradingView، مع روابط الإفصاحات الرسمية في موقعَي السوقين
       </PageHeader>
 
       <div className="financials-layout">
@@ -77,7 +67,6 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
         <div className="financials-detail-panel">
           <StockDetailHeader
             stock={currentStock}
-            tech={tech}
             inPortfolio={isInPortfolio(currentStock.sym)}
             onOpen={onOpen}
           />
@@ -88,6 +77,7 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
               <button
                 key={g}
                 onClick={() => setGroup(g)}
+                aria-pressed={group === g}
                 className={`financial-tab-btn ${group === g ? 'active' : ''}`}
               >
                 {GROUP_LABELS[g]}
@@ -97,16 +87,10 @@ export default function Financials({ onOpen }: { onOpen: (s: Stock) => void }) {
 
           {/* محتوى التبويبات الفعلي */}
           <div style={{ width: '100%' }}>
-            {(group === 'overview' || group === 'financial') && (
-              <div style={{ marginBottom: '12px' }}>
-                <SimBadge title="أرقام التداول والأحجام والمدى اليومي/السنوي في هذه المجموعة توضيحية مُولّدة خوارزمياً، وليست بيانات سوق رسمية لحظية.">أرقام التداول توضيحية</SimBadge>
-              </div>
-            )}
-
-            {group === 'overview' && <OverviewTabs stock={currentStock} tech={tech} historicalData={historicalData} />}
-            {group === 'financial' && <FinancialDataTabs stock={currentStock} />}
-            {group === 'governance' && <GovernanceTabs stock={currentStock} />}
-            {group === 'ownership' && <OwnershipTabs stock={currentStock} />}
+            {group === 'overview' && <OverviewTabs stock={currentStock} fin={fin} history={hist} />}
+            {group === 'financial' && (fin ? <FinancialDataTabs stock={currentStock} fin={fin} /> : <NoFinancials pending={pending} failed={failed} />)}
+            {group === 'governance' && <GovernanceTabs stock={currentStock} fin={fin} />}
+            {group === 'ownership' && <OwnershipTabs stock={currentStock} fin={fin} />}
           </div>
         </div>
       </div>
