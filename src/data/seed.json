@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-24T13:43:21.507Z",
+  "lastUpdated": "2026-10-23T16:30:31.223Z",
   "source": "tradingview+yahoo",
   "stocks": [
     {
@@ -11,7 +11,7 @@
       "yahoo": "DEWA.AE",
       "priceAuto": true,
       "price": 2.68,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "134 مليار",
       "pe": 15.3,
       "eps": "0.17",
@@ -30,7 +30,7 @@
         "note": "التزام سنوي ~6.2 مليار درهم",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -58,8 +58,8 @@
       "yahoo": "EMIRATESNBD.AE",
       "priceAuto": true,
       "price": 30,
-      "asof": "2026-10-24",
-      "mcap": "189 مليار",
+      "asof": "2026-10-23",
+      "mcap": "196 مليار",
       "pe": 8,
       "eps": "3.71",
       "roe": "22%",
@@ -67,7 +67,7 @@
       "rev": "47.91 مليار",
       "div": {
         "ps": "1.00 درهم",
-        "yld": "~3.3%",
+        "yld": "~3.2%",
         "lastEnt": "2026-02-25",
         "exd": "2026-02-26",
         "rec": "2026-02-27",
@@ -76,12 +76,12 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "yld"
           ]
         },
-        "ttmPs": 1
+        "ttmPs": 0.9653
       },
       "change": -3.47,
       "open": 31.08,
@@ -101,8 +101,8 @@
       "yahoo": "DIB.AE",
       "priceAuto": true,
       "price": 7.06,
-      "asof": "2026-10-24",
-      "mcap": "51 مليار",
+      "asof": "2026-10-23",
+      "mcap": "51.5 مليار",
       "pe": 7.1,
       "eps": "0.98",
       "roe": "16%",
@@ -110,7 +110,7 @@
       "rev": "12.8 مليار",
       "div": {
         "ps": "0.35 درهم (35%)",
-        "yld": "~5.0%",
+        "yld": "~4.9%",
         "lastEnt": "2026-04-09",
         "exd": "2026-04-10",
         "rec": "2026-04-13",
@@ -119,12 +119,12 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "yld"
           ]
         },
-        "ttmPs": 0.35
+        "ttmPs": 0.3466
       },
       "change": -0.98,
       "open": 7.11,
@@ -144,8 +144,8 @@
       "yahoo": "EMAAR.AE",
       "priceAuto": true,
       "price": 11.14,
-      "asof": "2026-10-24",
-      "mcap": "98.5 مليار",
+      "asof": "2026-10-23",
+      "mcap": "101 مليار",
       "pe": 5.1,
       "eps": "2.14",
       "roe": "21%",
@@ -153,7 +153,7 @@
       "rev": "49.6 مليار",
       "div": {
         "ps": "1.00 درهم",
-        "yld": "~9.0%",
+        "yld": "~8.8%",
         "lastEnt": "2026-04-02",
         "exd": "2026-04-03",
         "rec": "2026-04-06",
@@ -166,7 +166,7 @@
         "nextPs": "50 فلس",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "nextExd",
             "nextPay",
@@ -174,7 +174,7 @@
             "yld"
           ]
         },
-        "ttmPs": 1
+        "ttmPs": 0.9789
       },
       "change": -2.11,
       "open": 11.38,
@@ -194,7 +194,7 @@
       "yahoo": "DU.AE",
       "priceAuto": true,
       "price": 12.22,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "55.4 مليار",
       "pe": 17.6,
       "eps": "0.64",
@@ -212,7 +212,7 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -240,8 +240,8 @@
       "yahoo": "SALIK.AE",
       "priceAuto": true,
       "price": 5,
-      "asof": "2026-10-24",
-      "mcap": "37.5 مليار",
+      "asof": "2026-10-23",
+      "mcap": "38.5 مليار",
       "pe": 25.2,
       "eps": "0.20",
       "roe": "42%",
@@ -249,7 +249,7 @@
       "rev": "3.09 مليار",
       "div": {
         "ps": "9.4 فلس",
-        "yld": "~3.7%",
+        "yld": "~3.6%",
         "lastEnt": null,
         "exd": "2026-10-15",
         "rec": null,
@@ -259,7 +259,7 @@
         "note": "إجمالي سنوي ~22 فلس",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -267,7 +267,7 @@
             "yld"
           ]
         },
-        "ttmPs": 0.1854
+        "ttmPs": 0.1804
       },
       "change": -2.72,
       "open": 5.14,
@@ -287,8 +287,8 @@
       "yahoo": "TALABAT.AE",
       "priceAuto": true,
       "price": 1.09,
-      "asof": "2026-10-24",
-      "mcap": "25.4 مليار",
+      "asof": "2026-10-23",
+      "mcap": "26 مليار",
       "pe": 12.2,
       "eps": "0.08",
       "roe": "24%",
@@ -296,7 +296,7 @@
       "rev": "12.82 مليار",
       "div": {
         "ps": "2.7 فلس",
-        "yld": "~5.6%",
+        "yld": "~5.5%",
         "lastEnt": null,
         "exd": "2026-09-25",
         "rec": null,
@@ -306,7 +306,7 @@
         "note": "إدراج حديث بالبورصة",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -314,7 +314,7 @@
             "yld"
           ]
         },
-        "ttmPs": 0.0611
+        "ttmPs": 0.0597
       },
       "change": -2.24,
       "open": 1.11,
@@ -334,8 +334,8 @@
       "yahoo": "EMPOWER.AE",
       "priceAuto": true,
       "price": 1.5,
-      "asof": "2026-10-24",
-      "mcap": "15 مليار",
+      "asof": "2026-10-23",
+      "mcap": "15.1 مليار",
       "pe": 14.2,
       "eps": "0.10",
       "roe": "14%",
@@ -352,7 +352,7 @@
         "freq": "نصف سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -360,7 +360,7 @@
             "yld"
           ]
         },
-        "ttmPs": 0.0875
+        "ttmPs": 0.0869
       },
       "change": -0.66,
       "open": 1.51,
@@ -380,8 +380,8 @@
       "yahoo": "TECOM.AE",
       "priceAuto": true,
       "price": 3.09,
-      "asof": "2026-10-24",
-      "mcap": "15.4 مليار",
+      "asof": "2026-10-23",
+      "mcap": "15.5 مليار",
       "pe": 7.2,
       "eps": "0.21",
       "roe": "12%",
@@ -398,7 +398,7 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -406,7 +406,7 @@
             "yld"
           ]
         },
-        "ttmPs": 0.176
+        "ttmPs": 0.1754
       },
       "change": -0.32,
       "open": 3.09,
@@ -426,8 +426,8 @@
       "yahoo": "AIRARABIA.AE",
       "priceAuto": true,
       "price": 4.9,
-      "asof": "2026-10-24",
-      "mcap": "22.9 مليار",
+      "asof": "2026-10-23",
+      "mcap": "22.6 مليار",
       "pe": 17.5,
       "eps": "0.32",
       "roe": "18%",
@@ -435,7 +435,7 @@
       "rev": "6.00 مليار",
       "div": {
         "ps": "30 فلس (30%)",
-        "yld": "~6.1%",
+        "yld": "~6.2%",
         "lastEnt": null,
         "exd": "2026-03-18",
         "rec": null,
@@ -444,14 +444,14 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
             "yld"
           ]
         },
-        "ttmPs": 0.3,
+        "ttmPs": 0.3031,
         "src": {
           "url": "https://press.airarabia.com/air-arabia-shareholders-approve-30-dividend-distribution-at-annual-general-meeting/",
           "label": "بيان العربية للطيران: إقرار الجمعية العمومية توزيع 30% (12 مارس 2026)",
@@ -476,8 +476,8 @@
       "yahoo": "DTC.AE",
       "priceAuto": true,
       "price": 2.1,
-      "asof": "2026-10-24",
-      "mcap": "5.2 مليار",
+      "asof": "2026-10-23",
+      "mcap": "5.4 مليار",
       "pe": 23,
       "eps": "0.14",
       "roe": "22%",
@@ -485,7 +485,7 @@
       "rev": "1.20 مليار",
       "div": {
         "ps": "5.68 فلس (شريحة)",
-        "yld": "~5.8%",
+        "yld": "~5.7%",
         "lastEnt": "2026-04-15",
         "exd": "2026-04-16",
         "rec": "2026-04-17",
@@ -494,12 +494,12 @@
         "freq": "نصف سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "yld"
           ]
         },
-        "ttmPs": 0.1211,
+        "ttmPs": 0.1188,
         "src": {
           "url": "https://feeds.dfm.ae/documents/2026/Apr/7/549fb1c3-510f-437d-bb45-18e1ae969ae8/DTC%20BODRES%2008%2004%20202.pdf",
           "label": "إفصاح تاكسي دبي لسوق دبي المالي: نتائج الجمعية العمومية (7 أبريل 2026)",
@@ -524,8 +524,8 @@
       "yahoo": "EMAARDEV.AE",
       "priceAuto": true,
       "price": 12.26,
-      "asof": "2026-10-24",
-      "mcap": "49 مليار",
+      "asof": "2026-10-23",
+      "mcap": "50 مليار",
       "pe": 3.7,
       "eps": "1.65",
       "roe": "32%",
@@ -533,7 +533,7 @@
       "rev": "12.50 مليار",
       "div": {
         "ps": "1.00 درهم (100%)",
-        "yld": "~8.2%",
+        "yld": "~8.0%",
         "lastEnt": null,
         "exd": "2026-04-03",
         "rec": null,
@@ -542,13 +542,13 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "yld"
           ]
         },
-        "ttmPs": 1,
+        "ttmPs": 0.9808,
         "src": {
           "url": "https://www.emaar.com/en/press-release-listing/emaar-development-announces-100-dividend-payout-of-aed-4-billion-us-1-1-billion",
           "label": "بيان إعمار: إقرار توزيع 4 مليارات درهم = 100% من رأس المال (26 مارس 2026)",
@@ -573,8 +573,8 @@
       "yahoo": "DFM.AE",
       "priceAuto": true,
       "price": 1.27,
-      "asof": "2026-10-24",
-      "mcap": "10.2 مليار",
+      "asof": "2026-10-23",
+      "mcap": "10.5 مليار",
       "pe": 15.4,
       "eps": "0.04",
       "roe": "4%",
@@ -582,7 +582,7 @@
       "rev": "480 مليون",
       "div": {
         "ps": "6.5 فلس (6.5%)",
-        "yld": "~5.1%",
+        "yld": "~5.0%",
         "lastEnt": null,
         "exd": "2026-04-03",
         "rec": "2026-04-06",
@@ -591,13 +591,13 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "yld"
           ]
         },
-        "ttmPs": 0.065,
+        "ttmPs": 0.063,
         "src": {
           "url": "https://feeds.dfm.ae/documents/2026/Mar/03/f46fe01e-87a3-473f-a4f4-cf4e38297300/AGM_PressAd_EN2026_web.pdf",
           "label": "دعوة الجمعية العمومية لسوق دبي المالي (25 مارس 2026): الأحقية لمسجّلي 6 أبريل 2026",
@@ -622,8 +622,8 @@
       "yahoo": "MASQ.AE",
       "priceAuto": true,
       "price": 309.4,
-      "asof": "2026-10-24",
-      "mcap": "62.1 مليار",
+      "asof": "2026-10-23",
+      "mcap": "61.2 مليار",
       "pe": 8.7,
       "eps": "43.00",
       "roe": "24%",
@@ -640,12 +640,12 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "yld"
           ]
         },
-        "ttmPs": 10.2,
+        "ttmPs": 10.3471,
         "src": {
           "url": "https://www.mashreq.com/-/jssmedia/pdfs/aboutus/investors/2026/AGM-Results-2026.ashx",
           "label": "نتائج الجمعية العمومية للمشرق (10 مارس 2026)",
@@ -671,8 +671,8 @@
       "yahoo": "DIC.AE",
       "priceAuto": true,
       "price": 3.69,
-      "asof": "2026-10-24",
-      "mcap": "15.7 مليار",
+      "asof": "2026-10-23",
+      "mcap": "15.8 مليار",
       "pe": 9.3,
       "eps": "0.26",
       "roe": "11%",
@@ -680,7 +680,7 @@
       "rev": "3.80 مليار",
       "div": {
         "ps": "25 فلس (25%)",
-        "yld": "~6.8%",
+        "yld": "~6.7%",
         "lastEnt": null,
         "exd": "2026-05-01",
         "rec": null,
@@ -689,14 +689,14 @@
         "freq": "نصف سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
             "yld"
           ]
         },
-        "ttmPs": 0.25,
+        "ttmPs": 0.2487,
         "src": {
           "url": "https://feeds.dfm.ae/documents/2026/Apr/24/71f8a401-06a0-46dc-bdca-166b40b1bb6e/DIC%20PR%20E%2024%2004%202026..pdf",
           "label": "بيان دبي للاستثمار لسوق دبي المالي: إقرار توزيع 25% (الجمعية العمومية 23 أبريل 2026)",
@@ -721,7 +721,7 @@
       "yahoo": "GFH.AE",
       "priceAuto": true,
       "price": 1.6,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "6.8 مليار",
       "pe": 10.4,
       "eps": "0.026",
@@ -739,7 +739,7 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "ps",
             "yld"
@@ -770,8 +770,8 @@
       "yahoo": "ALANSARI.AE",
       "priceAuto": true,
       "price": 0.92,
-      "asof": "2026-10-24",
-      "mcap": "6.9 مليار",
+      "asof": "2026-10-23",
+      "mcap": "7 مليار",
       "pe": 20.3,
       "eps": "0.066",
       "roe": "38%",
@@ -779,7 +779,7 @@
       "rev": "1.10 مليار",
       "div": {
         "ps": "4 فلس (شريحة)",
-        "yld": "~6.5%",
+        "yld": "~6.3%",
         "lastEnt": "2026-04-10",
         "exd": "2026-04-11",
         "rec": "2026-04-12",
@@ -788,12 +788,12 @@
         "freq": "نصف سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "yld"
           ]
         },
-        "ttmPs": 0.0594
+        "ttmPs": 0.0583
       },
       "change": -1.92,
       "open": 0.92,
@@ -813,8 +813,8 @@
       "yahoo": "SPINNEYS.AE",
       "priceAuto": true,
       "price": 1.185,
-      "asof": "2026-10-24",
-      "mcap": "4.3 مليار",
+      "asof": "2026-10-23",
+      "mcap": "4.4 مليار",
       "pe": 12.2,
       "eps": "0.076",
       "roe": "28%",
@@ -822,7 +822,7 @@
       "rev": "3.00 مليار",
       "div": {
         "ps": "3.4 فلس",
-        "yld": "~5.9%",
+        "yld": "~5.8%",
         "lastEnt": null,
         "exd": "2026-08-19",
         "rec": null,
@@ -831,7 +831,7 @@
         "freq": "نصف سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -839,7 +839,7 @@
             "yld"
           ]
         },
-        "ttmPs": 0.07
+        "ttmPs": 0.0683
       },
       "change": -2.47,
       "open": 1.215,
@@ -859,8 +859,8 @@
       "yahoo": "PARKIN.AE",
       "priceAuto": true,
       "price": 5.82,
-      "asof": "2026-10-24",
-      "mcap": "17.5 مليار",
+      "asof": "2026-10-23",
+      "mcap": "17.8 مليار",
       "pe": 25.2,
       "eps": "0.088",
       "roe": "44%",
@@ -868,7 +868,7 @@
       "rev": "380 مليون",
       "div": {
         "ps": "11.7 فلس",
-        "yld": "~3.8%",
+        "yld": "~3.7%",
         "lastEnt": null,
         "exd": "2026-10-14",
         "rec": null,
@@ -877,7 +877,7 @@
         "freq": "نصف سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -885,7 +885,7 @@
             "yld"
           ]
         },
-        "ttmPs": 0.2186
+        "ttmPs": 0.2149
       },
       "change": -1.69,
       "open": 5.88,
@@ -906,7 +906,7 @@
       "yahoo": "AMANAT.AE",
       "priceAuto": true,
       "price": 1.525,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "3.8 مليار",
       "pe": 17,
       "eps": "0.065",
@@ -924,7 +924,7 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -953,8 +953,8 @@
       "priceAuto": true,
       "tradingview": "ADX-FAB",
       "price": 18.5,
-      "asof": "2026-10-24",
-      "mcap": "204 مليار",
+      "asof": "2026-10-23",
+      "mcap": "206 مليار",
       "pe": 10,
       "eps": "1.90",
       "roe": "14%",
@@ -971,14 +971,14 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
             "yld"
           ]
         },
-        "ttmPs": 0.8,
+        "ttmPs": 0.7948,
         "src": {
           "url": "https://www.bankfab.com/en-ae/about-fab/group/in-the-media/fab-shareholders-approve-record-dividend-agm",
           "label": "بيان بنك أبوظبي الأول: إقرار توزيع 80 فلسًا للسهم (11 مارس 2026)",
@@ -1004,8 +1004,8 @@
       "priceAuto": true,
       "tradingview": "ADX-ADCB",
       "price": 16.08,
-      "asof": "2026-10-24",
-      "mcap": "127 مليار",
+      "asof": "2026-10-23",
+      "mcap": "132 مليار",
       "pe": 9.8,
       "eps": "1.05",
       "roe": "15%",
@@ -1013,7 +1013,7 @@
       "rev": "19.08 مليار",
       "div": {
         "ps": "0.63 درهم",
-        "yld": "~3.9%",
+        "yld": "~3.8%",
         "lastEnt": null,
         "exd": "2026-03-12",
         "rec": "2026-03-13",
@@ -1022,12 +1022,12 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "yld"
           ]
         },
-        "ttmPs": 0.63
+        "ttmPs": 0.6066
       },
       "change": -3.71,
       "open": 16.78,
@@ -1048,8 +1048,8 @@
       "priceAuto": true,
       "tradingview": "ADX-ADIB",
       "price": 21.74,
-      "asof": "2026-10-24",
-      "mcap": "79 مليار",
+      "asof": "2026-10-23",
+      "mcap": "81 مليار",
       "pe": 12,
       "eps": "1.74",
       "roe": "18%",
@@ -1057,7 +1057,7 @@
       "rev": "9.50 مليار",
       "div": {
         "ps": "97.05 فلس",
-        "yld": "~4.5%",
+        "yld": "~4.4%",
         "lastEnt": null,
         "exd": "2026-03-13",
         "rec": "2026-03-14",
@@ -1066,12 +1066,12 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "yld"
           ]
         },
-        "ttmPs": 0.9705
+        "ttmPs": 0.9461
       },
       "change": -2.51,
       "open": 22.3,
@@ -1092,7 +1092,7 @@
       "priceAuto": true,
       "tradingview": "ADX-ADNIC",
       "price": 6.87,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "3.9 مليار",
       "pe": 8.5,
       "eps": "0.83",
@@ -1110,14 +1110,14 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
             "yld"
           ]
         },
-        "ttmPs": 0.47,
+        "ttmPs": 0.468,
         "src": {
           "url": "https://adnic.ae/-/adnic-shareholders-approve-cash-dividends-of-47-at-the-annual-general-meeting",
           "label": "بيان أدنيك: إقرار توزيع 47% (13 مارس 2026)",
@@ -1143,8 +1143,8 @@
       "priceAuto": true,
       "tradingview": "ADX-ETISALAT",
       "price": 20.84,
-      "asof": "2026-10-24",
-      "mcap": "181 مليار",
+      "asof": "2026-10-23",
+      "mcap": "182 مليار",
       "pe": 15.7,
       "eps": "1.32",
       "roe": "19%",
@@ -1161,7 +1161,7 @@
         "freq": "نصف سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -1169,7 +1169,7 @@
             "yld"
           ]
         },
-        "ttmPs": 0.945
+        "ttmPs": 0.9423
       },
       "change": -0.29,
       "open": 20.88,
@@ -1190,8 +1190,8 @@
       "priceAuto": true,
       "tradingview": "ADX-ADNOCGAS",
       "price": 3.17,
-      "asof": "2026-10-24",
-      "mcap": "243 مليار",
+      "asof": "2026-10-23",
+      "mcap": "244 مليار",
       "pe": 15.6,
       "eps": "0.24",
       "roe": "16%",
@@ -1208,7 +1208,7 @@
         "freq": "ربعي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -1216,7 +1216,7 @@
             "yld"
           ]
         },
-        "ttmPs": 0.1757
+        "ttmPs": 0.1752
       },
       "change": -0.31,
       "open": 3.18,
@@ -1237,8 +1237,8 @@
       "priceAuto": true,
       "tradingview": "ADX-ADNOCDIST",
       "price": 3.75,
-      "asof": "2026-10-24",
-      "mcap": "46.9 مليار",
+      "asof": "2026-10-23",
+      "mcap": "47.1 مليار",
       "pe": 13.1,
       "eps": "0.22",
       "roe": "21%",
@@ -1255,7 +1255,7 @@
         "freq": "ربعي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -1263,7 +1263,7 @@
             "yld"
           ]
         },
-        "ttmPs": 0.2057
+        "ttmPs": 0.2046
       },
       "change": -0.53,
       "open": 3.77,
@@ -1284,8 +1284,8 @@
       "priceAuto": true,
       "tradingview": "ADX-ADNOCDRILL",
       "price": 5.66,
-      "asof": "2026-10-24",
-      "mcap": "90.6 مليار",
+      "asof": "2026-10-23",
+      "mcap": "90.7 مليار",
       "pe": 16.9,
       "eps": "0.32",
       "roe": "20%",
@@ -1293,7 +1293,7 @@
       "rev": "18.0 مليار",
       "div": {
         "ps": "6 فلس",
-        "yld": "~4.2%",
+        "yld": "~4.1%",
         "lastEnt": null,
         "exd": "2026-08-07",
         "rec": null,
@@ -1302,7 +1302,7 @@
         "freq": "ربعي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -1310,7 +1310,7 @@
             "yld"
           ]
         },
-        "ttmPs": 0.2353
+        "ttmPs": 0.2349
       },
       "change": -0.18,
       "open": 5.67,
@@ -1331,8 +1331,8 @@
       "priceAuto": true,
       "tradingview": "ADX-NMDCENR",
       "price": 2.57,
-      "asof": "2026-10-24",
-      "mcap": "12.8 مليار",
+      "asof": "2026-10-23",
+      "mcap": "12.9 مليار",
       "pe": 10.1,
       "eps": "0.31",
       "roe": "15%",
@@ -1349,12 +1349,12 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "yld"
           ]
         },
-        "ttmPs": 0.1601,
+        "ttmPs": 0.1594,
         "src": {
           "url": "https://www.nmdc-energy.com/en/investor-relations/share-information/dividends/",
           "label": "صفحة التوزيعات لدى إن إم دي سي إنرجي: الاستبعاد 12 مارس والدفع 2 أبريل 2026",
@@ -1380,8 +1380,8 @@
       "priceAuto": true,
       "tradingview": "ADX-IHC",
       "price": 350,
-      "asof": "2026-10-24",
-      "mcap": "768 مليار",
+      "asof": "2026-10-23",
+      "mcap": "772 مليار",
       "pe": 22.3,
       "eps": "14.20",
       "roe": "19%",
@@ -1449,8 +1449,8 @@
       "priceAuto": true,
       "tradingview": "ADX-ALDAR",
       "price": 7.46,
-      "asof": "2026-10-24",
-      "mcap": "58.7 مليار",
+      "asof": "2026-10-23",
+      "mcap": "60.5 مليار",
       "pe": 7.2,
       "eps": "0.56",
       "roe": "12%",
@@ -1467,13 +1467,13 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "yld"
           ]
         },
-        "ttmPs": 0.205,
+        "ttmPs": 0.1989,
         "src": {
           "url": "https://www.aldar.com/en/news-and-media/aldar-q1-fy-2026-financial-results",
           "label": "بيان ألدار للربع الأول 2026: توزيع 0.205 درهم للسهم في أبريل",
@@ -1499,8 +1499,8 @@
       "priceAuto": true,
       "tradingview": "ADX-ALPHADHABI",
       "price": 6.77,
-      "asof": "2026-10-24",
-      "mcap": "67.7 مليار",
+      "asof": "2026-10-23",
+      "mcap": "68.6 مليار",
       "pe": 6.1,
       "eps": "1.30",
       "roe": "17%",
@@ -1508,7 +1508,7 @@
       "rev": "45.00 مليار",
       "div": {
         "ps": "20 فلس",
-        "yld": "~3.0%",
+        "yld": "~2.9%",
         "lastEnt": null,
         "exd": "2026-03-25",
         "rec": null,
@@ -1517,7 +1517,7 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -1525,7 +1525,7 @@
             "yld"
           ]
         },
-        "ttmPs": 0.2
+        "ttmPs": 0.1974
       },
       "change": -1.31,
       "open": 6.86,
@@ -1546,8 +1546,8 @@
       "priceAuto": true,
       "tradingview": "ADX-ADNOCLS",
       "price": 6.91,
-      "asof": "2026-10-24",
-      "mcap": "51.1 مليار",
+      "asof": "2026-10-23",
+      "mcap": "53.2 مليار",
       "pe": 9,
       "eps": "0.26",
       "roe": "21%",
@@ -1555,7 +1555,7 @@
       "rev": "9.50 مليار",
       "div": {
         "ps": "4.2 فلس",
-        "yld": "~2.4%",
+        "yld": "~2.3%",
         "lastEnt": null,
         "exd": "2026-08-19",
         "rec": null,
@@ -1564,7 +1564,7 @@
         "freq": "نصف سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -1572,7 +1572,7 @@
             "yld"
           ]
         },
-        "ttmPs": 0.1652
+        "ttmPs": 0.1588
       },
       "change": -3.89,
       "open": 7.19,
@@ -1593,8 +1593,8 @@
       "priceAuto": true,
       "tradingview": "ADX-2POINTZERO",
       "price": 1.95,
-      "asof": "2026-10-24",
-      "mcap": "67.4 مليار",
+      "asof": "2026-10-23",
+      "mcap": "69.5 مليار",
       "pe": 4.8,
       "eps": "0.12",
       "roe": "9%",
@@ -1629,8 +1629,8 @@
       "priceAuto": true,
       "tradingview": "ADX-BOROUGE",
       "price": 2.24,
-      "asof": "2026-10-24",
-      "mcap": "67.3 مليار",
+      "asof": "2026-10-23",
+      "mcap": "69.1 مليار",
       "pe": 18.9,
       "eps": "0.12",
       "roe": "15%",
@@ -1638,7 +1638,7 @@
       "rev": "21.00 مليار",
       "div": {
         "ps": "8.1 فلس",
-        "yld": "~7.2%",
+        "yld": "~7.0%",
         "lastEnt": null,
         "exd": "2026-08-31",
         "rec": null,
@@ -1647,7 +1647,7 @@
         "freq": "نصف سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -1655,7 +1655,7 @@
             "yld"
           ]
         },
-        "ttmPs": 0.162
+        "ttmPs": 0.1578
       },
       "change": -2.61,
       "open": 2.3,
@@ -1676,7 +1676,7 @@
       "priceAuto": true,
       "tradingview": "ADX-WAHA",
       "price": 2.01,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "3.8 مليار",
       "pe": 3.3,
       "eps": "0.18",
@@ -1694,12 +1694,12 @@
         "freq": "سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "yld"
           ]
         },
-        "ttmPs": 0.1
+        "ttmPs": 0.0995
       },
       "change": -0.5,
       "open": 2.04,
@@ -1720,7 +1720,7 @@
       "priceAuto": true,
       "tradingview": "ADX-DANA",
       "price": 0.812,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "5.7 مليار",
       "pe": 9.4,
       "eps": "0.08",
@@ -1738,13 +1738,13 @@
         "freq": "نصف سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "yld"
           ]
         },
-        "ttmPs": 0.065,
+        "ttmPs": 0.0649,
         "src": {
           "url": "https://www.danagas.com/?p=6424",
           "label": "جدول التوزيعات لدى دانة غاز: إغلاق السجل 1 مايو والدفع 20 مايو 2026",
@@ -1770,8 +1770,8 @@
       "priceAuto": true,
       "tradingview": "ADX-BURJEEL",
       "price": 1.12,
-      "asof": "2026-10-24",
-      "mcap": "5.8 مليار",
+      "asof": "2026-10-23",
+      "mcap": "6 مليار",
       "pe": 12.1,
       "eps": "0.10",
       "roe": "24%",
@@ -1779,7 +1779,7 @@
       "rev": "4.500 مليار",
       "div": {
         "ps": "2 فلس",
-        "yld": "~1.8%",
+        "yld": "~1.7%",
         "lastEnt": null,
         "exd": "2026-04-24",
         "rec": "2026-04-27",
@@ -1788,13 +1788,13 @@
         "freq": "نصف سنوي",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "yld"
           ]
         },
-        "ttmPs": 0.02,
+        "ttmPs": 0.0193,
         "src": {
           "url": "https://burjeelholdings.com/wp-content/uploads/2026/03/Invitation-to-Attend-AGM.pdf",
           "label": "دعوة الجمعية العمومية لبرجيل القابضة (17 أبريل 2026): الأحقية لمسجّلي 27 أبريل 2026",
@@ -1820,8 +1820,8 @@
       "priceAuto": true,
       "tradingview": "ADX-PHX",
       "price": 0.471,
-      "asof": "2026-10-24",
-      "mcap": "2.8 مليار",
+      "asof": "2026-10-23",
+      "mcap": "2.9 مليار",
       "pe": 18,
       "eps": "0.06",
       "roe": "15%",
@@ -1855,8 +1855,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 3.18,
-      "asof": "2026-10-24",
-      "mcap": "11.3 مليار",
+      "asof": "2026-10-23",
+      "mcap": "11.2 مليار",
       "pe": null,
       "eps": "-0.02",
       "roe": "-2.9%",
@@ -1890,7 +1890,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 10.86,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "329 مليون",
       "pe": 6.4,
       "eps": "1.69",
@@ -1909,7 +1909,7 @@
         "ttmPs": 0.5,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -1936,8 +1936,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 19.54,
-      "asof": "2026-10-24",
-      "mcap": "586 مليون",
+      "asof": "2026-10-23",
+      "mcap": "597 مليون",
       "pe": 6.9,
       "eps": "2.81",
       "roe": "33.1%",
@@ -1971,8 +1971,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.82,
-      "asof": "2026-10-24",
-      "mcap": "12.2 مليار",
+      "asof": "2026-10-23",
+      "mcap": "12.3 مليار",
       "pe": 8.1,
       "eps": "0.35",
       "roe": "14.7%",
@@ -1980,17 +1980,17 @@
       "rev": "5.2 مليار",
       "div": {
         "ps": "20 فلس",
-        "yld": "~6.5%",
+        "yld": "~6.4%",
         "lastEnt": null,
         "exd": "2026-03-18",
         "rec": null,
         "pay": "2026-04-07",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.1833,
+        "ttmPs": 0.1814,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -2017,8 +2017,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.39,
-      "asof": "2026-10-24",
-      "mcap": "139 مليون",
+      "asof": "2026-10-23",
+      "mcap": "135 مليون",
       "pe": null,
       "eps": "-0.07",
       "roe": "-15.6%",
@@ -2052,8 +2052,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.25,
-      "asof": "2026-10-24",
-      "mcap": "716 مليون",
+      "asof": "2026-10-23",
+      "mcap": "725 مليون",
       "pe": 16,
       "eps": "0.02",
       "roe": null,
@@ -2087,8 +2087,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.298,
-      "asof": "2026-10-24",
-      "mcap": "775 مليون",
+      "asof": "2026-10-23",
+      "mcap": "798 مليون",
       "pe": null,
       "eps": null,
       "roe": null,
@@ -2122,7 +2122,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 13,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "37.5 مليار",
       "pe": 11,
       "eps": "1.19",
@@ -2141,7 +2141,7 @@
         "ttmPs": 0.8412,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -2168,8 +2168,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 25.1,
-      "asof": "2026-10-24",
-      "mcap": "21.2 مليار",
+      "asof": "2026-10-23",
+      "mcap": "21.7 مليار",
       "pe": 6,
       "eps": "4.21",
       "roe": "25.9%",
@@ -2177,17 +2177,17 @@
       "rev": "29.6 مليار",
       "div": {
         "ps": "1.00 درهم",
-        "yld": "~4.0%",
+        "yld": "~3.9%",
         "lastEnt": null,
         "exd": "2026-03-13",
         "rec": null,
         "pay": "2026-04-04",
         "agm": null,
         "freq": null,
-        "ttmPs": 1,
+        "ttmPs": 0.9774,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -2214,7 +2214,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 31,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "2.8 مليار",
       "pe": 16.5,
       "eps": "1.87",
@@ -2233,7 +2233,7 @@
         "ttmPs": 1.1,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -2260,7 +2260,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.607,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "1.3 مليار",
       "pe": 9.8,
       "eps": "0.06",
@@ -2269,17 +2269,17 @@
       "rev": "1.9 مليار",
       "div": {
         "ps": "2.7 فلس",
-        "yld": "~13.2%",
+        "yld": "~13.3%",
         "lastEnt": null,
         "exd": "2026-10-07",
         "rec": null,
         "pay": "2026-10-27",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.08,
+        "ttmPs": 0.0809,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -2306,7 +2306,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 3.34,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "3.6 مليار",
       "pe": 11.2,
       "eps": "0.3",
@@ -2322,10 +2322,10 @@
         "pay": "2026-04-21",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.2,
+        "ttmPs": 0.1994,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -2352,8 +2352,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.93,
-      "asof": "2026-10-24",
-      "mcap": "5.9 مليار",
+      "asof": "2026-10-23",
+      "mcap": "5.7 مليار",
       "pe": 10.9,
       "eps": "0.27",
       "roe": "8.5%",
@@ -2361,17 +2361,17 @@
       "rev": "1.2 مليار",
       "div": {
         "ps": "20 فلس",
-        "yld": "~6.8%",
+        "yld": "~7.1%",
         "lastEnt": null,
         "exd": "2026-03-18",
         "rec": null,
         "pay": "2026-04-08",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.2,
+        "ttmPs": 0.2071,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -2398,7 +2398,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 5.65,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "932 مليون",
       "pe": 9.5,
       "eps": "0.59",
@@ -2417,7 +2417,7 @@
         "ttmPs": 0.45,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -2445,7 +2445,7 @@
       "tradingview": "DFM-TAKAFUL_EM",
       "priceAuto": true,
       "price": 1.75,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "369 مليون",
       "pe": 19.7,
       "eps": "0.09",
@@ -2480,7 +2480,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.105,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "1.7 مليار",
       "pe": 1.1,
       "eps": "1.02",
@@ -2489,17 +2489,17 @@
       "rev": "3 مليار",
       "div": {
         "ps": "49 فلس",
-        "yld": "~44.3%",
+        "yld": "~42.8%",
         "lastEnt": null,
         "exd": "2026-05-01",
         "rec": null,
         "pay": "2026-05-15",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.49,
+        "ttmPs": 0.4729,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -2526,7 +2526,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 3.15,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "428 مليون",
       "pe": 8.4,
       "eps": "0.38",
@@ -2545,7 +2545,7 @@
         "ttmPs": 0.3,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -2572,7 +2572,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.45,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "3.2 مليار",
       "pe": 19.6,
       "eps": "0.07",
@@ -2581,17 +2581,17 @@
       "rev": "345 مليون",
       "div": {
         "ps": "9.2 فلس",
-        "yld": "~12.7%",
+        "yld": "~12.8%",
         "lastEnt": null,
         "exd": "2026-09-30",
         "rec": null,
         "pay": "2026-10-21",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.184,
+        "ttmPs": 0.1853,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -2618,7 +2618,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.47,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "618 مليون",
       "pe": 11,
       "eps": "0.22",
@@ -2653,8 +2653,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 6.19,
-      "asof": "2026-10-24",
-      "mcap": "31.5 مليار",
+      "asof": "2026-10-23",
+      "mcap": "31.4 مليار",
       "pe": 15.4,
       "eps": "0.4",
       "roe": "8%",
@@ -2688,7 +2688,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.43,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "3.1 مليار",
       "pe": 14.2,
       "eps": "0.1",
@@ -2707,7 +2707,7 @@
         "ttmPs": 0.021,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -2734,8 +2734,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.47,
-      "asof": "2026-10-24",
-      "mcap": "13.9 مليار",
+      "asof": "2026-10-23",
+      "mcap": "14 مليار",
       "pe": 14.7,
       "eps": "0.1",
       "roe": "4.5%",
@@ -2743,17 +2743,17 @@
       "rev": "20.8 مليار",
       "div": {
         "ps": "2.8 فلس",
-        "yld": "~3.5%",
+        "yld": "~3.4%",
         "lastEnt": null,
         "exd": "2026-05-01",
         "rec": null,
         "pay": "2026-05-21",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.051,
+        "ttmPs": 0.0507,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -2780,8 +2780,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.962,
-      "asof": "2026-10-24",
-      "mcap": "2.8 مليار",
+      "asof": "2026-10-23",
+      "mcap": "2.9 مليار",
       "pe": null,
       "eps": "0.11",
       "roe": "5.5%",
@@ -2815,8 +2815,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.49,
-      "asof": "2026-10-24",
-      "mcap": "1.2 مليار",
+      "asof": "2026-10-23",
+      "mcap": "1.3 مليار",
       "pe": 42,
       "eps": "0.04",
       "roe": "6.5%",
@@ -2850,7 +2850,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.86,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "404 مليون",
       "pe": null,
       "eps": "-0.01",
@@ -2885,8 +2885,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.999,
-      "asof": "2026-10-24",
-      "mcap": "460 مليون",
+      "asof": "2026-10-23",
+      "mcap": "455 مليون",
       "pe": 9.3,
       "eps": "0.11",
       "roe": "11.5%",
@@ -2901,10 +2901,10 @@
         "pay": "2026-05-13",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.0435,
+        "ttmPs": 0.0439,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -2931,26 +2931,26 @@
       "auto": true,
       "priceAuto": true,
       "price": 9.86,
-      "asof": "2026-10-24",
-      "mcap": "19.8 مليار",
+      "asof": "2026-10-23",
+      "mcap": "20.3 مليار",
       "pe": 6.7,
-      "eps": "1.51",
+      "eps": "1.46",
       "roe": "22.5%",
-      "net": "3 مليار (+23.8%)",
-      "rev": "7.7 مليار",
+      "net": "2.9 مليار (+24.9%)",
+      "rev": "8.4 مليار",
       "div": {
         "ps": "63 فلس",
-        "yld": "~6.4%",
+        "yld": "~6.3%",
         "lastEnt": null,
         "exd": "2026-03-11",
         "rec": null,
         "pay": "2026-03-16",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.63,
+        "ttmPs": 0.6163,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -2977,7 +2977,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 7.62,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "1.1 مليار",
       "pe": 10,
       "eps": "0.76",
@@ -2993,10 +2993,10 @@
         "pay": "2026-03-31",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.5667,
+        "ttmPs": 0.566,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -3023,7 +3023,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 5.85,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "2.7 مليار",
       "pe": 43.7,
       "eps": "0.13",
@@ -3058,7 +3058,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.346,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "107 مليون",
       "pe": null,
       "eps": "-0.01",
@@ -3093,8 +3093,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.605,
-      "asof": "2026-10-24",
-      "mcap": "513 مليون",
+      "asof": "2026-10-23",
+      "mcap": "539 مليون",
       "pe": null,
       "eps": "0",
       "roe": "-0.2%",
@@ -3128,7 +3128,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.5,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "238 مليون",
       "pe": 8.3,
       "eps": "0.3",
@@ -3163,8 +3163,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.07,
-      "asof": "2026-10-24",
-      "mcap": "414 مليون",
+      "asof": "2026-10-23",
+      "mcap": "434 مليون",
       "pe": 5.9,
       "eps": "0.35",
       "roe": "26.7%",
@@ -3172,17 +3172,17 @@
       "rev": "659 مليون",
       "div": {
         "ps": "6 فلس",
-        "yld": "~2.9%",
+        "yld": "~2.8%",
         "lastEnt": null,
         "exd": "2026-08-06",
         "rec": null,
         "pay": "2026-08-27",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.06,
+        "ttmPs": 0.0572,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -3209,8 +3209,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 3.28,
-      "asof": "2026-10-24",
-      "mcap": "18.4 مليار",
+      "asof": "2026-10-23",
+      "mcap": "18.5 مليار",
       "pe": 29.9,
       "eps": "0.11",
       "roe": "15.4%",
@@ -3244,7 +3244,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.6,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "1.8 مليار",
       "pe": 10.9,
       "eps": "0.15",
@@ -3263,7 +3263,7 @@
         "ttmPs": 0.0357,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -3290,8 +3290,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.275,
-      "asof": "2026-10-24",
-      "mcap": "16.6 مليار",
+      "asof": "2026-10-23",
+      "mcap": "16.2 مليار",
       "pe": 7.6,
       "eps": "0.17",
       "roe": "9.9%",
@@ -3299,17 +3299,17 @@
       "rev": "2 مليار",
       "div": {
         "ps": "4.4 فلس",
-        "yld": "~6.7%",
+        "yld": "~6.9%",
         "lastEnt": null,
         "exd": "2026-08-12",
         "rec": null,
         "pay": null,
         "agm": null,
         "freq": null,
-        "ttmPs": 0.086,
+        "ttmPs": 0.0881,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -3336,7 +3336,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.09,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "3.6 مليار",
       "pe": 10.8,
       "eps": "0.19",
@@ -3355,7 +3355,7 @@
         "ttmPs": 0.14,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -3382,8 +3382,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.4,
-      "asof": "2026-10-24",
-      "mcap": "575 مليون",
+      "asof": "2026-10-23",
+      "mcap": "567 مليون",
       "pe": 32.4,
       "eps": "0.05",
       "roe": null,
@@ -3417,8 +3417,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.5,
-      "asof": "2026-10-24",
-      "mcap": "8.3 مليار",
+      "asof": "2026-10-23",
+      "mcap": "8.8 مليار",
       "pe": null,
       "eps": "0.03",
       "roe": null,
@@ -3452,8 +3452,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 4.48,
-      "asof": "2026-10-24",
-      "mcap": "470 مليون",
+      "asof": "2026-10-23",
+      "mcap": "469 مليون",
       "pe": 152.9,
       "eps": "0.03",
       "roe": "1.1%",
@@ -3487,7 +3487,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.75,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "910 مليون",
       "pe": 14.7,
       "eps": "0.12",
@@ -3506,7 +3506,7 @@
         "ttmPs": 0.07,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -3533,8 +3533,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 12.32,
-      "asof": "2026-10-24",
-      "mcap": "3.1 مليار",
+      "asof": "2026-10-23",
+      "mcap": "3.2 مليار",
       "pe": 8.9,
       "eps": "1.38",
       "roe": "14.1%",
@@ -3568,8 +3568,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.52,
-      "asof": "2026-10-24",
-      "mcap": "28 مليار",
+      "asof": "2026-10-23",
+      "mcap": "28.8 مليار",
       "pe": 13,
       "eps": "0.19",
       "roe": "11%",
@@ -3584,10 +3584,10 @@
         "pay": "2026-08-31",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.0541,
+        "ttmPs": 0.0526,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -3614,8 +3614,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.185,
-      "asof": "2026-10-24",
-      "mcap": "5.9 مليار",
+      "asof": "2026-10-23",
+      "mcap": "6.1 مليار",
       "pe": 8.9,
       "eps": "0.13",
       "roe": "56.4%",
@@ -3623,17 +3623,17 @@
       "rev": "16.2 مليار",
       "div": {
         "ps": "2 فلس",
-        "yld": "~4.2%",
+        "yld": "~4.1%",
         "lastEnt": null,
         "exd": "2026-10-23",
         "rec": null,
         "pay": "2026-10-29",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.05,
+        "ttmPs": 0.0486,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -3660,7 +3660,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 6,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "630 مليون",
       "pe": 4.5,
       "eps": "1.33",
@@ -3679,7 +3679,7 @@
         "ttmPs": 0.2857,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -3706,8 +3706,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.97,
-      "asof": "2026-10-24",
-      "mcap": "3 مليار",
+      "asof": "2026-10-23",
+      "mcap": "3.1 مليار",
       "pe": null,
       "eps": "-0.11",
       "roe": "-10.2%",
@@ -3741,8 +3741,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.21,
-      "asof": "2026-10-24",
-      "mcap": "8.3 مليار",
+      "asof": "2026-10-23",
+      "mcap": "8.2 مليار",
       "pe": 9.3,
       "eps": "0.13",
       "roe": "9.6%",
@@ -3776,8 +3776,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.88,
-      "asof": "2026-10-24",
-      "mcap": "9 مليار",
+      "asof": "2026-10-23",
+      "mcap": "9.1 مليار",
       "pe": null,
       "eps": "-0.08",
       "roe": "-5.6%",
@@ -3811,7 +3811,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 55.3,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "6.5 مليار",
       "pe": 7.3,
       "eps": "7.58",
@@ -3820,17 +3820,17 @@
       "rev": "22.3 مليار",
       "div": {
         "ps": null,
-        "yld": "~3.1%",
+        "yld": "~3.0%",
         "lastEnt": null,
         "exd": null,
         "rec": null,
         "pay": null,
         "agm": null,
         "freq": null,
-        "ttmPs": 1.7263,
+        "ttmPs": 1.6748,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "yld"
           ]
@@ -3854,8 +3854,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.44,
-      "asof": "2026-10-24",
-      "mcap": "5.5 مليار",
+      "asof": "2026-10-23",
+      "mcap": "5.7 مليار",
       "pe": 6.1,
       "eps": "0.07",
       "roe": "8.9%",
@@ -3863,17 +3863,17 @@
       "rev": "3.3 مليار",
       "div": {
         "ps": "3 فلس",
-        "yld": "~6.8%",
+        "yld": "~6.7%",
         "lastEnt": null,
         "exd": "2026-03-18",
         "rec": null,
         "pay": "2026-04-11",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.03,
+        "ttmPs": 0.0293,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -3900,7 +3900,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.28,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "254 مليون",
       "pe": 51.2,
       "eps": "0.03",
@@ -3935,8 +3935,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.68,
-      "asof": "2026-10-24",
-      "mcap": "2.7 مليار",
+      "asof": "2026-10-23",
+      "mcap": "2.8 مليار",
       "pe": null,
       "eps": "-0.23",
       "roe": "-5.7%",
@@ -3970,7 +3970,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 5.81,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "6.4 مليار",
       "pe": 7.4,
       "eps": "0.79",
@@ -3986,10 +3986,10 @@
         "pay": "2026-04-11",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.3,
+        "ttmPs": 0.3005,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -4016,7 +4016,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.24,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "391 مليون",
       "pe": 472.7,
       "eps": "0",
@@ -4035,7 +4035,7 @@
         "ttmPs": 0.0302,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -4062,8 +4062,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 9.4,
-      "asof": "2026-10-24",
-      "mcap": "28.1 مليار",
+      "asof": "2026-10-23",
+      "mcap": "28.9 مليار",
       "pe": 8.1,
       "eps": "1.16",
       "roe": "20.6%",
@@ -4071,17 +4071,17 @@
       "rev": "9.9 مليار",
       "div": {
         "ps": "58.6 فلس",
-        "yld": "~6.2%",
+        "yld": "~6.1%",
         "lastEnt": null,
         "exd": "2026-03-06",
         "rec": null,
         "pay": "2026-03-12",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.5862,
+        "ttmPs": 0.5692,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -4108,8 +4108,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.227,
-      "asof": "2026-10-24",
-      "mcap": "831 مليون",
+      "asof": "2026-10-23",
+      "mcap": "842 مليون",
       "pe": null,
       "eps": "-0.01",
       "roe": "-8.4%",
@@ -4143,7 +4143,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.7,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "2.5 مليار",
       "pe": 121.4,
       "eps": "0.01",
@@ -4178,7 +4178,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.34,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "206 مليون",
       "pe": 5.1,
       "eps": "0.26",
@@ -4213,7 +4213,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.025,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "6.6 مليار",
       "pe": 35.7,
       "eps": "0",
@@ -4248,8 +4248,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.52,
-      "asof": "2026-10-24",
-      "mcap": "722 مليون",
+      "asof": "2026-10-23",
+      "mcap": "740 مليون",
       "pe": 2,
       "eps": "0.26",
       "roe": "32.6%",
@@ -4257,17 +4257,17 @@
       "rev": "2 مليار",
       "div": {
         "ps": "9.8 فلس",
-        "yld": "~18.8%",
+        "yld": "~18.3%",
         "lastEnt": null,
         "exd": "2026-07-14",
         "rec": null,
         "pay": "2026-08-14",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.0976,
+        "ttmPs": 0.0952,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -4294,8 +4294,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.42,
-      "asof": "2026-10-24",
-      "mcap": "864 مليون",
+      "asof": "2026-10-23",
+      "mcap": "852 مليون",
       "pe": 5.9,
       "eps": "0.24",
       "roe": "10.3%",
@@ -4303,17 +4303,17 @@
       "rev": "904 مليون",
       "div": {
         "ps": "10 فلس",
-        "yld": "~7.0%",
+        "yld": "~7.1%",
         "lastEnt": null,
         "exd": "2026-04-17",
         "rec": null,
         "pay": "2026-05-07",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.1,
+        "ttmPs": 0.1014,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -4340,7 +4340,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 16.9,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "1.7 مليار",
       "pe": 8.1,
       "eps": "2.09",
@@ -4359,7 +4359,7 @@
         "ttmPs": 1,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -4386,7 +4386,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 4.94,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "1.8 مليار",
       "pe": 12.2,
       "eps": "0.4",
@@ -4405,7 +4405,7 @@
         "ttmPs": 0.25,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -4432,8 +4432,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.78,
-      "asof": "2026-10-24",
-      "mcap": "45.4 مليار",
+      "asof": "2026-10-23",
+      "mcap": "45.8 مليار",
       "pe": 11.1,
       "eps": "0.25",
       "roe": "7.5%",
@@ -4467,8 +4467,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 3.07,
-      "asof": "2026-10-24",
-      "mcap": "3 مليار",
+      "asof": "2026-10-23",
+      "mcap": "3.1 مليار",
       "pe": 24.1,
       "eps": "0.13",
       "roe": "7.2%",
@@ -4476,19 +4476,19 @@
       "rev": "1.3 مليار",
       "div": {
         "ps": "15 فلس",
-        "yld": "~4.9%",
+        "yld": "~4.7%",
         "lastEnt": null,
         "exd": "2025-12-05",
         "rec": null,
         "pay": null,
         "agm": null,
         "freq": null,
-        "ttmPs": 0.15,
+        "ttmPs": 0.1453,
         "nextExd": "2026-11-19",
         "nextPs": "12 فلس",
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "nextExd",
@@ -4517,8 +4517,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.478,
-      "asof": "2026-10-24",
-      "mcap": "58 مليون",
+      "asof": "2026-10-23",
+      "mcap": "59 مليون",
       "pe": 2.1,
       "eps": "0.22",
       "roe": "5.7%",
@@ -4552,7 +4552,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.89,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "1.5 مليار",
       "pe": 5.5,
       "eps": "0.16",
@@ -4587,8 +4587,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.956,
-      "asof": "2026-10-24",
-      "mcap": "6.7 مليار",
+      "asof": "2026-10-23",
+      "mcap": "6.8 مليار",
       "pe": 13.8,
       "eps": "0.07",
       "roe": "59.4%",
@@ -4596,17 +4596,17 @@
       "rev": "774 مليون",
       "div": {
         "ps": "3 فلس",
-        "yld": "~10.1%",
+        "yld": "~10.0%",
         "lastEnt": null,
         "exd": "2026-08-14",
         "rec": null,
         "pay": "2026-09-02",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.0964,
+        "ttmPs": 0.0955,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -4633,8 +4633,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 48,
-      "asof": "2026-10-24",
-      "mcap": "480 مليون",
+      "asof": "2026-10-23",
+      "mcap": "481 مليون",
       "pe": 10.5,
       "eps": "4.55",
       "roe": "3.1%",
@@ -4668,7 +4668,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.899,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "1.8 مليار",
       "pe": 13.5,
       "eps": "0.07",
@@ -4684,10 +4684,10 @@
         "pay": null,
         "agm": null,
         "freq": null,
-        "ttmPs": 0.1,
+        "ttmPs": 0.0997,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -4714,7 +4714,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.32,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "330 مليون",
       "pe": 6.9,
       "eps": "0.19",
@@ -4733,7 +4733,7 @@
         "ttmPs": 0.0368,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -4760,7 +4760,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.85,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "168 مليون",
       "pe": null,
       "eps": null,
@@ -4795,12 +4795,12 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.707,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "3.1 مليار",
-      "pe": 4.8,
-      "eps": "0.15",
-      "roe": "11.4%",
-      "net": "645 مليون (+16.4%)",
+      "pe": 4.9,
+      "eps": "0.14",
+      "roe": "11.6%",
+      "net": "633 مليون (+18.1%)",
       "rev": "2.1 مليار",
       "div": {
         "ps": "5 فلس",
@@ -4811,10 +4811,10 @@
         "pay": "2026-04-29",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.05,
+        "ttmPs": 0.0501,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -4841,7 +4841,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.588,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "1.6 مليار",
       "pe": 16.2,
       "eps": "0.04",
@@ -4876,7 +4876,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.045,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "733 مليون",
       "pe": null,
       "eps": null,
@@ -4895,7 +4895,7 @@
         "ttmPs": 0.0745,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -4922,7 +4922,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 8.51,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "851 مليون",
       "pe": 17.6,
       "eps": "0.48",
@@ -4941,7 +4941,7 @@
         "ttmPs": 0.35,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -4968,7 +4968,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 3.14,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "2.6 مليار",
       "pe": 16.6,
       "eps": "0.19",
@@ -4977,17 +4977,17 @@
       "rev": "5 مليار",
       "div": {
         "ps": "11.8 فلس",
-        "yld": "~7.5%",
+        "yld": "~7.6%",
         "lastEnt": null,
         "exd": "2026-09-25",
         "rec": null,
         "pay": null,
         "agm": null,
         "freq": null,
-        "ttmPs": 0.2358,
+        "ttmPs": 0.2374,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5014,7 +5014,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.26,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "1.6 مليار",
       "pe": 14.8,
       "eps": "0.15",
@@ -5023,17 +5023,17 @@
       "rev": "807 مليون",
       "div": {
         "ps": "17 فلس",
-        "yld": "~7.5%",
+        "yld": "~7.4%",
         "lastEnt": null,
         "exd": "2026-04-03",
         "rec": null,
         "pay": "2026-04-24",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.17,
+        "ttmPs": 0.167,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5060,8 +5060,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.271,
-      "asof": "2026-10-24",
-      "mcap": "163 مليون",
+      "asof": "2026-10-23",
+      "mcap": "162 مليون",
       "pe": null,
       "eps": "0",
       "roe": "-0.1%",
@@ -5095,7 +5095,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.43,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "4.4 مليار",
       "pe": 10,
       "eps": "0.14",
@@ -5114,7 +5114,7 @@
         "ttmPs": 0.035,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5141,8 +5141,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.592,
-      "asof": "2026-10-24",
-      "mcap": "154 مليون",
+      "asof": "2026-10-23",
+      "mcap": "162 مليون",
       "pe": 3.9,
       "eps": "0.15",
       "roe": "15.8%",
@@ -5176,7 +5176,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.27,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "1.3 مليار",
       "pe": 8.7,
       "eps": "0.15",
@@ -5194,7 +5194,7 @@
         "freq": null,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5220,8 +5220,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.38,
-      "asof": "2026-10-24",
-      "mcap": "3.8 مليار",
+      "asof": "2026-10-23",
+      "mcap": "3.7 مليار",
       "pe": 7.5,
       "eps": "0.18",
       "roe": "15.1%",
@@ -5236,10 +5236,10 @@
         "pay": "2026-03-24",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.0918,
+        "ttmPs": 0.0925,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5266,8 +5266,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.75,
-      "asof": "2026-10-24",
-      "mcap": "217 مليون",
+      "asof": "2026-10-23",
+      "mcap": "221 مليون",
       "pe": 18,
       "eps": "0.15",
       "roe": "8%",
@@ -5301,8 +5301,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.47,
-      "asof": "2026-10-24",
-      "mcap": "534 مليون",
+      "asof": "2026-10-23",
+      "mcap": "559 مليون",
       "pe": 8.3,
       "eps": "0.18",
       "roe": "8.7%",
@@ -5310,17 +5310,17 @@
       "rev": "71 مليون",
       "div": {
         "ps": "8 فلس",
-        "yld": "~5.4%",
+        "yld": "~5.2%",
         "lastEnt": null,
         "exd": "2026-04-24",
         "rec": null,
         "pay": "2026-05-15",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.08,
+        "ttmPs": 0.0764,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5347,8 +5347,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.18,
-      "asof": "2026-10-24",
-      "mcap": "18.1 مليار",
+      "asof": "2026-10-23",
+      "mcap": "18 مليار",
       "pe": 7.5,
       "eps": "0.29",
       "roe": "48.3%",
@@ -5363,10 +5363,10 @@
         "pay": "2026-10-29",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.1155,
+        "ttmPs": 0.116,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5393,8 +5393,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.892,
-      "asof": "2026-10-24",
-      "mcap": "2.2 مليار",
+      "asof": "2026-10-23",
+      "mcap": "2.3 مليار",
       "pe": 20.5,
       "eps": "0.04",
       "roe": "7.9%",
@@ -5428,7 +5428,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 7.07,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "3.3 مليار",
       "pe": 7.6,
       "eps": "0.93",
@@ -5447,7 +5447,7 @@
         "ttmPs": 0.25,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5474,7 +5474,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 3.24,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "671 مليون",
       "pe": 5.6,
       "eps": "0.58",
@@ -5493,7 +5493,7 @@
         "ttmPs": 0.25,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5520,7 +5520,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 7.99,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "1.7 مليار",
       "pe": null,
       "eps": "-0.31",
@@ -5539,7 +5539,7 @@
         "ttmPs": 0.19,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5566,7 +5566,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 7.41,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "1.1 مليار",
       "pe": 7.7,
       "eps": "0.96",
@@ -5585,7 +5585,7 @@
         "ttmPs": 0.6,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5612,7 +5612,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.32,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "150 مليون",
       "pe": 14,
       "eps": "0.09",
@@ -5647,7 +5647,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.943,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "472 مليون",
       "pe": 15.3,
       "eps": "0.06",
@@ -5666,7 +5666,7 @@
         "ttmPs": 0.02,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5693,7 +5693,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.657,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "168 مليون",
       "pe": null,
       "eps": "-0.7",
@@ -5728,8 +5728,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.939,
-      "asof": "2026-10-24",
-      "mcap": "9.7 مليار",
+      "asof": "2026-10-23",
+      "mcap": "9.8 مليار",
       "pe": 15.9,
       "eps": "0.06",
       "roe": "16.4%",
@@ -5737,17 +5737,17 @@
       "rev": "28.8 مليار",
       "div": {
         "ps": "3 فلس",
-        "yld": "~6.9%",
+        "yld": "~6.8%",
         "lastEnt": null,
         "exd": "2026-08-21",
         "rec": null,
         "pay": "2026-09-10",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.065,
+        "ttmPs": 0.0643,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5774,7 +5774,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 4.84,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "12.5 مليار",
       "pe": 9.8,
       "eps": "0.49",
@@ -5793,7 +5793,7 @@
         "ttmPs": 0.2,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5820,7 +5820,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 3.3,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "381 مليون",
       "pe": 6.5,
       "eps": "0.51",
@@ -5839,7 +5839,7 @@
         "ttmPs": 0.15,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5866,8 +5866,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.539,
-      "asof": "2026-10-24",
-      "mcap": "2.3 مليار",
+      "asof": "2026-10-23",
+      "mcap": "2.4 مليار",
       "pe": 5,
       "eps": "0.11",
       "roe": "13.8%",
@@ -5875,17 +5875,17 @@
       "rev": "977 مليون",
       "div": {
         "ps": "3 فلس",
-        "yld": "~5.6%",
+        "yld": "~5.4%",
         "lastEnt": null,
         "exd": "2026-04-16",
         "rec": null,
         "pay": null,
         "agm": null,
         "freq": null,
-        "ttmPs": 0.03,
+        "ttmPs": 0.0289,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5912,7 +5912,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.3,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "2.3 مليار",
       "pe": 9.8,
       "eps": "0.24",
@@ -5928,10 +5928,10 @@
         "pay": "2026-09-04",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.2,
+        "ttmPs": 0.2009,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -5958,26 +5958,26 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.57,
-      "asof": "2026-10-24",
-      "mcap": "3.5 مليار",
-      "pe": 5.5,
-      "eps": "0.28",
-      "roe": "18.4%",
-      "net": "853 مليون (+62.9%)",
-      "rev": "2.8 مليار",
+      "asof": "2026-10-23",
+      "mcap": "3.6 مليار",
+      "pe": 5.7,
+      "eps": "0.27",
+      "roe": "18.5%",
+      "net": "822 مليون (+70.7%)",
+      "rev": "2.7 مليار",
       "div": {
         "ps": "6.5 فلس",
-        "yld": "~4.1%",
+        "yld": "~3.9%",
         "lastEnt": null,
         "exd": "2026-05-08",
         "rec": null,
         "pay": "2026-05-29",
         "agm": null,
         "freq": null,
-        "ttmPs": 0.065,
+        "ttmPs": 0.0618,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -6004,7 +6004,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.92,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "1.1 مليار",
       "pe": 12.9,
       "eps": "0.07",
@@ -6039,7 +6039,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.99,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "595 مليون",
       "pe": null,
       "eps": "-0.01",
@@ -6074,7 +6074,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 1.8,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "4.1 مليار",
       "pe": null,
       "eps": "-1.07",
@@ -6093,7 +6093,7 @@
         "ttmPs": 0.0265,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -6120,8 +6120,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.18,
-      "asof": "2026-10-24",
-      "mcap": "524 مليون",
+      "asof": "2026-10-23",
+      "mcap": "547 مليون",
       "pe": null,
       "eps": "0",
       "roe": "-1.6%",
@@ -6155,7 +6155,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.99,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "2.2 مليار",
       "pe": 10.9,
       "eps": "0.09",
@@ -6174,7 +6174,7 @@
         "ttmPs": 0.0428,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -6201,8 +6201,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 0.49,
-      "asof": "2026-10-24",
-      "mcap": "111 مليون",
+      "asof": "2026-10-23",
+      "mcap": "116 مليون",
       "pe": 5.9,
       "eps": "0.08",
       "roe": "71.1%",
@@ -6236,7 +6236,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 66.3,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "335 مليون",
       "pe": 0.4,
       "eps": "172.29",
@@ -6255,7 +6255,7 @@
         "ttmPs": 98.9552,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -6282,7 +6282,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.31,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "19.4 مليار",
       "pe": 19.3,
       "eps": "0.12",
@@ -6301,7 +6301,7 @@
         "ttmPs": 0.1327,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -6328,8 +6328,8 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.26,
-      "asof": "2026-10-24",
-      "mcap": "6.4 مليار",
+      "asof": "2026-10-23",
+      "mcap": "6.5 مليار",
       "pe": 16.8,
       "eps": "0.13",
       "roe": "6.2%",
@@ -6337,17 +6337,17 @@
       "rev": "2.5 مليار",
       "div": {
         "ps": "5 فلس",
-        "yld": "~5.1%",
+        "yld": "~5.0%",
         "lastEnt": null,
         "exd": "2026-08-19",
         "rec": null,
         "pay": null,
         "agm": null,
         "freq": null,
-        "ttmPs": 0.115,
+        "ttmPs": 0.113,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -6374,7 +6374,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 4.76,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "185 مليون",
       "pe": 10.8,
       "eps": "0.44",
@@ -6393,7 +6393,7 @@
         "ttmPs": 0.3,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -6420,7 +6420,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 2.09,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "6.6 مليار",
       "pe": 8.9,
       "eps": "0.23",
@@ -6439,7 +6439,7 @@
         "ttmPs": 0.0734,
         "auto": {
           "src": "tradingview",
-          "asof": "2026-10-24",
+          "asof": "2026-10-23",
           "fields": [
             "exd",
             "pay",
@@ -6466,7 +6466,7 @@
       "auto": true,
       "priceAuto": true,
       "price": 11.28,
-      "asof": "2026-10-24",
+      "asof": "2026-10-23",
       "mcap": "2.7 مليار",
       "pe": 35.5,
       "eps": "0.32",
@@ -6501,7 +6501,7 @@
       "value": 5734.19,
       "change": -83.78,
       "changePct": -1.44,
-      "asof": "2026-10-24"
+      "asof": "2026-10-23"
     },
     "FADGI": {
       "code": "FADGI",
@@ -6510,7 +6510,7 @@
       "value": 9588.41,
       "change": -113.51,
       "changePct": -1.17,
-      "asof": "2026-10-24"
+      "asof": "2026-10-23"
     }
   }
 }

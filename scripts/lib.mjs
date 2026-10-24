@@ -4,6 +4,19 @@ export const round = (n, p = 2) => Math.round(n * 10 ** p) / 10 ** p
 export const num = (x) => (typeof x === 'number' && isFinite(x) ? x : null)
 export const isoDate = (d) => d.toISOString().slice(0, 10)
 
+/**
+ * تاريخ آخر جلسة تداول بتوقيت دبي (UTC+4): أيام التداول من الإثنين إلى الجمعة، والجلسة تبدأ 10:00.
+ * التشغيل في عطلة نهاية الأسبوع أو قبل افتتاح الجلسة يُنسب إلى آخر يوم تداول سابق، لا إلى يوم التشغيل.
+ * (العطل الرسمية لا تُحتسب هنا.) يُرجع Date عند منتصف ليل ذلك اليوم بالتوقيت العالمي.
+ */
+export function sessionDate(now = new Date()) {
+  const dubai = new Date(now.getTime() + 4 * 3600_000)
+  const d = new Date(Date.UTC(dubai.getUTCFullYear(), dubai.getUTCMonth(), dubai.getUTCDate()))
+  if (dubai.getUTCHours() < 10) d.setUTCDate(d.getUTCDate() - 1)
+  while (d.getUTCDay() === 0 || d.getUTCDay() === 6) d.setUTCDate(d.getUTCDate() - 1)
+  return d
+}
+
 // نقطة TradingView الخاصة بالسوق الإماراتي (uae/scan) تُرجع كل القيم بالدرهم مباشرة (تحقّق فحصٌ من خوادم
 // GitHub: توزيع إعمار 1 و0.5، ديوا 0.062، الأول 0.80 — مطابقة للإعلانات الرسمية)، فلا تحويل عملات.
 export const TV_SCAN_URL = 'https://scanner.tradingview.com/uae/scan'
@@ -112,7 +125,7 @@ export function applyQuote(s, r, time) {
   if (r.div?.yieldPct != null && r.div.yieldPct > 0) s.div.ttmPs = round((r.div.yieldPct / 100) * r.price, 4)
   // الأساسيات تُملأ آليًا للأسهم الآلية فقط؛ المنسّقة يدويًا تبقى كما أُدخلت
   if (s.auto && r.fundamentals) Object.assign(s, fundamentalsText(r.fundamentals))
-  s.asof = isoDate(time ?? r.time ?? new Date())
+  s.asof = isoDate(time ?? r.time ?? sessionDate())
   return s
 }
 

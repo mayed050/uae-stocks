@@ -1,51 +1,129 @@
-import { FileText } from 'lucide-react'
-import type { Stock } from '@/data'
+import type { FinRecord, Stock } from '@/data'
+import { OfficialLink, Section, Stats } from './parts'
+import { dateAr, dec, money, officialLinks, pct, tone } from './finFormat'
 
-/** مجموعة «البيانات والتقارير»: البيانات الأساسية (Fundamentals) + قائمة التقارير. */
-export default function FinancialDataTabs({ stock }: { stock: Stock }) {
+const DEFS =
+  'الأرقام كما يصنّفها مزوّد البيانات وقد تختلف تعريفاتها عن القوائم المنشورة (الإيرادات في البنوك مثلًا تشمل إجمالي دخل الفوائد)؛ المرجع القوائم المالية المدققة.'
+
+/** مجموعة «البيانات والتقارير»: آخر 12 شهرًا، والتقييم، والميزانية، والسجلان السنوي والربعي، والتقارير الرسمية. */
+export default function FinancialDataTabs({ stock, fin }: { stock: Stock; fin: FinRecord }) {
+  const links = officialLinks(stock)
+  const src = `المصدر: TradingView — حتى ${dateAr(fin.asof)}.`
+  const maxNet = Math.max(1, ...fin.fy.map((r) => Math.abs(r.net ?? 0)))
+
   return (
     <>
-      {/* 3. تبويب البيانات الأساسية (Fundamentals) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
-        <div style={{ background: 'var(--chip)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)', textAlign: 'center' }}>
-          <div style={{ fontSize: '11.5px', color: 'var(--muted)', fontWeight: 700, marginBottom: '6px' }}>مكرر الربحية (P/E)</div>
-          <b style={{ fontSize: '20px', color: 'var(--brand)' }}>{stock.pe?.toFixed(2) ?? 'يلزم تحقق'}</b>
-          <div style={{ fontSize: '9.5px', color: 'var(--muted)', marginTop: '4px' }}>المعدل الفعلي لتقييم سعر السهم</div>
-        </div>
-        <div style={{ background: 'var(--chip)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)', textAlign: 'center' }}>
-          <div style={{ fontSize: '11.5px', color: 'var(--muted)', fontWeight: 700, marginBottom: '6px' }}>ربحية السهم الواحد (EPS)</div>
-          <b style={{ fontSize: '20px', color: 'var(--brand)' }}>{stock.eps ? `${stock.eps} د.إ` : 'يلزم تحقق'}</b>
-          <div style={{ fontSize: '9.5px', color: 'var(--muted)', marginTop: '4px' }}>حصة السهم من صافي الأرباح</div>
-        </div>
-        <div style={{ background: 'var(--chip)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)', textAlign: 'center' }}>
-          <div style={{ fontSize: '11.5px', color: 'var(--muted)', fontWeight: 700, marginBottom: '6px' }}>عائد التوزيعات النقدي</div>
-          <b style={{ fontSize: '20px', color: 'var(--good)' }}>{stock.div.yld ?? 'غير معلن'}</b>
-          <div style={{ fontSize: '9.5px', color: 'var(--muted)', marginTop: '4px' }}>العائد النقدي الفعلي السنوي</div>
-        </div>
-        <div style={{ background: 'var(--chip)', padding: '16px', borderRadius: '12px', border: '1px solid var(--line)', textAlign: 'center' }}>
-          <div style={{ fontSize: '11.5px', color: 'var(--muted)', fontWeight: 700, marginBottom: '6px' }}>صافي الأرباح السنوية</div>
-          <b style={{ fontSize: '16px', color: 'var(--txt)' }}>{stock.net ?? 'يلزم تحقق'}</b>
-          <div style={{ fontSize: '9.5px', color: 'var(--muted)', marginTop: '4px' }}>حجم صافي الدخل المحقق للشركة</div>
-        </div>
-      </div>
+      <Section title="آخر 12 شهرًا" source={src}>
+        <Stats
+          items={[
+            { label: 'الإيرادات', value: money(fin.ttm.rev) },
+            { label: 'صافي الربح', value: money(fin.ttm.net), tone: tone(fin.ttm.net) },
+            { label: 'ربحية السهم المخفّفة', value: dec(fin.ttm.eps, 3) },
+            { label: 'الأرباح قبل الفوائد والضرائب والإهلاك', value: money(fin.ttm.ebitda) },
+            { label: 'التدفق النقدي الحر', value: money(fin.ttm.fcf), tone: tone(fin.ttm.fcf) },
+            { label: 'هامش الربح الإجمالي', value: pct(fin.ttm.grossM) },
+            { label: 'هامش الربح التشغيلي', value: pct(fin.ttm.opM) },
+            { label: 'هامش صافي الربح', value: pct(fin.ttm.netM) },
+            { label: 'العائد على حقوق الملكية', value: pct(fin.ttm.roe) },
+            { label: 'العائد على الأصول', value: pct(fin.ttm.roa) },
+          ]}
+        />
+      </Section>
 
-      {/* 5. تبويب التقارير */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '14px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--chip)', padding: '12px 16px', borderRadius: '10px', border: '1px solid var(--line)' }}>
-          <div>
-            <b style={{ fontSize: '13px', display: 'block', color: 'var(--txt)' }}><FileText size={14} className="ico" aria-hidden /> تقرير الاستدامة والحوكمة لعام 2025</b>
-            <span style={{ fontSize: '10px', color: 'var(--muted)' }}>تنسيق PDF · 4.8 ميجابايت</span>
+      <Section title="مؤشرات التقييم" source={src}>
+        <Stats
+          items={[
+            { label: 'مكرر الربحية', value: dec(stock.pe, 2) },
+            { label: 'السعر إلى القيمة الدفترية', value: dec(fin.val.pb, 2) },
+            { label: 'السعر إلى المبيعات', value: dec(fin.val.ps, 2) },
+            { label: 'قيمة المنشأة إلى EBITDA', value: dec(fin.val.evEbitda, 2) },
+            { label: 'نسبة التوزيع من الأرباح (آخر سنة مالية)', value: pct(fin.val.payout) },
+          ]}
+        />
+      </Section>
+
+      <Section title="المركز المالي — آخر ميزانية ربعية" source={src}>
+        <Stats
+          items={[
+            { label: 'إجمالي الأصول', value: money(fin.bal.assets) },
+            { label: 'إجمالي المطلوبات', value: money(fin.bal.liab) },
+            { label: 'حقوق الملكية', value: money(fin.bal.equity) },
+            { label: 'إجمالي الدين', value: money(fin.bal.debt) },
+            { label: 'النقد والاستثمارات قصيرة الأجل', value: money(fin.bal.cash) },
+            { label: 'صافي الدين', value: money(fin.bal.netDebt), hint: fin.bal.netDebt != null && fin.bal.netDebt < 0 ? 'النقد يفوق الدين' : undefined },
+            { label: 'القيمة الدفترية للسهم', value: dec(fin.bal.bvps, 3) },
+            { label: 'نسبة التداول', value: dec(fin.bal.curRatio, 2) },
+            { label: 'الدين إلى حقوق الملكية', value: dec(fin.bal.de, 2) },
+          ]}
+        />
+      </Section>
+
+      {fin.fy.length > 0 && (
+        <Section title="السجل السنوي" source={`${src} ${DEFS}`}>
+          <div className="fin-tablewrap" tabIndex={0} role="region" aria-label="جدول السجل المالي السنوي">
+            <table className="fin-table">
+              <thead>
+                <tr>
+                  <th>السنة المالية</th><th>الإيرادات</th><th>صافي الربح</th><th>ربحية السهم</th><th>التوزيع للسهم</th><th>إجمالي الأصول</th><th>التدفق النقدي الحر</th>
+                </tr>
+              </thead>
+              <tbody>
+                {fin.fy.map((r) => (
+                  <tr key={r.y}>
+                    <th scope="row">{r.y}</th>
+                    <td>{money(r.rev)}</td>
+                    <td>
+                      <span className="fin-bar-cell">
+                        <span className={'fin-bar ' + (tone(r.net) ?? '')} style={{ width: `${(Math.abs(r.net ?? 0) / maxNet) * 100}%` }} aria-hidden />
+                        <span>{money(r.net)}</span>
+                      </span>
+                    </td>
+                    <td>{dec(r.eps, 3)}</td>
+                    <td>{dec(r.dps, 3)}</td>
+                    <td>{money(r.assets)}</td>
+                    <td className={tone(r.fcf)}>{money(r.fcf)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          <button onClick={() => alert('جاري تحميل التقرير...')} style={{ border: 0, background: 'linear-gradient(135deg, #ff7b00, #ff4500)', color: '#fff', fontSize: '11px', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 700 }}>تحميل التقرير</button>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--chip)', padding: '12px 16px', borderRadius: '10px', border: '1px solid var(--line)' }}>
-          <div>
-            <b style={{ fontSize: '13px', display: 'block', color: 'var(--txt)' }}><FileText size={14} className="ico" aria-hidden /> القوائم المالية السنوية المدققة لعام 2025</b>
-            <span style={{ fontSize: '10px', color: 'var(--muted)' }}>تنسيق PDF · 8.2 ميجابايت</span>
+        </Section>
+      )}
+
+      {fin.fq && fin.fq.length > 0 && (
+        <Section title="السجل الربعي" source={`${src} تسميات الأرباع مُتحقَّق منها: مجموع أرباع آخر سنة مالية يطابق رقمها السنوي.`}>
+          <div className="fin-tablewrap" tabIndex={0} role="region" aria-label="جدول السجل المالي الربعي">
+            <table className="fin-table">
+              <thead>
+                <tr><th>الربع</th><th>الإيرادات</th><th>صافي الربح</th><th>صافي الربح مقارنةً بالربع نفسه من العام السابق</th></tr>
+              </thead>
+              <tbody>
+                {fin.fq.map((r, i) => {
+                  const lastYear = fin.fq?.[i + 4]?.net
+                  const yoy = r.net != null && lastYear != null && lastYear > 0 ? ((r.net - lastYear) / lastYear) * 100 : null
+                  return (
+                    <tr key={r.q}>
+                      <th scope="row" dir="ltr">{r.q}</th>
+                      <td>{money(r.rev)}</td>
+                      <td className={tone(r.net)}>{money(r.net)}</td>
+                      <td className={tone(yoy)}>{pct(yoy, true)}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
-          <button onClick={() => alert('جاري تحميل التقرير...')} style={{ border: 0, background: 'linear-gradient(135deg, #ff7b00, #ff4500)', color: '#fff', fontSize: '11px', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 700 }}>تحميل القوائم</button>
-        </div>
-      </div>
+        </Section>
+      )}
+
+      <Section title="التقارير المالية الرسمية">
+        <p className="fin-note">
+          القوائم المالية المدققة والتقارير السنوية وتقارير الحوكمة والاستدامة تنشرها الشركة في صفحتها على موقع السوق. لا تستضيف
+          المنصة نسخًا منها، تفاديًا لعرض نسخة قديمة أو غير مطابقة.
+          {fin.rel.last && <> آخر إعلان نتائج: <b>{dateAr(fin.rel.last)}</b>.</>}
+        </p>
+        <OfficialLink {...links.company} />
+      </Section>
     </>
   )
 }

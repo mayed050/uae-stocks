@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { num, round, fmtMcap, parseTvRow, applyQuote, toIndexQuote, tvDate, fmtDps, mergeDividend, psAed, amountsDiffer, staleStocks, mergeHistory, arName, arSector, fundamentalsText, discoverStocks, stockKey, TV_COLS } from '../lib.mjs'
+import { sessionDate, num, round, fmtMcap, parseTvRow, applyQuote, toIndexQuote, tvDate, fmtDps, mergeDividend, psAed, amountsDiffer, staleStocks, mergeHistory, arName, arSector, fundamentalsText, discoverStocks, stockKey, TV_COLS } from '../lib.mjs'
 
 describe('num', () => {
   it('يقبل الأرقام الصحيحة', () => {
@@ -316,5 +316,20 @@ describe('التغطية الكاملة', () => {
   it('mergeHistory: لا تراكم يومي للأسهم الآلية', () => {
     const h = mergeHistory({}, {}, [{ sym: 'SHUAA', auto: true, priceAuto: true, price: 0.3, asof: '2026-10-22' }])
     expect(h.SHUAA).toBeUndefined()
+  })
+})
+
+describe('sessionDate', () => {
+  const at = (iso) => sessionDate(new Date(iso)).toISOString().slice(0, 10)
+  it('يوم التداول نفسه بعد افتتاح الجلسة (الجمعة 16:00 بتوقيت دبي)', () => {
+    expect(at('2026-10-23T12:00:00Z')).toBe('2026-10-23')
+  })
+  it('السبت والأحد يُنسبان إلى جلسة الجمعة', () => {
+    expect(at('2026-10-24T13:43:00Z')).toBe('2026-10-23')
+    expect(at('2026-10-25T09:00:00Z')).toBe('2026-10-23')
+  })
+  it('صباح الإثنين قبل الافتتاح يُنسب إلى الجمعة', () => {
+    expect(at('2026-10-26T04:00:00Z')).toBe('2026-10-23') // 08:00 بتوقيت دبي
+    expect(at('2026-10-26T07:00:00Z')).toBe('2026-10-26') // 11:00 بتوقيت دبي
   })
 })
