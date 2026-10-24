@@ -351,3 +351,111 @@ export function discoverStocks(rows, stocks) {
   }
   return out
 }
+
+// ───────────── البيانات المالية التفصيلية (financials.json) ─────────────
+// القيم كما يصنّفها TradingView بالدرهم: آخر 12 شهرًا، وآخر ميزانية ربعية، وسجل سنوي وربعي.
+export const FIN_COLS = [
+  'total_revenue_ttm', 'net_income_ttm', 'earnings_per_share_diluted_ttm', 'gross_margin', 'operating_margin', 'net_margin',
+  'return_on_equity', 'return_on_assets', 'free_cash_flow_ttm', 'ebitda',
+  'total_assets_fq', 'total_liabilities_fq', 'total_equity_fq', 'total_debt_fq', 'cash_n_short_term_invest_fq', 'net_debt_fq',
+  'book_value_per_share_fq', 'current_ratio', 'debt_to_equity',
+  'price_book_fq', 'price_sales_current', 'enterprise_value_ebitda_ttm', 'dividend_payout_ratio_fy',
+  'total_shares_outstanding', 'float_shares_outstanding', 'float_shares_percent_current', 'isin',
+  'earnings_release_date', 'earnings_release_next_date',
+  'Perf.W', 'Perf.1M', 'Perf.3M', 'Perf.YTD', 'Perf.Y', 'RSI', 'SMA50', 'SMA200', 'beta_1_year', 'average_volume_30d_calc',
+  'fiscal_period_fy_h', 'total_revenue_fy_h', 'net_income_fy_h', 'earnings_per_share_diluted_fy_h', 'dps_common_stock_prim_issue_fy_h',
+  'total_assets_fy_h', 'total_debt_fy_h', 'free_cash_flow_fy_h',
+  'total_revenue_fq_h', 'net_income_fq_h',
+]
+const FY_KEEP = 6
+const FQ_KEEP = 8
+
+/**
+ * تسميات الأرباع (الأحدث أولًا) من تاريخ آخر إعلان نتائج: الربع المُعلن هو آخر ربع انتهى قبل الإعلان
+ * بأسبوعين على الأقل (لا تُعلن نتائج ربع في أيامه الأولى بعد انتهائه). تُرجع null بلا تاريخ.
+ */
+export function quarterLabels(lastReleaseIso, n) {
+  if (!lastReleaseIso) return null
+  const rel = Date.parse(lastReleaseIso + 'T00:00:00Z')
+  if (!Number.isFinite(rel)) return null
+  let y = new Date(rel).getUTCFullYear()
+  let q = Math.floor(new Date(rel).getUTCMonth() / 3) + 1
+  const prev = () => { q--; if (q === 0) { q = 4; y-- } }
+  while (Date.UTC(y, q * 3, 0) > rel - 14 * 86400000) prev() // Date.UTC(y, q*3, 0) = آخر يوم في الربع
+  const out = []
+  for (let i = 0; i < n; i++) { out.push({ q, y }); prev() }
+  return out
+}
+
+const money = (x) => (num(x) === null ? null : Math.round(x))
+const pct2 = (x) => (num(x) === null ? null : round(x, 2))
+const ps4 = (x) => (num(x) === null ? null : round(x, 4))
+const arr = (x) => (Array.isArray(x) ? x : [])
+
+/** يحوّل صف TradingView (بترتيب FIN_COLS) إلى سجل مالي مضغوط، أو null إن غابت كل البيانات الأساسية. */
+export function parseFinRow(d) {
+  if (!Array.isArray(d)) return null
+  const v = Object.fromEntries(FIN_COLS.map((c, i) => [c, d[i]]))
+  const last = tvDate(v.earnings_release_date)
+
+  // السجل السنوي: السنوات من fiscal_period_fy_h، وبقية المصفوفات بالمواضع نفسها (الأحدث أولًا)
+  const years = arr(v.fiscal_period_fy_h)
+  const fy = []
+  for (let i = 0; i < years.length && fy.length < FY_KEEP; i++) {
+    if (num(years[i]) === null) continue
+    const row = {
+      y: years[i],
+      rev: money(arr(v.total_revenue_fy_h)[i]),
+      net: money(arr(v.net_income_fy_h)[i]),
+      eps: ps4(arr(v.earnings_per_share_diluted_fy_h)[i]),
+      dps: ps4(arr(v.dps_common_stock_prim_issue_fy_h)[i]),
+      assets: money(arr(v.total_assets_fy_h)[i]),
+      debt: money(arr(v.total_debt_fy_h)[i]),
+      fcf: money(arr(v.free_cash_flow_fy_h)[i]),
+    }
+    if (row.rev !== null || row.net !== null) fy.push(row)
+  }
+
+  // السجل الربعي: يُقبل فقط إن طابق مجموع أرباع آخر سنة مالية رقمَها السنوي (±3%)، تحقّقًا من التسميات
+  const rq = arr(v.total_revenue_fq_h)
+  const nq = arr(v.net_income_fq_h)
+  const labels = quarterLabels(last, Math.min(FQ_KEEP, Math.max(rq.length, nq.length)))
+  let fq = null
+  if (labels && fy.length) {
+    const i4 = labels.findIndex((l) => l.q === 4 && l.y === fy[0].y)
+    const check = (series, annual) => {
+      if (i4 < 0 || annual === null) return null
+      const four = series.slice(i4, i4 + 4)
+      if (four.length < 4 || four.some((x) => num(x) === null)) return null
+      const sum = four.reduce((a, b) => a + b, 0)
+      return Math.abs(sum - annual) <= Math.abs(annual) * 0.03
+    }
+    const ok = check(rq, fy[0].rev) ?? check(nq, fy[0].net)
+    if (ok) fq = labels.map((l, i) => ({ q: `Q${l.q} ${l.y}`, rev: money(rq[i]), net: money(nq[i]) })).filter((r) => r.rev !== null || r.net !== null)
+  }
+
+  const out = {
+    ttm: {
+      rev: money(v.total_revenue_ttm), net: money(v.net_income_ttm), eps: ps4(v.earnings_per_share_diluted_ttm),
+      grossM: pct2(v.gross_margin), opM: pct2(v.operating_margin), netM: pct2(v.net_margin),
+      roe: pct2(v.return_on_equity), roa: pct2(v.return_on_assets), fcf: money(v.free_cash_flow_ttm), ebitda: money(v.ebitda),
+    },
+    bal: {
+      assets: money(v.total_assets_fq), liab: money(v.total_liabilities_fq), equity: money(v.total_equity_fq),
+      debt: money(v.total_debt_fq), cash: money(v.cash_n_short_term_invest_fq), netDebt: money(v.net_debt_fq),
+      bvps: ps4(v.book_value_per_share_fq), curRatio: pct2(v.current_ratio), de: pct2(v.debt_to_equity),
+    },
+    val: { pb: pct2(v.price_book_fq), ps: pct2(v.price_sales_current), evEbitda: pct2(v.enterprise_value_ebitda_ttm), payout: pct2(v.dividend_payout_ratio_fy) },
+    own: {
+      shares: money(v.total_shares_outstanding), float: money(v.float_shares_outstanding), floatPct: pct2(v.float_shares_percent_current),
+      isin: typeof v.isin === 'string' && v.isin.trim() ? v.isin.trim() : null,
+    },
+    rel: { last, next: tvDate(v.earnings_release_next_date) },
+    perf: { w: pct2(v['Perf.W']), m1: pct2(v['Perf.1M']), m3: pct2(v['Perf.3M']), ytd: pct2(v['Perf.YTD']), y1: pct2(v['Perf.Y']) },
+    tech: { rsi: pct2(v.RSI), sma50: ps4(v.SMA50), sma200: ps4(v.SMA200), beta: pct2(v.beta_1_year), avgVol30: money(v.average_volume_30d_calc) },
+    fy,
+    fq,
+  }
+  const hasAny = out.ttm.rev !== null || out.ttm.net !== null || out.bal.assets !== null || fy.length > 0 || out.own.shares !== null
+  return hasAny ? out : null
+}

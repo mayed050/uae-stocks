@@ -106,6 +106,27 @@ export const HistorySchema = z.object({
   history: z.record(z.string(), z.array(z.tuple([isoDate, price]))),
 })
 
+/** البيانات المالية التفصيلية (financials.json) من TradingView: الرمز → سجل؛ المبالغ بالدرهم والنسب بالمئة. */
+const n = nullable(z.number())
+export const FinRecordSchema = z.object({
+  asof: isoDate,
+  ttm: z.object({ rev: n, net: n, eps: n, grossM: n, opM: n, netM: n, roe: n, roa: n, fcf: n, ebitda: n }),
+  bal: z.object({ assets: n, liab: n, equity: n, debt: n, cash: n, netDebt: n, bvps: n, curRatio: n, de: n }),
+  val: z.object({ pb: n, ps: n, evEbitda: n, payout: n }),
+  own: z.object({ shares: n, float: n, floatPct: n, isin: nullable(z.string()) }),
+  rel: z.object({ last: nullable(isoDate), next: nullable(isoDate) }),
+  perf: z.object({ w: n, m1: n, m3: n, ytd: n, y1: n }),
+  tech: z.object({ rsi: n, sma50: n, sma200: n, beta: n, avgVol30: n }),
+  fy: z.array(z.object({ y: z.int(), rev: n, net: n, eps: n, dps: n, assets: n, debt: n, fcf: n })),
+  // السجل الربعي لا يُحفظ إلا إن تحقّقت تسمياته (مجموع أرباع السنة = رقمها السنوي)
+  fq: nullable(z.array(z.object({ q: z.string().check(z.regex(/^Q[1-4] \d{4}$/)), rev: n, net: n }))),
+})
+export const FinancialsSchema = z.object({
+  updated: z.iso.datetime(),
+  source: z.string(),
+  stocks: z.record(z.string(), FinRecordSchema),
+})
+
 /** حيازات المحفظة المحفوظة في المتصفح (حماية من بيانات تالفة أو قديمة الشكل). */
 export const HoldingsSchema = z.array(
   z.object({

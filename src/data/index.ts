@@ -1,5 +1,5 @@
 import type * as z from 'zod/mini'
-import type { DatasetSchema, DividendSchema, IndexQuoteSchema, StockSchema } from './schema'
+import type { DatasetSchema, DividendSchema, FinRecordSchema, IndexQuoteSchema, StockSchema } from './schema'
 import seed from './seed.json'
 
 // الأنواع مشتقة من عقد البيانات (schema.ts) — تعريف واحد للشكل والتحقق معًا.
@@ -7,6 +7,7 @@ export type Dividend = z.infer<typeof DividendSchema>
 export type Stock = z.infer<typeof StockSchema>
 export type IndexQuote = z.infer<typeof IndexQuoteSchema>
 export type Dataset = z.infer<typeof DatasetSchema>
+export type FinRecord = z.infer<typeof FinRecordSchema>
 export type Exchange = Stock['ex']
 export type Category = Stock['cat']
 

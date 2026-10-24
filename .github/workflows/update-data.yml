@@ -36,6 +36,10 @@ jobs:
       - name: Fetch price history (DFM)
         run: node scripts/fetch-history.mjs || echo "history fetch failed (non-fatal)"
 
+      # البيانات المالية التفصيلية لصفحة النتائج المالية — غير حاسم: عند الفشل تبقى آخر بيانات محفوظة
+      - name: Fetch financials
+        run: node scripts/fetch-financials.mjs || echo "financials fetch failed (non-fatal)"
+
       # حارس البيانات: يرفض أي ملف بيانات يخالف العقد (src/data/schema.ts) قبل دفعه؛
       # عند الفشل لا يُدفع شيء، ويفتح تنبيه الفشل أدناه Issue تلقائيًا.
       - name: Validate data contract
@@ -45,7 +49,7 @@ jobs:
         run: |
           git config user.name "data-bot"
           git config user.email "actions@github.com"
-          git add public/data.json src/data/seed.json public/history.json
+          git add public/data.json src/data/seed.json public/history.json public/financials.json
           if git diff --staged --quiet; then
             echo "لا تغييرات في البيانات."
           else
