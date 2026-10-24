@@ -600,3 +600,11 @@ th.sortable:hover{color:var(--txt)}
 .scr-card-price b{font-size:15px}
 .scr-card-meta{grid-area:meta; display:flex; flex-wrap:wrap; align-items:center; gap:4px 12px; font-size:11.5px; color:var(--muted)}
 .scr-card-meta b{color:var(--txt); font-weight:700}
+
+/* رابط الشروط في التنويه، وتذييل الصفحات */
+.disc-link{color:var(--brand); font-weight:700; white-space:nowrap}
+.site-foot{display:flex; flex-wrap:wrap; align-items:center; gap:6px 18px; margin-top:32px; padding-top:14px;
+  border-top:1px solid var(--line); color:var(--muted); font-size:12.5px}
+.site-foot a{color:var(--muted); font-weight:700; text-decoration:underline; text-underline-offset:3px}
+.site-foot a:hover{color:var(--brand)}
+@media (max-width:700px){ .site-foot{margin-top:24px; gap:6px 14px} }

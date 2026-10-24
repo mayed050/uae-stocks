@@ -6,6 +6,7 @@ import { NAV } from './components/nav'
 import LazySlot from './components/LazySlot'
 import { LazyStockDetail } from './components/lazy'
 import CommandPalette from './components/CommandPalette'
+import SiteFooter from './components/SiteFooter'
 import { useStocks } from './store'
 
 /** الهيكل العام لكل الصفحات: الشريط الجانبي، المحتوى (Outlet)، الشريط السفلي، وبطاقة السهم من ?stock=. */
@@ -40,7 +41,7 @@ export default function App() {
 
   // عنوان التبويب يعكس الصفحة والسهم المفتوح (يظهر في السجل والإشارات المرجعية)
   useEffect(() => {
-    const page = NAV.find((n) => n.to === pathname)?.label
+    const page = NAV.find((n) => n.to === pathname)?.label ?? (pathname === '/terms' ? 'الشروط وإخلاء المسؤولية' : undefined)
     const parts = [detail ? `${detail.name.split('—')[0]?.trim()} (${detail.sym})` : null, page, 'منصة الأسهم الإماراتية']
     document.title = parts.filter(Boolean).join(' — ')
   }, [pathname, detail])
@@ -86,7 +87,8 @@ export default function App() {
           <div className={'disclaimer' + (disclaimerOpen ? ' open' : '')}>
             <span className="disc-text" id="disc-text">
               <b>تنويه:</b> منصّة معلوماتية للمتابعة فقط — لا تتضمّن أي توصية بالشراء أو البيع. البنود
-              المعلّمة بـ«يلزم التحقق» تحتاج تأكيدًا من الإفصاحات الرسمية للشركات في سوقَي دبي وأبوظبي.
+              المعلّمة بـ«يلزم التحقق» تحتاج تأكيدًا من الإفصاحات الرسمية للشركات في سوقَي دبي وأبوظبي.{' '}
+              <Link to="/terms" className="disc-link">الشروط الكاملة</Link>
             </span>
             <button className="disc-more" aria-expanded={disclaimerOpen} aria-controls="disc-text" onClick={() => setDisclaimerOpen((o) => !o)}>
               {disclaimerOpen ? 'أقل' : 'المزيد'}
@@ -100,6 +102,7 @@ export default function App() {
           </div>
         )}
         <Outlet />
+        <SiteFooter />
       </main>
       
       {/* شريط التنقل السفلي المطور لتطبيقات الهواتف الذكية (Bottom Navigation Bar) */}
