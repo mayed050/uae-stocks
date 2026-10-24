@@ -31,7 +31,7 @@ const helper = createColumnHelper<typeof features, Stock>()
 const SORTABLE: readonly string[] = ['name', 'price', 'change', 'pe', 'mcap', 'yield'] satisfies SortKey[]
 
 /** السعر مع نقطة تنبيه إن كان أقدم من آخر جلسة (تعذّر تحديثه). */
-function PriceCell({ s }: { s: Stock }) {
+export function PriceCell({ s }: { s: Stock }) {
   const { stocks } = useStocks()
   const stale = isStale(s, sessionDate(stocks))
   return (
@@ -42,7 +42,7 @@ function PriceCell({ s }: { s: Stock }) {
   )
 }
 
-function PortfolioToggle({ sym }: { sym: string }) {
+export function PortfolioToggle({ sym }: { sym: string }) {
   const { isInPortfolio, togglePortfolioStock } = usePortfolio()
   const held = isInPortfolio(sym)
   return (

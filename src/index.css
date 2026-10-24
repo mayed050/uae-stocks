@@ -60,6 +60,13 @@ header.hero{position:relative; overflow:hidden; border-radius:24px; padding:34px
   border:1px solid var(--line); border-inline-start:4px solid var(--warn);
   border-radius:14px; padding:14px 16px; font-size:13.5px; color:var(--muted)}
 .disclaimer b{color:var(--txt)}
+.disc-text{flex:1; min-width:0}
+.disc-more{display:none}
+@media (max-width:900px){
+  .disclaimer{padding:10px 12px; font-size:13px; margin-top:8px}
+  .disclaimer:not(.open) .disc-text{display:-webkit-box; -webkit-line-clamp:1; line-clamp:1; -webkit-box-orient:vertical; overflow:hidden}
+  .disc-more{display:inline-block; flex:0 0 auto; background:none; border:0; padding:4px; color:var(--brand); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer}
+}
 
 .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin:22px 0}
 .stat{background:var(--panel); backdrop-filter:blur(8px); border:1px solid var(--line);
@@ -568,3 +575,28 @@ th.sortable:hover{color:var(--txt)}
 }
 /* الجدول شفاف داخل الحاوية كي يظهر ظلّ الحافة المرسوم على خلفيتها */
 .tablewrap table,.o-mv-table{background:transparent}
+
+/* ===== المستكشف على الجوال: فلاتر مطويّة، وبطاقات بدل الجدول ===== */
+.filter-groups{display:contents}
+.filters-toggle{display:none}
+@media (max-width:900px){
+  .filters-toggle{display:inline-flex; align-items:center; gap:6px}
+  .controls:not(.filters-open) .filter-groups{display:none}
+  .controls.filters-open .filter-groups{display:flex; flex-direction:column; align-items:flex-start; gap:10px; width:100%}
+}
+.scr-sortbar{display:flex; align-items:center; gap:8px; margin-bottom:10px; color:var(--muted); font-size:13px}
+.scr-sortbar label{display:flex; align-items:center; gap:8px; flex:1}
+.scr-sortbar select{flex:1; background:var(--chip); color:var(--txt); border:1px solid var(--line); border-radius:10px; padding:8px 10px; font:inherit; font-size:13px}
+.scr-cards{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px}
+.scr-card{display:flex; align-items:flex-start; gap:6px; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:10px 10px 10px 6px}
+.scr-card-main{flex:1; min-width:0; display:grid; grid-template-columns:34px minmax(0,1fr) auto; grid-template-areas:"av id price" "meta meta meta";
+  gap:6px 10px; align-items:center; text-align:start; background:none; border:0; padding:0; color:var(--txt); font:inherit; cursor:pointer}
+.scr-card-main > .avatar{grid-area:av}
+.scr-card-id{grid-area:id; display:flex; flex-direction:column; min-width:0; line-height:1.35}
+.scr-card-name{font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.scr-card-sym{font-size:11px; color:var(--muted)}
+.scr-card-sym .exch{font-size:10px; padding:0 5px}
+.scr-card-price{grid-area:price; display:flex; flex-direction:column; align-items:flex-end; line-height:1.35; font-size:13px}
+.scr-card-price b{font-size:15px}
+.scr-card-meta{grid-area:meta; display:flex; flex-wrap:wrap; align-items:center; gap:4px 12px; font-size:11.5px; color:var(--muted)}
+.scr-card-meta b{color:var(--txt); font-weight:700}
