@@ -5,6 +5,9 @@ import { usePortfolio } from '@/store'
 import Avatar from '@/components/Avatar'
 import { getDailyData } from '@/market'
 
+// ستة صفوف تكفي لقراءة الاتجاه في الصفحة الرئيسية؛ القائمة الكاملة في المستكشف (مرتّبة بالتغيّر)
+const ROWS = 6
+
 function fmtTradingValue(val: number) {
   if (val >= 1e6) {
     return `${(val / 1e6).toFixed(2)} مليون د.إ`
@@ -36,20 +39,20 @@ export default function MarketMovementPanel({ stocks, onOpen }: { stocks: Stock[
       return stocksWithData
         .filter(x => x.d.change > 0)
         .sort((a, b) => b.pctNum - a.pctNum)
-        .slice(0, 10)
+        .slice(0, ROWS)
     } else if (movementTab === 'losers') {
       return stocksWithData
         .filter(x => x.d.change < 0)
         .sort((a, b) => a.pctNum - b.pctNum)
-        .slice(0, 10)
+        .slice(0, ROWS)
     } else if (movementTab === 'volume') {
       return stocksWithData
         .sort((a, b) => b.d.volume - a.d.volume)
-        .slice(0, 10)
+        .slice(0, ROWS)
     } else { // 'value'
       return stocksWithData
         .sort((a, b) => b.d.value - a.d.value)
-        .slice(0, 10)
+        .slice(0, ROWS)
     }
   }, [stocks, movementTab])
 

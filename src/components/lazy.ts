@@ -6,5 +6,4 @@
 import { lazyRouteComponent } from '@tanstack/react-router'
 
 export const LazyPriceChart = lazyRouteComponent(() => import('./PriceChart'))
-export const LazySectorPie = lazyRouteComponent(() => import('@/features/overview/SectorPie'))
 export const LazyStockDetail = lazyRouteComponent(() => import('./StockDetail'))

@@ -1,8 +1,6 @@
 import { useMemo } from 'react'
-import type { Stock } from '@/data'
 import { parseYield, parseAmount, MONTHS_AR } from '@/format'
-import { upcoming, isAlert, parseISO } from '@/lib'
-import type { Upcoming } from '@/lib'
+import { parseISO } from '@/lib'
 import { useStocks } from './useStocks'
 
 /** خطاف مخصص لاستخراج وحساب إحصائيات لوحة تحليلات السوق الإجمالية */
@@ -27,13 +25,6 @@ export function useMarketStats() {
       mcapCount: covMcap.length,
       avgPe,
     }
-  }, [DATA])
-
-  // 2. تصفية التنبيهات القريبة
-  const alertRows = useMemo(() => {
-    return DATA.map((s) => ({ s, u: upcoming(s) }))
-      .filter((r): r is { s: Stock; u: Upcoming } => r.u !== null && isAlert(r.u))
-      .sort((a, b) => (a.u.n ?? 9999) - (b.u.n ?? 9999))
   }, [DATA])
 
   // 3. عمالقة السوق الإماراتي
@@ -85,7 +76,6 @@ export function useMarketStats() {
 
   return {
     stats,
-    alertRows,
     marketGiants,
     valuationOpportunities,
     yieldLeaders,

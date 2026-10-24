@@ -1,38 +1,29 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
+import { Grid3x3 } from 'lucide-react'
 import type { Stock } from '@/data'
 import type { View } from '@/components/nav'
 import { useStocks, useMarketStats } from '@/store'
 import { sessionDate as lastSession } from '@/lib'
 import PageHeader from '@/components/ui/PageHeader'
 import MarketKpiStrip from './MarketKpiStrip'
+import UpcomingDividends from './UpcomingDividends'
 import MarketIndexCards from './MarketIndexCards'
-import MarketLeaders from './MarketLeaders'
-import DividendMonthsCard from './DividendMonthsCard'
-import LiveActionsFeed from './LiveActionsFeed'
-import SectorDistribution from './SectorDistribution'
-import InteractiveChartPanel from './InteractiveChartPanel'
 import MarketMovementPanel from './MarketMovementPanel'
+import MarketLeaders from './MarketLeaders'
+import InteractiveChartPanel from './InteractiveChartPanel'
+import SectorDistribution from './SectorDistribution'
+import DividendMonthsCard from './DividendMonthsCard'
 import HeatmapSection from './HeatmapSection'
-import CompanyPricesWidget from './CompanyPricesWidget'
-import DividendTrackerWidget from './DividendTrackerWidget'
-import { useLiveActions } from './useLiveActions'
 import './overview.css'
 
-/** صفحة النظرة العامة — جذر تركيب: عمود رئيسي (رسوم وحركة وخريطة حرارية) وعمود جانبي (ودجات). */
+/**
+ * صفحة النظرة العامة مرتّبة حول مهمتها: الأرقام الكبرى، ثم مواعيد التوزيع القادمة، ثم السوق اليوم
+ * (المؤشرات والحركة والمتصدّرون)، ثم التحليل (مخطط السعر، القطاعات، شهور التوزيع)، والخريطة الحرارية مطويّة.
+ */
 export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) => void; onNavigate?: (v: View) => void }) {
   const { stocks: DATA, indices } = useStocks()
-  const {
-    stats,
-    alertRows,
-    sectorData,
-    yieldLeaders,
-    marketGiants,
-    valuationOpportunities,
-    monthData,
-  } = useMarketStats()
-
-  // التنبيهات المباشرة لإجراءات الشركات (عرض تجريبي يتجدد تلقائياً)
-  const liveActions = useLiveActions()
+  const { stats, sectorData, yieldLeaders, marketGiants, valuationOpportunities, monthData } = useMarketStats()
+  const [heatOpen, setHeatOpen] = useState(false)
 
   // نشاط آخر جلسة للأسهم المغطّاة — من الحقول الحقيقية فقط (حجم + نسبة تغيّر) ولأحدث تاريخ تداول،
   // فلا تدخل أسهم متقادمة السعر أو أحجام مولّدة في المجاميع.
@@ -59,56 +50,41 @@ export default function Overview({ onOpen, onNavigate }: { onOpen: (s: Stock) =>
   }, [DATA])
 
   return (
-    <div className="view">
+    <div className="view ov-stack">
       <PageHeader title="نظرة عامة على الأسهم والأسواق">
         لوحة معلوماتية مالية شاملة لـ {DATA.length} سهمًا مدرجاً في سوق دبي المالي وسوق أبوظبي للأوراق المالية
       </PageHeader>
 
-      {/* شريط مؤشرات الأداء العلوي — ملخّص السوق في أربعة أرقام */}
       <MarketKpiStrip stats={stats} />
 
-      <div className="overview-layout">
-        {/* العمود الأيمن الرئيسي (المحتوى التفاعلي والبياني 70%) */}
-        <div className="overview-main">
-          {/* 📊 بطاقة نشاط مؤشرات الأسواق والنشاط اليومي */}
-          <MarketIndexCards indices={indices} marketActivity={marketActivity} />
+      <UpcomingDividends stocks={DATA} onOpen={onOpen} onNavigate={onNavigate} />
 
-          {/* قسم التحليل: توزيع القطاعات + ازدحام شهور التوزيعات */}
-          <div className="chart-grid o-sector-grid">
-            <SectorDistribution sectorData={sectorData} />
-            <DividendMonthsCard data={monthData} />
-          </div>
+      <MarketIndexCards indices={indices} marketActivity={marketActivity} />
 
-          {/* 📈 لوحة الرسم البياني التفاعلي لأسعار وحركة الأسهم الفردية */}
-          <InteractiveChartPanel stocks={DATA} />
-
-          {/* 📊 لوحة حركة السوق التفاعلية الشاملة */}
-          <MarketMovementPanel stocks={DATA} onOpen={onOpen} />
-
-          {/* خريطة السوق الحرارية التفاعلية */}
-          <HeatmapSection stocks={DATA} onOpen={onOpen} />
-        </div>
-
-        {/* العمود الأيسر الجانبي (المعلومات الرديفة 30%) */}
-        <div className="overview-sidebar">
-          {/* لوحات المتصدّرين: العوائد · العمالقة · فرص التقييم */}
-          <MarketLeaders
-            yieldLeaders={yieldLeaders}
-            marketGiants={marketGiants}
-            valuationOpportunities={valuationOpportunities}
-            onOpen={onOpen}
-          />
-
-          {/* 1. لوحة قطاعات وأسعار الشركات */}
-          <CompanyPricesWidget stocks={DATA} onOpen={onOpen} />
-
-          {/* 2. متتبع توزيعات الأرباح التفاعلي المتقدم */}
-          <DividendTrackerWidget alertRows={alertRows} onOpen={onOpen} onNavigate={onNavigate} />
-
-          {/* 3. إشعارات وأحداث الشركات (عرض تجريبي) */}
-          <LiveActionsFeed actions={liveActions} stocks={DATA} onOpen={onOpen} />
-        </div>
+      <div className="ov-row-2-1">
+        <MarketMovementPanel stocks={DATA} onOpen={onOpen} />
+        <MarketLeaders
+          yieldLeaders={yieldLeaders}
+          marketGiants={marketGiants}
+          valuationOpportunities={valuationOpportunities}
+          onOpen={onOpen}
+        />
       </div>
+
+      <InteractiveChartPanel stocks={DATA} />
+
+      <div className="ov-row-1-1">
+        <SectorDistribution sectorData={sectorData} />
+        <DividendMonthsCard data={monthData} />
+      </div>
+
+      {/* الخريطة الحرارية مطويّة، ولا تُرسم خلاياها الستون إلا عند فتحها */}
+      <details className="panel ov-heat" onToggle={(e) => setHeatOpen(e.currentTarget.open)}>
+        <summary>
+          <Grid3x3 size={16} className="ico" aria-hidden /> خريطة السوق الحرارية — أكبر 60 شركة
+        </summary>
+        {heatOpen && <HeatmapSection stocks={DATA} onOpen={onOpen} />}
+      </details>
     </div>
   )
 }
