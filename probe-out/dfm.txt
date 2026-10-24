@@ -1,0 +1,31 @@
+== trading page 200 110949
+__NUXT_DATA__ len 1329
+[["ShallowReactive",1],{"data":2,"state":4,"once":25,"_errors":26,"serverRendered":11,"path":28},["ShallowReactive",3],{},["Reactive",5],{"$si18n-locale":6,"$si18n-route-params":7,"$si18n-head-page":8,"$si18n-missing-handler":8,"$scolor-mode":9,"$snuxt-seo-utils:routeRules":13,"$sstockslite":8,"$slatestPressReleases":8,"$ssite-bootstrap-ready":12,"$ssite-bootstrap-polling-bound":12,"$stoasts":14,"$sdfmgi":8,"$ssite-config":15},"en",{},null,{"preference":10,"value":10,"unknown":11,"forced":12},"light",true,false,{"head":-1,"seoMeta":-1},[],{"_priority":16,"currentLocale":20,"defaultLocale":20,"description":21,"env":22,"indexable":11,"name":23,"url":24},{"env":17,"url":18,"name":19,"description":19,"indexable":18,"defaultLocale":19,"currentLocale":19},-15,-3,-2,"en-US","Dubai Financial Market (DFM) is The global destination for individuals and companies to accelerate their wealth and businesses with innovative products and services in conducting trading, clearing, settlement and depository of securities, in an efficient, transparent and liquid environment.","production","Dubai Financial Market","https:\u002F\u002Fwww.dfm.ae",["Set"],["ShallowReactive",27],{"symbol-search-stocks-en":-1,"$f121407s6m5egt":-1,"companyData-EMAAR":-1},"\u002Fthe-exchange\u002Fmarket-information\u002Fcompany\u002FEMAAR\u002Ftrading"]
+  ctx: " style=""><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>DFM - EMAAR - Dubai Financial Market</title><link nonce="7XzuT2lCvCxvE/x6SptBBhDR" rel="preconnect" href="https://api-doc-ai.dfm.ae" crossorigin><link nonce="7XzuT2lC
+  ctx: perty="og:image:width" content="1900"><meta property="og:image:height" content="935"><meta property="og:title" content="EMAAR - Dubai Financial Market"><meta name="format-detection" content="telephone=no"><meta property="author" content="Dubai Financial Market"><meta property="co
+  ctx: nt="en_US"><meta id="i18n-og-url" property="og:url" content="https://www.dfm.ae/the-exchange/market-information/company/EMAAR/trading"><meta id="i18n-og-alt-ar_AE" property="og:locale:alternate" content="ar_AE"><link nonce="7XzuT2lCvCxvE/x6SptBBhDR" id="i18n-can" rel="canonical" 
+  ctx: XzuT2lCvCxvE/x6SptBBhDR" id="i18n-can" rel="canonical" href="https://www.dfm.ae/the-exchange/market-information/company/EMAAR/trading"><link nonce="7XzuT2lCvCxvE/x6SptBBhDR" id="i18n-alternate-en-US" rel="alternate" href="https://www.dfm.ae/the-exchange/market-information/company
+  ctx: /x6SptBBhDR" id="i18n-alternate-en-US" rel="alternate" href="https://www.dfm.ae/the-exchange/market-information/company/EMAAR/trading" hreflang="en-US"><link nonce="7XzuT2lCvCxvE/x6SptBBhDR" id="i18n-alternate-ar-AE" rel="alternate" href="https://www.dfm.ae/ar/the-exchange/market
+  ctx: SptBBhDR" id="i18n-alternate-ar-AE" rel="alternate" href="https://www.dfm.ae/ar/the-exchange/market-information/company/EMAAR/trading" hreflang="ar-AE"><link nonce="7XzuT2lCvCxvE/x6SptBBhDR" id="i18n-xd" rel="alternate" href="https://www.dfm.ae/the-exchange/market-information/com
+  ctx: 7XzuT2lCvCxvE/x6SptBBhDR" id="i18n-xd" rel="alternate" href="https://www.dfm.ae/the-exchange/market-information/company/EMAAR/trading" hreflang="x-default"><meta name="description" content="Company profile, trading data, and disclosures on Dubai Financial Market."><meta name="twi
+  ctx: ercase" data-v-825d522a><!--[--><!--[--><!----><!--]--><!--[--><li><a href="/ar/the-exchange/market-information/company/EMAAR/trading" data-slot="base" aria-label="عربي" class="rounded-md inline-flex items-center disabled:cursor-not-allowed aria-disabled:cursor-not-allowed disabl
+  ctx: Dubai Financial Market","url":"https://www.dfm.ae/"},{"@id":"https://www.dfm.ae/the-exchange/market-information/company/EMAAR/trading#webpage","@type":"WebPage","description":"Company profile, trading data, and disclosures on Dubai Financial Market.","name":"EMAAR - Dubai Financi
+  ctx: ge","@type":"WebPage","description":"Company profile, trading data, and disclosures on Dubai Financial Market.","name":"EMAAR - Dubai Financial Market","url":"https://www.dfm.ae/the-exchange/market-information/company/EMAAR/trading","isPartOf":{"@id":"https://www.dfm.ae/#website"
+  ctx: cial Market.","name":"EMAAR - Dubai Financial Market","url":"https://www.dfm.ae/the-exchange/market-information/company/EMAAR/trading","isPartOf":{"@id":"https://www.dfm.ae/#website"},"potentialAction":[{"@type":"ReadAction","target":["https://www.dfm.ae/the-exchange/market-infor
+  ctx: ebsite"},"potentialAction":[{"@type":"ReadAction","target":["https://www.dfm.ae/the-exchange/market-information/company/EMAAR/trading"]}]}]}</script><script nonce="7XzuT2lCvCxvE/x6SptBBhDR" type="application/json" data-nuxt-data="nuxt-app" data-ssr="true" id="__NUXT_DATA__">[["Sh
+  ctx: :\u002F\u002Fwww.dfm.ae",["Set"],["ShallowReactive",27],{"symbol-search-stocks-en":-1,"$f121407s6m5egt":-1,"companyData-EMAAR":-1},"\u002Fthe-exchange\u002Fmarket-information\u002Fcompany\u002FEMAAR\u002Ftrading"]</script></body></html>
+  ctx: tocks-en":-1,"$f121407s6m5egt":-1,"companyData-EMAAR":-1},"\u002Fthe-exchange\u002Fmarket-information\u002Fcompany\u002FEMAAR\u002Ftrading"]</script></body></html>
+
+== bundles 89
+paths: /api/_nuxt_icon
+  https://api-doc-ai.dfm.ae
+  https://api2.dfm.ae
+
+cmds: Disclosures, GetFreshHomePageAnnouncements, Disclosure, AiDisclosureSummaryContent, AiDisclosureFinanceContent, AiDisclosureSummary, ToastAnnounceExclude, ToastAnnounce
+
+== candidates
+GET https://api2.dfm.ae/web/widgets/v1/data?Command=GetCompanyDisclosures&Symbol=EMAAR 404 application/json { "statusCode": 404, "message": "Resource not found" }
+GET https://api2.dfm.ae/efsah/v1/disclosures?symbol=EMAAR&pageNumber=1&pageSize=10 404 application/json { "statusCode": 404, "message": "Resource not found" }
+GET https://api2.dfm.ae/efsah/v1/Disclosures?Symbol=EMAAR 404 application/json { "statusCode": 404, "message": "Resource not found" }
+GET https://api2.dfm.ae/web/sf/v1/company/EMAAR 404 application/json { "statusCode": 404, "message": "Resource not found" }
+GET https://api2.dfm.ae/mw/v1/company-profile/EMAAR 404 application/json { "statusCode": 404, "message": "Resource not found" }
