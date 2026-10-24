@@ -1,0 +1,24 @@
+/* صفحة الشروط وإخلاء المسؤولية — عمود نصي بعرض قراءة مريح */
+.legal{max-width:760px; line-height:1.9}
+.legal h2{font-size:17px; font-weight:800; margin:0 0 6px; color:var(--txt)}
+.legal p{margin:0 0 10px}
+.legal ul{list-style:disc; margin:0 0 10px; padding-inline-start:20px}
+.legal ul li::marker{color:var(--muted2)}
+.legal li + li{margin-top:4px}
+.legal a{color:var(--brand); font-weight:700}
+
+.legal-summary{background:var(--panel); border:1px solid var(--line); border-inline-start:4px solid var(--brand);
+  border-radius:var(--radius); padding:14px 18px; margin-bottom:22px}
+.legal-summary ul{margin:0}
+
+.legal-sections{list-style:none; counter-reset:legal; padding:0; margin:0}
+.legal-sections > li{counter-increment:legal; padding:16px 0; border-top:1px solid var(--line)}
+.legal-sections > li > h2::before{content:counter(legal) ". "; color:var(--brand)}
+.legal-sections > li + li{margin-top:0}
+
+.legal-back{margin-top:18px}
+
+@media (max-width:700px){
+  .legal{line-height:1.8}
+  .legal-summary{padding:12px 14px}
+}

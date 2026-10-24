@@ -56,6 +56,12 @@ const portfolioRoute = createRoute({
   component: lazyRouteComponent(() => import('./routes/portfolio')),
 })
 
+const termsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/terms',
+  component: lazyRouteComponent(() => import('./routes/terms')),
+})
+
 const routeTree = rootRoute.addChildren([
   overviewRoute,
   screenerRoute,
@@ -63,6 +69,7 @@ const routeTree = rootRoute.addChildren([
   financialsRoute,
   compareRoute,
   portfolioRoute,
+  termsRoute,
 ])
 
 /** يُنشئ الموجّه؛ تمرّر الاختبارات سجلًا في الذاكرة بدل سجل الهاش. */

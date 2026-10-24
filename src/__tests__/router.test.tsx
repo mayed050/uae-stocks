@@ -63,6 +63,15 @@ describe('التوجيه', () => {
     expect(screen.getByRole('link', { name: 'العودة إلى النظرة العامة' })).toBeInTheDocument()
   })
 
+  it('صفحة الشروط لها مسار وعنوان، ورابطها في تذييل كل صفحة', async () => {
+    renderAt('/terms')
+    expect(await screen.findByRole('heading', { level: 1, name: 'الشروط وإخلاء المسؤولية' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /لا توصية ولا استشارة/ })).toBeInTheDocument()
+    expect(document.title).toContain('الشروط وإخلاء المسؤولية')
+    const footerLink = document.querySelector('.site-foot a[href$="/terms"]')
+    expect(footerLink).not.toBeNull()
+  })
+
   it('رابط التنقّل للصفحة الحالية يحمل حالة النشاط', async () => {
     renderAt('/dividends')
     const links = await screen.findAllByRole('link', { name: /التوزيعات/ })
