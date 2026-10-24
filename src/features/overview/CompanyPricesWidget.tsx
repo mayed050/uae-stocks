@@ -49,7 +49,7 @@ export default function CompanyPricesWidget({ stocks, onOpen }: { stocks: Stock[
                     className="rowlink"
                   >
                     <td className="o-mini-td">
-                      <span className="o-mini-name">{realStock.name.split('—')[0]}</span>
+                      <span className="o-mini-name" title={realStock.name}>{realStock.name.split('—')[0]}</span>
                       <span className="o-mini-sym">{realStock.sym}</span>
                     </td>
                     <td className="o-mini-price">
@@ -85,7 +85,7 @@ export default function CompanyPricesWidget({ stocks, onOpen }: { stocks: Stock[
                   className="rowlink"
                 >
                   <td className="o-mini-td">
-                    <span className="o-mini-name">{realStock.name.split('—')[0]}</span>
+                    <span className="o-mini-name" title={realStock.name}>{realStock.name.split('—')[0]}</span>
                     <span className="o-mini-sym">{realStock.sym}</span>
                   </td>
                   <td className="o-mini-price">

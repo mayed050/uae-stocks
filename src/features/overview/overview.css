@@ -428,7 +428,7 @@
 .o-mv-tab { border: 0; background: transparent; color: var(--muted); font-size: 12px; font-weight: 800; padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-family: inherit; }
 .o-mv-tab.active { background: linear-gradient(135deg, #ff7b00, #ff4500); color: #fff; }
 .o-mv-tablewrap { overflow-x: auto; width: 100%; }
-.o-mv-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 750px; }
+.o-mv-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 620px; }
 .o-mv-table thead tr { border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--brand) 2%, transparent); }
 .o-mv-table th { padding: 12px 10px; color: var(--muted); font-weight: 800; }
 .o-mv-table td { padding: 12px 10px; }
@@ -460,12 +460,14 @@
 .o-mkt-tab { border: 0; background: transparent; color: var(--muted); font-size: 11px; padding: 3px 9px; border-radius: 5px; cursor: pointer; font-weight: 700; font-family: inherit; transition: all 0.15s ease; }
 .o-mkt-tab.active { background: linear-gradient(120deg, var(--brand-fill), var(--brand2-fill)); color: #fff; }
 .o-prices-scroll { max-height: 440px; overflow-y: auto; padding-right: 2px; }
-.o-mini-table { min-width: 100%; background: transparent; font-size: 12px; border-collapse: collapse; }
+.o-mini-table { width: 100%; min-width: 0; table-layout: fixed; background: transparent; font-size: 12px; border-collapse: collapse; }
+/* عرض ثابت للأعمدة داخل العمود الجانبي الضيّق: الاسم يُختصر بنقاط بدل أن يدفع عمود التغيّر خارج اللوحة */
+.o-mini-table th:nth-child(1) { width: 50%; } .o-mini-table th:nth-child(2) { width: 22%; } .o-mini-table th:nth-child(3) { width: 28%; }
 .o-mini-table thead tr { border-bottom: 1px solid var(--line); }
 .o-mini-table th { padding: 6px 4px; color: var(--muted); font-weight: 700; }
 .o-mini-table .rowlink { border-bottom: 1px solid rgba(255,255,255,0.04); cursor: pointer; }
 .o-mini-td { padding: 7px 4px; text-align: right; }
-.o-mini-name { font-weight: 700; display: block; color: var(--txt); }
+.o-mini-name { font-weight: 700; display: block; color: var(--txt); overflow: hidden; text-overflow: ellipsis; }
 .o-mini-sym { font-size: 10px; color: var(--muted2); font-weight: 600; }
 .o-mini-price { padding: 7px 4px; text-align: center; font-weight: 700; color: var(--txt); }
 .o-mini-change { padding: 7px 4px; text-align: left; font-weight: 800; direction: ltr; }

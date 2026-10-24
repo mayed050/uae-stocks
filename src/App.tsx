@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Sun, Moon, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { Link, Outlet, useCanGoBack, useLocation, useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import Sidebar from './components/Sidebar'
 import { NAV } from './components/nav'
@@ -77,20 +77,12 @@ export default function App() {
   return (
     <div className="app">
       <button className="skip-link" onClick={() => mainRef.current?.focus()}>تخطَّ إلى المحتوى الرئيسي</button>
-      <Sidebar />
-      <button
-        className="theme-toggle-floating"
-        onClick={toggleTheme}
-        title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}
-        aria-label={dark ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'}
-      >
-        {dark ? <Sun size={18} aria-hidden /> : <Moon size={18} aria-hidden />}
-      </button>
+      <Sidebar dark={dark} onToggleTheme={toggleTheme} />
       <main className="main" ref={mainRef} tabIndex={-1} aria-label="المحتوى الرئيسي">
         {!disclaimerHidden && (
           <div className="disclaimer">
             <b>تنويه:</b> منصّة معلوماتية للمتابعة فقط — لا تتضمّن أي توصية بالشراء أو البيع. البنود
-            المعلّمة بـ«يلزم التحقق» تحتاج تأكيدًا من المصادر الرسمية (DFM / ADX / إفصاحات الشركات).
+            المعلّمة بـ«يلزم التحقق» تحتاج تأكيدًا من الإفصاحات الرسمية للشركات في سوقَي دبي وأبوظبي.
             <button
               onClick={dismissDisclaimer}
               title="إخفاء التنويه"

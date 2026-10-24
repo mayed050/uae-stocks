@@ -17,7 +17,6 @@ export interface DailyData {
   pct: string
   volume: number
   value: number
-  trades: number
   prevClose: number
   open: number
   high: number
@@ -102,10 +101,9 @@ export function getDailyData(s: Stock): DailyData {
     volume = Math.round((mcapVal * 150000) * rand(2.2, 0.1))
   }
   const value = volume * price                       // قيمة التداول الحقيقية = الحجم × السعر
-  const trades = Math.round(volume * rand(0.00005, 0.00001)) + 3  // تقديري (لا يوفّره المصدر)
 
   return {
-    change, pct, volume, value, trades, prevClose, open, high, low,
+    change, pct, volume, value, prevClose, open, high, low,
     isUp, isFlat, isDown: !isUp && !isFlat, isReal,
   }
 }

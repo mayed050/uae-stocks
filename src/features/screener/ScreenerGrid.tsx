@@ -97,13 +97,18 @@ const columns = helper.columns([
 ])
 
 const VIS_KEY = 'screener_columns'
+// افتراضيًا تُخفى ربحية السهم وصافي الربح كي يتسع الجدول لشاشة الحاسوب المحمول دون قصّ؛
+// تُظهر من قائمة «الأعمدة»، ويُحفظ اختيار المستخدم.
+const DEFAULT_VISIBILITY: ColumnVisibilityState = { eps: false, net: false }
 
 function loadVisibility(): ColumnVisibilityState {
   try {
-    const v: unknown = JSON.parse(localStorage.getItem(VIS_KEY) ?? '{}')
-    return v && typeof v === 'object' ? (v as ColumnVisibilityState) : {}
+    const saved = localStorage.getItem(VIS_KEY)
+    if (saved === null) return DEFAULT_VISIBILITY
+    const v: unknown = JSON.parse(saved)
+    return v && typeof v === 'object' ? (v as ColumnVisibilityState) : DEFAULT_VISIBILITY
   } catch {
-    return {}
+    return DEFAULT_VISIBILITY
   }
 }
 

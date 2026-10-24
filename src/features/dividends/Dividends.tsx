@@ -130,11 +130,17 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
               <div className="cal-none">—</div>
             ) : (
               evs.map((ev, j) => (
-                <button key={j} className={'cal-ev ' + ev.kind} onClick={() => onOpen(ev.s)}>
+                <button
+                  key={j}
+                  className={'cal-ev ' + ev.kind}
+                  onClick={() => onOpen(ev.s)}
+                  title={`${ev.s.name} — ${ev.kind === 'ex' ? 'تاريخ الاستبعاد' : 'تاريخ الدفع'} ${ev.date.getDate()} ${m}`}
+                >
                   <span className="cal-ev-day">{ev.date.getDate()}</span>
                   <Avatar sym={ev.s.sym} size={22} />
                   <span className="cal-ev-sym">{ev.s.sym}</span>
                   <span className="cal-ev-kind">{ev.kind === 'ex' ? 'استبعاد' : 'دفع'}</span>
+                  <span className="sr-only">— {ev.s.name.split('—')[0]?.trim()}، {m}</span>
                 </button>
               ))
             )}
@@ -199,7 +205,7 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
 
         <div style={{ marginTop: '12px' }}>
           <h4 style={{ margin: '0 0 10px 0', fontSize: '13.5px', color: 'var(--txt)' }}>سلة الاستثمار المقترحة للتنويع الفعال (توزيع تلقائي للميزانية):</h4>
-          <div className="tablewrap">
+          <div className="tablewrap" tabIndex={0} role="region" aria-label="سلة الاستثمار المقترحة (قابلة للتمرير)">
             <table style={{ minWidth: '100%', fontSize: '12px' }}>
               <thead>
                 <tr>
@@ -260,7 +266,7 @@ export default function Dividends({ onOpen }: { onOpen: (s: Stock) => void }) {
       </div>
       <CalendarSubscribe />
       <p className="cal-sub-hint">تقويم السوق بلا تنبيهات؛ ولتنبيهات سهم بعينه اشترك في تقويمه من بطاقة السهم.</p>
-      <div className="tablewrap">
+      <div className="tablewrap" tabIndex={0} role="region" aria-label="جدول التوزيعات (قابل للتمرير)">
         <table>
           <thead>
             <tr>

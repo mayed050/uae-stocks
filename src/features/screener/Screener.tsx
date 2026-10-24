@@ -135,9 +135,9 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
         عرض <b style={{ color: 'var(--brand)' }}>{rows.length}</b> من {DATA.length} سهمًا مطابقًا للفلتر — اضغط أي صف للتفاصيل الكاملة
       </PageHeader>
 
-      <div className="overview-layout">
-        {/* العمود الأيمن الرئيسي (الفلاتر والجدول 70%) */}
-        <div className="overview-main">
+      <div className="screener-layout">
+        {/* الفلاتر والجدول: العرض كاملًا كي لا تُقصّ أعمدة الجدول */}
+        <div className="screener-main">
           
           <div className="controls">
             <div className="search">
@@ -243,7 +243,6 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                           <th>التغير (%)</th>
                           <th>حجم التداول (سهم)</th>
                           <th>قيمة التداول</th>
-                          <th>الصفقات</th>
                           <th>الإغلاق السابق</th>
                           <th>سعر الفتح</th>
                           <th>الأعلى</th>
@@ -296,7 +295,6 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
                               </td>
                               <td>{d.volume.toLocaleString('en-US')}</td>
                               <td>{Math.round(d.value).toLocaleString('en-US')} د.إ</td>
-                              <td>{d.trades.toLocaleString('en-US')}</td>
                               <td>{d.prevClose.toFixed(2)}</td>
                               <td>{d.open.toFixed(2)}</td>
                               <td style={{ color: 'var(--good)' }}>{d.high.toFixed(2)}</td>
@@ -331,27 +329,28 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
           {rows.length === 0 && <div className="empty">لا توجد نتائج مطابقة.</div>}
         </div>
 
-        {/* الشريط الجانبي: ملخّص حيّ للنتائج المطابقة */}
-        <div className="overview-sidebar">
-          <div className="o-widget">
-            <h4 className="o-widget-h"><ListFilter size={16} className="ico" aria-hidden /> ملخّص النتائج</h4>
-
-            <div className="stats" style={{ gridTemplateColumns: '1fr 1fr', gap: '10px', margin: '0 0 14px' }}>
+        {/* ملخّص حيّ للنتائج المطابقة: شريط أفقي فوق الجدول، وعمود جانبي على الشاشات العريضة جدًا فقط */}
+        <aside className="o-widget screener-summary" aria-label="ملخّص النتائج">
+          <h4 className="o-widget-h"><ListFilter size={16} className="ico" aria-hidden /> ملخّص النتائج</h4>
+          <div className="scr-summary">
+            <div className="stats scr-sum-stats">
               <StatCard color="var(--brand)" value={rows.length} label="أسهم مطابقة" />
               <StatCard color="var(--good)" value={`${summary.avgYield.toFixed(2)}%`} label="متوسط العائد" />
             </div>
 
-            <div className="o-index-item">
-              <span style={{ color: 'var(--muted)' }}>سوق دبي (DFM)</span>
-              <b style={{ color: 'var(--brand)' }}>{summary.dfm}</b>
-            </div>
-            <div className="o-index-item">
-              <span style={{ color: 'var(--muted)' }}>سوق أبوظبي (ADX)</span>
-              <b style={{ color: 'var(--good)' }}>{summary.adx}</b>
+            <div className="scr-sum-ex">
+              <div className="o-index-item">
+                <span style={{ color: 'var(--muted)' }}>سوق دبي (DFM)</span>
+                <b style={{ color: 'var(--brand)' }}>{summary.dfm}</b>
+              </div>
+              <div className="o-index-item">
+                <span style={{ color: 'var(--muted)' }}>سوق أبوظبي (ADX)</span>
+                <b style={{ color: 'var(--good)' }}>{summary.adx}</b>
+              </div>
             </div>
 
             {summary.topSectors.length > 0 && (
-              <div style={{ marginTop: '14px' }}>
+              <div className="scr-sum-sectors">
                 <div style={{ fontSize: '11.5px', fontWeight: 800, color: 'var(--muted)', marginBottom: '8px' }}>التوزيع القطاعي</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
                   {summary.topSectors.map((s) => (
@@ -367,7 +366,7 @@ export default function Screener({ onOpen }: { onOpen: (s: Stock) => void }) {
               </div>
             )}
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   )
