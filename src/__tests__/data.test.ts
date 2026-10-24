@@ -23,6 +23,17 @@ describe('ملفات البيانات المُلتزَمة', () => {
     if (!r.success) throw new Error(r.error.message)
     expect(Object.keys(r.data.history).length).toBeGreaterThan(0)
   })
+  // يقتصر على الحقول المُدخلة يدويًا: قيمة شاذة من TradingView تُراجَع في Issue المراجعة ولا توقف التحديث اليومي
+  it('لا تقع مواعيد الاستحقاق والاستبعاد والسجل اليدوية في عطلة نهاية الأسبوع (لا تداول السبت والأحد)', () => {
+    const weekend = (iso: string) => [0, 6].includes(new Date(`${iso}T00:00:00Z`).getUTCDay())
+    const bad = (publicData as { stocks: { sym: string; div: Record<string, unknown> & { auto?: { fields: string[] } } }[] }).stocks.flatMap((s) =>
+      (['lastEnt', 'exd', 'rec', 'nextExd'] as const)
+        .filter((f) => !s.div.auto?.fields.includes(f))
+        .filter((f) => typeof s.div[f] === 'string' && weekend(s.div[f]))
+        .map((f) => `${s.sym}.${f}=${String(s.div[f])}`),
+    )
+    expect(bad).toEqual([])
+  })
   it('public/financials.json يطابق عقد البيانات المالية', () => {
     const r = FinancialsSchema.safeParse(financialsData)
     if (!r.success) throw new Error(r.error.message)
