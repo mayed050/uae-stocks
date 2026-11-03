@@ -251,11 +251,12 @@ export function mergeHistory(existing, fetched, stocks, maxPoints = 400) {
   const out = {}
   for (const s of stocks) {
     let pts = fetched[s.sym] ?? existing[s.sym] ?? []
-    // التراكم اليومي للأسهم المنسّقة فقط (الأسهم المكتشفة آليًا كثيرة وتُضخّم الملف)
-    if (!fetched[s.sym] && !s.auto && s.priceAuto && num(s.price) != null && s.asof) {
+    // التراكم اليومي للأسهم المنسّقة فقط (الأسهم المكتشفة آليًا كثيرة وتُضخّم الملف). يُلحق إغلاق آخر جلسة
+    // حتى بعد جلب سلسلة Yahoo إن تأخرت عنه؛ أما إغلاق اليوم نفسه فيبقى من Yahoo إن وُجد فيها.
+    if (!s.auto && s.priceAuto && num(s.price) != null && s.asof) {
       const last = pts[pts.length - 1]
       if (!last || s.asof > last[0]) pts = [...pts, [s.asof, round(s.price, 3)]]
-      else if (s.asof === last[0]) pts = [...pts.slice(0, -1), [s.asof, round(s.price, 3)]]
+      else if (!fetched[s.sym] && s.asof === last[0]) pts = [...pts.slice(0, -1), [s.asof, round(s.price, 3)]]
     }
     if (pts.length) out[s.sym] = pts.slice(-maxPoints)
   }

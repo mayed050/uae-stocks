@@ -35,7 +35,6 @@ export const TRADINGVIEW_LOGO_MAP: Record<string, string> = {
   ADNOCDRILL: 'https://s3-symbol-logo.tradingview.com/adnoc-drilling-company-pjsc--600.png',
   NMDCENR: 'https://s3-symbol-logo.tradingview.com/nmdc-energy-pjsc--600.png',
   IHC: 'https://s3-symbol-logo.tradingview.com/international-holding-company-pjsc--600.png',
-  TAQA: 'https://s3-symbol-logo.tradingview.com/abu-dhabi-national-energy-company--600.png',
   ALDAR: 'https://s3-symbol-logo.tradingview.com/al-dar-properties--600.png',
   ALPHADHABI: 'https://s3-symbol-logo.tradingview.com/alpha-dhabi-pjsc--600.png',
   ADNOCLS:    'https://s3-symbol-logo.tradingview.com/adnoc-logistics-services--600.png',
