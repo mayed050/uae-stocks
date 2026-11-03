@@ -258,6 +258,13 @@ describe('mergeHistory', () => {
     expect(h.FAB).toEqual([['2026-10-21', 18.9], ['2026-10-22', 18.62]])
     expect(h.EMAAR).toEqual([['2026-10-21', 11.5], ['2026-10-22', 11.38]])
   })
+  it('سلسلة Yahoo المتأخرة عن آخر جلسة يُلحق بها إغلاقها، ولا يُستبدل إغلاق يوم موجود فيها', () => {
+    // Yahoo يتوقف عند 20 أكتوبر بينما آخر جلسة 22 أكتوبر
+    const lagging = { DEWA: [['2026-10-19', 2.6], ['2026-10-20', 2.64]] }
+    expect(mergeHistory({}, lagging, stocks).DEWA).toEqual([['2026-10-19', 2.6], ['2026-10-20', 2.64], ['2026-10-22', 2.68]])
+    const current = { DEWA: [['2026-10-21', 2.66], ['2026-10-22', 2.69]] }
+    expect(mergeHistory({}, current, stocks).DEWA).toEqual(current.DEWA)
+  })
   it('تشغيلان في اليوم نفسه لا يكرّران النقطة، والطول محدود', () => {
     const once = mergeHistory({}, {}, stocks)
     expect(mergeHistory(once, {}, stocks).FAB).toEqual([['2026-10-22', 18.62]])

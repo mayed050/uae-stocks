@@ -144,7 +144,7 @@ export default function Compare() {
           </div>
 
           {/* جدول المقارنة الشامل مع تمييز القيم الأفضل */}
-          <div className="tablewrap">
+          <div className="tablewrap" tabIndex={0} role="region" aria-label="جدول المقارنة (قابل للتمرير)">
             <table>
               <thead>
                 <tr>
